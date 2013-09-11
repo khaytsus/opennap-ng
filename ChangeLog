@@ -1,0 +1,2301 @@
+------------------------------------------------------------------------
+r364 | reech | 2005-04-11 19:38:46 -0400 (Mon, 11 Apr 2005) | 4 lines
+
+moved all globally declared (except Buf) to the global. structure.
+change opennap's debugging to use ONAP_DEBUG and not DEBUG
+changed normalize_ban, it was calling invalid_nick to figure out if what was passed is a nick or a ip(mask).  now it looks at the string and if it only contains digits and "." then it is considered to ba an ip(mask) otherwise it assumes it is a nick.  as always, if *!* is passed, that is used directly.
+
+------------------------------------------------------------------------
+r363 | reech | 2005-04-07 15:44:01 -0400 (Thu, 07 Apr 2005) | 18 lines
+
+\src\buffer.c
+ * If init_compress or init_client_compress isnt successfull return -1, if good return0
+ * took out the stopping of compression of the sendfbuf is 16k (why not just compress it all and save some memory)
+ * CSC clients dont get preferential treatment, they now queue data and send it with all the other users.
+
+\src\kill_user.c
+ * only PROTNET local users
+
+\src\login.c
+ * check return of init_client_compress and clean up things if it does fail for whatever reason *leak fixed*
+ * show the port the user connected to if the user is local in debug output (methos asked for)
+
+\src\server_login.c
+ * check return of init_compress and do the right thing if it bombs *crash fixed*
+
+\src\opennap.h
+ * change return of init_compress and init_client_compress from void to int
+
+------------------------------------------------------------------------
+r362 | reech | 2005-04-05 16:15:47 -0400 (Tue, 05 Apr 2005) | 2 lines
+
+modified   opennap-ng.nsi
+ * version bump to rc2
+------------------------------------------------------------------------
+r361 | reech | 2005-04-05 15:42:52 -0400 (Tue, 05 Apr 2005) | 1 line
+
+Changes so BSD doesnt define LINUX
+------------------------------------------------------------------------
+r360 | reech | 2005-04-05 15:38:33 -0400 (Tue, 05 Apr 2005) | 30 lines
+
+\src\abuse.c
+ * lots of whitespace changes for readability
+ * check_eject_limits now sets an int and returns it - for debugging ease
+\src\ban.c
+ * whitespace changes for readability
+\src\buffer.c
+ * whitespace changes for readability
+\src\channel.c
+ * whitespace changes for readability
+\src\download.c
+ * whitespace changes for readability
+\src\handler.c
+ * whitespace changes for readability
+ * replaced a goto with an else {}
+\src\join.c
+ * whitespace changes for readability
+\src\login.c
+ * whitespace changes for readability
+ * add sanity check after ghost check to make sure there isnt a user still logged in with the new user's nick
+ * remove ghost_kill_timer for remote connections, this is for a local server to deal with, falls back to TS comparison of ghost kill code
+\src\main.c
+ * go back to digging into /proc for linux as it's implementation of getrusage is broked
+\src\privmsg.c
+ * whitespace changes for readability
+ * commented out debug code
+\src\userflags.c
+ * whitespace changes for readability
+\src\win32-support.h
+ * revision bump to rc2
+
+------------------------------------------------------------------------
+r359 | reech | 2005-03-24 09:24:14 -0500 (Thu, 24 Mar 2005) | 2 lines
+
+that's what i get for not compiling something before checking it in...
+
+------------------------------------------------------------------------
+r358 | reech | 2005-03-24 09:17:41 -0500 (Thu, 24 Mar 2005) | 5 lines
+
+\src\ban.c
+ * fix a compiler warning
+\src\kill_user.c
+ * dont notify mods on messages starting with ghost, share, or Connect
+
+------------------------------------------------------------------------
+r357 | reech | 2005-03-22 15:20:37 -0500 (Tue, 22 Mar 2005) | 1 line
+
+ghost timer changes
+------------------------------------------------------------------------
+r356 | reech | 2005-03-22 14:36:23 -0500 (Tue, 22 Mar 2005) | 2 lines
+
+
+
+------------------------------------------------------------------------
+r355 | reech | 2005-03-22 14:32:07 -0500 (Tue, 22 Mar 2005) | 2 lines
+
+BUGABOO IN LOGIN.C
+
+------------------------------------------------------------------------
+r354 | reech | 2005-03-22 13:52:44 -0500 (Tue, 22 Mar 2005) | 2 lines
+
+ghost kill timer bug fix
+
+------------------------------------------------------------------------
+r353 | reech | 2005-03-22 13:09:05 -0500 (Tue, 22 Mar 2005) | 1 line
+
+forgot to set stat.mem_usage in the frenzy
+------------------------------------------------------------------------
+r352 | reech | 2005-03-22 11:15:10 -0500 (Tue, 22 Mar 2005) | 1 line
+
+rusage is not spelled ruage
+------------------------------------------------------------------------
+r351 | reech | 2005-03-22 11:12:40 -0500 (Tue, 22 Mar 2005) | 2 lines
+
+forgot the vars when bringing it over...
+
+------------------------------------------------------------------------
+r350 | reech | 2005-03-22 11:03:18 -0500 (Tue, 22 Mar 2005) | 1 line
+
+added reporting of cpu/memory/etc via sys/resource.h and removed the opening of /proc files for this.  this is more portable (ie: works on linux and f/bsd at least).
+------------------------------------------------------------------------
+r349 | reech | 2005-03-21 13:58:53 -0500 (Mon, 21 Mar 2005) | 7 lines
+
+added 10262 and 10263 - MSG_SERVER_SYNC_END and MSG_SERVER_SYNC_END_ACK
+
+the first message is sent as the last of the sync burst.  when this message is received, the second message is sent back.
+this shows not just when the sync is queued (synch_server: done) but when the other server is actually done and processing regular network traffic.
+
+
+and as always, whitespace nazi action
+------------------------------------------------------------------------
+r348 | reech | 2005-03-20 12:28:52 -0500 (Sun, 20 Mar 2005) | 3 lines
+
+New global variable ghost_kill_timer defaulted to 450 seconds
+if a user's ghost is less than ghost_kill_timer seconds old, the ghost isnt killed and the connecting user is given a message and disconnected.
+
+------------------------------------------------------------------------
+r347 | reech | 2005-03-20 11:13:31 -0500 (Sun, 20 Mar 2005) | 1 line
+
+Changes for windows build of installer
+------------------------------------------------------------------------
+r346 | reech | 2005-03-19 19:19:04 -0500 (Sat, 19 Mar 2005) | 2 lines
+
+stab at fixing a really annoying hard to recreate bug
+
+------------------------------------------------------------------------
+r345 | reech | 2005-03-19 15:39:43 -0500 (Sat, 19 Mar 2005) | 1 line
+
+removed removed files
+------------------------------------------------------------------------
+r344 | reech | 2005-03-19 12:29:18 -0500 (Sat, 19 Mar 2005) | 1 line
+
+needed a ROUTING_ONLY around the code moved from abuse.c
+------------------------------------------------------------------------
+r343 | reech | 2005-03-19 10:04:01 -0500 (Sat, 19 Mar 2005) | 1 line
+
+deleted opennap-ng.wav as it isnt used anymore
+------------------------------------------------------------------------
+r342 | reech | 2005-03-19 10:02:32 -0500 (Sat, 19 Mar 2005) | 1 line
+
+deleted some old VC project/workspace files that are no longer needed
+------------------------------------------------------------------------
+r341 | khaytsus | 2005-03-19 09:52:17 -0500 (Sat, 19 Mar 2005) | 3 lines
+
+Deleted win98 references, as we don't support it any longer.
+
+
+------------------------------------------------------------------------
+r340 | reech | 2005-03-19 09:48:34 -0500 (Sat, 19 Mar 2005) | 1 line
+
+more Makefile.am changes
+------------------------------------------------------------------------
+r339 | reech | 2005-03-19 09:33:02 -0500 (Sat, 19 Mar 2005) | 1 line
+
+misc changes preparing for release
+------------------------------------------------------------------------
+r338 | khaytsus | 2005-03-19 09:00:00 -0500 (Sat, 19 Mar 2005) | 3 lines
+
+Updated a few more places in the manual.
+
+
+------------------------------------------------------------------------
+r337 | khaytsus | 2005-03-19 08:41:34 -0500 (Sat, 19 Mar 2005) | 3 lines
+
+Updated version strings, URLs, added proxycheck info to documentation.
+
+
+------------------------------------------------------------------------
+r336 | khaytsus | 2005-03-19 08:07:59 -0500 (Sat, 19 Mar 2005) | 5 lines
+
+Updated autogen.sh using intellient generator from the DSpam project.
+Should detect the locations of the autoconf/automake files appropriately,
+also provides more informative output about what's happening.
+
+
+------------------------------------------------------------------------
+r335 | khaytsus | 2005-03-19 01:03:07 -0500 (Sat, 19 Mar 2005) | 3 lines
+
+Added isuser(con) around proxy check; no need to check unless we're local.
+
+
+------------------------------------------------------------------------
+r334 | reech | 2005-03-19 00:54:42 -0500 (Sat, 19 Mar 2005) | 3 lines
+
+change char cap back to char cap
+format nazi
+
+------------------------------------------------------------------------
+r333 | khaytsus | 2005-03-19 00:02:41 -0500 (Sat, 19 Mar 2005) | 8 lines
+
+Fixed whois return information to return all possible information on the user,
+such as (at most): Friend Muzzled Criminal Cloaked
+
+Seems fine in TekNap, Lopster, and WinMX, will need additional checking in other
+clients to make sure it's compatable with everything.  If not, we'll have to
+prioritize which one we want to see.
+
+
+------------------------------------------------------------------------
+r332 | reech | 2005-03-18 21:54:15 -0500 (Fri, 18 Mar 2005) | 3 lines
+
+\src\login.c
+ * helps if I were to use the right function to sync channels for a ghosted user
+
+------------------------------------------------------------------------
+r331 | reech | 2005-03-18 18:47:35 -0500 (Fri, 18 Mar 2005) | 3 lines
+
+\src\main.c
+ * server now sets itself to high priority - WIN32 only
+
+------------------------------------------------------------------------
+r330 | reech | 2005-03-18 17:25:41 -0500 (Fri, 18 Mar 2005) | 1 line
+
+more changes for the move from cvs to svn - preparing for 0.48 release and automated snapshots
+------------------------------------------------------------------------
+r329 | reech | 2005-03-18 10:39:22 -0500 (Fri, 18 Mar 2005) | 2 lines
+
+had forgotten to resync the user's channels in the ghost code.
+
+------------------------------------------------------------------------
+r328 | reech | 2005-03-18 09:43:35 -0500 (Fri, 18 Mar 2005) | 13 lines
+
+\src\abuse.c
+ * moved some things around so we are not doing math unless really needed 
+ * changed order of some if's to speed up some things (again mostly check 0/1 before doing math or complex things)
+ * took eject check out of notify_mod_abuse, it was killing clients and the calling code never expected that... moved to client io loop in main.c
+\src\client_quit.c
+ * when we get a client QUIT from another server and the user is local zap them (before it just logged a message)
+\src\login.c
+ * whitespace nazi action
+\src\main.c
+ * add eject check into main loop
+\src\search.c
+ * remove leftover ss var from removing the inline strtolower
+
+------------------------------------------------------------------------
+r327 | reech | 2005-03-17 15:58:00 -0500 (Thu, 17 Mar 2005) | 5 lines
+
+fix strlower in util.c and use it in search.c in place of the also broken inline replacement.
+
+it seems that the line "*s++ = tolower(*s);' works as expexted except on linux, where the ++ is evaluated before the =
+moving the ++ to a line by itself seems to work fine even on linux.
+
+------------------------------------------------------------------------
+r326 | reech | 2005-03-17 12:47:39 -0500 (Thu, 17 Mar 2005) | 5 lines
+
+* \src\login.c
+   * more ghost kill changes, this time in the 'if user is on another server' section
+ * \src\search.c
+   * fixed a possible division by 0 condition
+
+------------------------------------------------------------------------
+r325 | reech | 2005-03-16 22:48:31 -0500 (Wed, 16 Mar 2005) | 2 lines
+
+typo
+
+------------------------------------------------------------------------
+r324 | reech | 2005-03-16 22:44:32 -0500 (Wed, 16 Mar 2005) | 2 lines
+
+Fix a race condition where a user that is logging in maybe desynched in the ghost code
+
+------------------------------------------------------------------------
+r323 | reech | 2005-03-16 15:53:21 -0500 (Wed, 16 Mar 2005) | 7 lines
+
+\src\util.c
+ * little more whitespace nazi action
+\src\login.c
+ * rewrote the ghost kill section to make it do what everyone though it should do as well as fix #5 which should also make #6 unneeded - still needs testing
+\src\main.c
+ * removed a printf that was put in long ago for testing and never removed
+
+------------------------------------------------------------------------
+r322 | reech | 2005-03-16 13:16:57 -0500 (Wed, 16 Mar 2005) | 2 lines
+
+damn typos
+
+------------------------------------------------------------------------
+r321 | reech | 2005-03-16 12:51:15 -0500 (Wed, 16 Mar 2005) | 2 lines
+
+opennap.h change for proxy.c
+
+------------------------------------------------------------------------
+r320 | reech | 2005-03-16 12:30:27 -0500 (Wed, 16 Mar 2005) | 2 lines
+
+This patch is mainly a formatting patch,  It also moves around some things for WIN32 into util.c and win32-support.h where I think they should really reside.
+
+------------------------------------------------------------------------
+r319 | reech | 2005-03-15 09:29:29 -0500 (Tue, 15 Mar 2005) | 2 lines
+
+This adds a new opennap config variable to allow the toggling on and off of proxycheck, renames the function to ProxyCheck and makes some formatting changes to proxy.c
+
+------------------------------------------------------------------------
+r318 | reech | 2005-03-14 22:37:52 -0500 (Mon, 14 Mar 2005) | 3 lines
+
+this is to wrap the proxy code in #ifdef HAVE_LIBTHREAD
+this revistion should be considered EXPERIMENTAL until a time which the code is also wrapped with a config option to not proxy check by default.
+
+------------------------------------------------------------------------
+r317 | reech | 2005-03-14 22:19:26 -0500 (Mon, 14 Mar 2005) | 1 line
+
+add preliminary proxy check patch - will add #ifdefs around it soon
+------------------------------------------------------------------------
+r316 | reech | 2005-03-14 21:55:26 -0500 (Mon, 14 Mar 2005) | 6 lines
+
+\src\login.c
+fix #3 - now every user, local or remote, will be checked against the local servers file nicks. before it was only local users were checked against the local servers file.
+
+\src\server_login.c
+remove some code i had added trying to fix #3 but wasnt needed
+
+------------------------------------------------------------------------
+r315 | reech | 2005-03-10 10:29:29 -0500 (Thu, 10 Mar 2005) | 2 lines
+
+just a test of svn
+
+------------------------------------------------------------------------
+r314 | reech | 2005-03-09 18:14:10 -0500 (Wed, 09 Mar 2005) | 2 lines
+
+This is the first stab at fixing #3
+
+------------------------------------------------------------------------
+r313 | reech | 2005-03-09 14:43:55 -0500 (Wed, 09 Mar 2005) | 34 lines
+
+\src\util.c
+ * Added functions to report current and max memory usage
+
+\src\main.c
+ * Added reporting to memory usage
+ * Added .win32 to the version string if we are WIN32
+ * Added .rt to the version string if we are ROUTING_ONLY
+
+\src\motd.c
+ * Added .win32 to the version string if we are WIN32
+ * Added .rt to the version string if we are ROUTING_ONLY
+
+\src\server_connect.c
+ * Added .win32 to the version string if we are WIN32
+ * Added .rt to the version string if we are ROUTING_ONLY
+
+\src\win32-support.h
+ * More zlib changes - zlib is now statically compiled in so there is no zlibwapi.dll needed now
+ * getpid() now works in WIN32
+ * defined PID so a pidfile is made
+ * removed .win32 from the version string as the code handles it now
+
+\src\opennap.h
+ * If WIN32 add max_mem_usage to stats variable
+ * Declare CurrentMemUsage and MaxMemusage
+
+\win\opennap.vcproj
+ * Add psapi.lib to the linked libraries
+ * Add opennap.h to the header files (suprised that hadnt been done already)
+ * Remove zlib.h and zconf.h from the header files as they were moved into the default include directory
+
+\win\README.zlib
+ * Update to say zlib is static and no extra files are needed now
+
+------------------------------------------------------------------------
+r312 | reech | 2005-03-09 09:30:16 -0500 (Wed, 09 Mar 2005) | 7 lines
+
+\win\opennap.vcproj
+changed optimization options and made zlibwapi static (no more dll silliness!)
+ \src\login.c
+got rid of a compiler warning (and reformatted the code)
+ \src\server_links.c
+changed the win32 gettimeofday function to one that changes the epoch to match unix's
+
+------------------------------------------------------------------------
+r311 | reech | 2005-03-08 20:40:53 -0500 (Tue, 08 Mar 2005) | 2 lines
+
+update zlib readme
+
+------------------------------------------------------------------------
+r310 | reech | 2005-03-08 20:39:02 -0500 (Tue, 08 Mar 2005) | 7 lines
+
+\win\opennap.vcproj
+changed project default to opennap and release not debug (does debug even work anymore?)
+ \src\napigator.c
+moved #ifndef ROUTE_ONLY for win32 support to work
+ \src\win32-support.h
+made changes for update to zlib 1.2.2
+
+------------------------------------------------------------------------
+r309 | reech | 2005-03-08 19:12:23 -0500 (Tue, 08 Mar 2005) | 2 lines
+
+added VS.NET solution and project files to svn
+
+------------------------------------------------------------------------
+r300 | masterof822 | 2004-11-21 17:19:13 -0500 (Sun, 21 Nov 2004) | 2 lines
+
+add differend setup dirs
+
+------------------------------------------------------------------------
+r299 | khaytsus | 2004-08-30 00:10:06 -0400 (Mon, 30 Aug 2004) | 6 lines
+
+
+
+Actually updated rpm building for recent rpm's.  Oops.  Again, if you're
+on an older system that uses "rpm -ba" linkining rpm to rpmbuild will
+fix the "make rpm" for you.  rpm -ba has been depreciated for some time.
+
+------------------------------------------------------------------------
+r298 | khaytsus | 2004-08-29 17:22:52 -0400 (Sun, 29 Aug 2004) | 5 lines
+
+
+
+Updated sample init script to check for configdir, statedir, and
+configdir/users files as these are all required for running anyway.
+
+------------------------------------------------------------------------
+r297 | khaytsus | 2004-08-29 17:14:20 -0400 (Sun, 29 Aug 2004) | 10 lines
+
+
+
+Updateds NEWS and README to reflect changes and addition of new script,
+fixfiles.
+
+fixfiles [prefix] will copy old files to their new locations for the
+user.  Does basic checking to make sure the original prefix is valid,
+otherwise it doesn't check much.  There is no rm or mv'ing involved,
+so should be safe.
+
+------------------------------------------------------------------------
+r296 | khaytsus | 2004-08-29 16:41:00 -0400 (Sun, 29 Aug 2004) | 4 lines
+
+
+
+Updated RPM spec file to match new share/config dir structure.
+
+------------------------------------------------------------------------
+r295 | khaytsus | 2004-08-29 16:39:51 -0400 (Sun, 29 Aug 2004) | 17 lines
+
+
+
+level.c: Fixed level.log, was in State_Dir and Config_Dir
+
+init.c: Added some additional informational log output to point users
+        to possible problem with config directory being changed.
+
+setup.c: Added note about copying or creating config file.
+
+README: Updated with new directory information, updated some things.
+
+TODO: Updated
+
+main.c: zuser count problem fixed.
+
+buffer.c: zuser count problem fixed.
+
+------------------------------------------------------------------------
+r294 | masterof822 | 2004-08-29 12:02:47 -0400 (Sun, 29 Aug 2004) | 2 lines
+
+Install
+
+------------------------------------------------------------------------
+r293 | masterof822 | 2004-08-29 12:00:33 -0400 (Sun, 29 Aug 2004) | 2 lines
+
+remove log dir bug
+
+------------------------------------------------------------------------
+r292 | masterof822 | 2004-08-15 07:38:09 -0400 (Sun, 15 Aug 2004) | 2 lines
+
+update Changelog
+
+------------------------------------------------------------------------
+r291 | masterof822 | 2004-08-14 11:50:57 -0400 (Sat, 14 Aug 2004) | 2 lines
+
+move channel from config dir to log dir
+
+------------------------------------------------------------------------
+r290 | masterof822 | 2004-08-14 10:56:28 -0400 (Sat, 14 Aug 2004) | 2 lines
+
+add configure option disable pid
+
+------------------------------------------------------------------------
+r289 | masterof822 | 2004-08-13 15:54:49 -0400 (Fri, 13 Aug 2004) | 2 lines
+
+new output format
+
+------------------------------------------------------------------------
+r288 | masterof822 | 2004-08-13 09:02:12 -0400 (Fri, 13 Aug 2004) | 2 lines
+
+add different log and config directory. changed setup to opennap_setup
+
+------------------------------------------------------------------------
+r287 | masterof822 | 2004-08-13 08:48:56 -0400 (Fri, 13 Aug 2004) | 2 lines
+
+add different log and config directory. changed setup to opennap_setup
+
+------------------------------------------------------------------------
+r286 | masterof822 | 2004-08-13 08:27:47 -0400 (Fri, 13 Aug 2004) | 2 lines
+
+add different log and config directory. changed setup to opennap_setup
+
+------------------------------------------------------------------------
+r285 | masterof822 | 2004-08-13 08:13:19 -0400 (Fri, 13 Aug 2004) | 2 lines
+
+add log and spezial config directory.
+
+------------------------------------------------------------------------
+r284 | khaytsus | 2004-06-15 10:43:21 -0400 (Tue, 15 Jun 2004) | 5 lines
+
+
+
+Wintermute helped fix the HUP problem, so now the log file can be rotated/
+renamed/deleted and will be recreated on a -HUP.  Yay!
+
+------------------------------------------------------------------------
+r283 | khaytsus | 2004-04-02 09:58:14 -0500 (Fri, 02 Apr 2004) | 3 lines
+
+Reech - Fixed small problem in util.c from previous patches; variable
+didn't match up correctly in code.
+
+------------------------------------------------------------------------
+r282 | khaytsus | 2004-04-02 09:46:17 -0500 (Fri, 02 Apr 2004) | 7 lines
+
+Patch from reech for Win32/VC6.   Skips all of the timers and whatnot
+that are not dependant on network activity.  Let's try to wrap the
+network stuff in an if to allow those other things to happen.
+
+
+Updated TODO and manual a bit.
+
+------------------------------------------------------------------------
+r281 | khaytsus | 2004-03-04 08:55:56 -0500 (Thu, 04 Mar 2004) | 12 lines
+
+Fixed bad coding in max_files warning, incrementing bit flags doesn't
+make logical sense.
+
+Implimented improved strsep from Hoshi in util.c
+
+'Fixed' negative bug that shows up in Windows occationally on server
+pongs.  In reality, just abs() it.
+
+Commented out my_client_check in server rehash in config.c due to it
+killing clients *globally* if an admin adds a client to his invalid_clients
+list and rehashes.
+
+------------------------------------------------------------------------
+r280 | masterof822 | 2004-01-16 13:40:23 -0500 (Fri, 16 Jan 2004) | 2 lines
+
+add Install
+
+------------------------------------------------------------------------
+r279 | masterof822 | 2004-01-16 13:16:41 -0500 (Fri, 16 Jan 2004) | 2 lines
+
+Remove User Flood
+
+------------------------------------------------------------------------
+r278 | masterof822 | 2004-01-16 13:09:30 -0500 (Fri, 16 Jan 2004) | 2 lines
+
+Remove User Flood
+
+------------------------------------------------------------------------
+r277 | masterof822 | 2004-01-16 13:02:55 -0500 (Fri, 16 Jan 2004) | 2 lines
+
+Remove User Flood
+
+------------------------------------------------------------------------
+r276 | masterof822 | 2004-01-16 12:04:16 -0500 (Fri, 16 Jan 2004) | 2 lines
+
+Remove User Flood
+
+------------------------------------------------------------------------
+r275 | khaytsus | 2003-09-25 18:50:04 -0400 (Thu, 25 Sep 2003) | 2 lines
+
+Re-added COPYING file to cvs.  wth!
+
+------------------------------------------------------------------------
+r274 | khaytsus | 2003-09-22 21:06:46 -0400 (Mon, 22 Sep 2003) | 19 lines
+
+Here's a list of changes I made from Hoshi, forgot to mention them before
+and want to give credit where it is due!
+
+abuse.c
+Bugfix: new approach to make "eject_nochannels" functional.
+
+add_file.c
+Bugfix: block file treats empty lines now as comments and not as "*".
+
+config.c
+Change: default for "max_connections" to 1000. (Was FD_SETSIZE which looks
+        dangerous for most OSes and some less powerful machines.)
+Change: default for "stat_pass" and "stat_user" set to NULL (instead of "".
+        Now not setting those vars is a clean way to skip Napigator report.)
+
+hash.c
+Change: some optimizations and inlinings to speed up some functions a bit.
+New: created own inlined version of strcmp() to speed up searches and hashes
+
+------------------------------------------------------------------------
+r273 | khaytsus | 2003-09-22 20:27:44 -0400 (Mon, 22 Sep 2003) | 11 lines
+
+Updated version strings (again!?) to 0.47, this time 0.47.1 since we're on
+another beta run.
+
+Fixed several Windows problems, this code is what should be in the Windows
+0.47 version.  Fixed servers file loading, fixed pongs (still rounded to
+nearest 10 milliseconds, but better than 1 second accuracy!), fixed levels
+file, etc.
+
+Started work on cycling logs on SIGHUP for *nix but incomplete, code not
+currently used.
+
+------------------------------------------------------------------------
+r272 | khaytsus | 2003-09-14 16:05:43 -0400 (Sun, 14 Sep 2003) | 2 lines
+
+Fixed 100% polling bug where timeout = 0ms.
+
+------------------------------------------------------------------------
+r271 | khaytsus | 2003-09-14 02:06:40 -0400 (Sun, 14 Sep 2003) | 6 lines
+
+Returned level.log to its previously written method in level.c version 1.5,
+as the current method with fake_fgets/fputs doesn't work correctly as it
+is.  Fixes level.log not being updated.
+
+Removed some test logging from a few places I had forgotten.
+
+------------------------------------------------------------------------
+r270 | khaytsus | 2003-09-14 01:20:11 -0400 (Sun, 14 Sep 2003) | 10 lines
+
+Fixed the #$##ed idle bug.  After much time working it turned out to be
+an #endif excluded a condition.  Moving it and all is good.  Finding it
+was another thing.
+
+Fixed "make rpm" so it works with RECENT RPM builds, which implies that
+rpm -ba is depreciated.  If you're on an older rpm-based distro that
+has no rpmbuild, simply link rpmbuild to rpm, it will work.
+
+Fixed a few other small things I've forgotten since working on the above.  :)
+
+------------------------------------------------------------------------
+r269 | khaytsus | 2003-09-13 13:14:29 -0400 (Sat, 13 Sep 2003) | 5 lines
+
+Fixed channels bug similar to bans bug of long ago.
+Added dump_state to kill_server.
+Commented out acl-blocking since it is BROKE since forever.
+Incremented to 0.47, it's been a while.
+
+------------------------------------------------------------------------
+r268 | khaytsus | 2003-06-07 00:20:21 -0400 (Sat, 07 Jun 2003) | 2 lines
+
+Added nick of ignored user to kill/ban when user ignores mod+.  Updated operserv help.
+
+------------------------------------------------------------------------
+r267 | masterof822 | 2003-05-26 15:55:50 -0400 (Mon, 26 May 2003) | 2 lines
+
+remove bug line 734
+
+------------------------------------------------------------------------
+r266 | khaytsus | 2003-04-16 13:03:41 -0400 (Wed, 16 Apr 2003) | 2 lines
+
+Slight change to put invalid_client logins with other invalid data in stats logging output
+
+------------------------------------------------------------------------
+r265 | khaytsus | 2003-03-21 07:20:37 -0500 (Fri, 21 Mar 2003) | 2 lines
+
+Fixed so it acts as Turner likes, log all files after being blocked.
+
+------------------------------------------------------------------------
+r264 | khaytsus | 2003-03-20 23:52:35 -0500 (Thu, 20 Mar 2003) | 2 lines
+
+Increase version to 0.46.4
+
+------------------------------------------------------------------------
+r263 | khaytsus | 2003-03-20 23:40:51 -0500 (Thu, 20 Mar 2003) | 2 lines
+
+Moved blocked file notification outside of criminal check so it is always logged
+
+------------------------------------------------------------------------
+r262 | khaytsus | 2003-03-17 16:56:19 -0500 (Mon, 17 Mar 2003) | 2 lines
+
+Updated version to 0.46.2, added abuse_bans_ip configuration
+
+------------------------------------------------------------------------
+r261 | khaytsus | 2003-02-22 14:09:23 -0500 (Sat, 22 Feb 2003) | 2 lines
+
+Minor manual changes, added a todo
+
+------------------------------------------------------------------------
+r260 | leodav | 2003-02-20 18:14:50 -0500 (Thu, 20 Feb 2003) | 2 lines
+
+Fixed win32 crash with saving bans. fixed compression bug when no motd
+
+------------------------------------------------------------------------
+r259 | the_turner | 2003-01-12 02:39:36 -0500 (Sun, 12 Jan 2003) | 3 lines
+
+Updated Changelog file on the first Sunday free from work.
+When being asked to build a house again I'd bit the throat of the asker.
+
+------------------------------------------------------------------------
+r258 | leodav | 2003-01-10 19:43:31 -0500 (Fri, 10 Jan 2003) | 2 lines
+
+updated mkpass for use with win32, some minor changes
+
+------------------------------------------------------------------------
+r257 | khaytsus | 2002-12-30 20:51:04 -0500 (Mon, 30 Dec 2002) | 2 lines
+
+fixed simple min_file_size bug pointed out by hoshi
+
+------------------------------------------------------------------------
+r256 | masterof822 | 2002-12-30 05:53:35 -0500 (Mon, 30 Dec 2002) | 2 lines
+
+update samples.config
+
+------------------------------------------------------------------------
+r255 | masterof822 | 2002-12-29 19:14:52 -0500 (Sun, 29 Dec 2002) | 2 lines
+
+update samples.channel
+
+------------------------------------------------------------------------
+r254 | masterof822 | 2002-12-29 18:49:17 -0500 (Sun, 29 Dec 2002) | 2 lines
+
+remove setup bug
+
+------------------------------------------------------------------------
+r253 | masterof822 | 2002-12-29 15:30:19 -0500 (Sun, 29 Dec 2002) | 2 lines
+
+update samples.users
+
+------------------------------------------------------------------------
+r252 | masterof822 | 2002-12-29 15:27:56 -0500 (Sun, 29 Dec 2002) | 2 lines
+
+update samples.channel
+
+------------------------------------------------------------------------
+r251 | khaytsus | 2002-11-27 21:48:42 -0500 (Wed, 27 Nov 2002) | 2 lines
+
+Cloaked public messages and emotes are prepended with #, experimental limiting of zlib
+
+------------------------------------------------------------------------
+r250 | khaytsus | 2002-11-23 14:51:57 -0500 (Sat, 23 Nov 2002) | 2 lines
+
+promoted version strings to 0.46 to match upcoming release tarball
+
+------------------------------------------------------------------------
+r249 | khaytsus | 2002-11-21 22:53:49 -0500 (Thu, 21 Nov 2002) | 2 lines
+
+henning fixed the server message, this fixes the 612 part :)
+
+------------------------------------------------------------------------
+r248 | henning_d | 2002-11-21 16:25:29 -0500 (Thu, 21 Nov 2002) | 3 lines
+
+
+commited bugfix from Sgop that fixes the segfault when banning without giving a reason
+
+------------------------------------------------------------------------
+r247 | khaytsus | 2002-11-17 00:25:33 -0500 (Sun, 17 Nov 2002) | 2 lines
+
+crap, bad code, bad..  removing log cycling stuff for right now
+
+------------------------------------------------------------------------
+r246 | khaytsus | 2002-11-16 17:05:09 -0500 (Sat, 16 Nov 2002) | 2 lines
+
+Changed ban/kill strings in abuse.c and added quick and dirty logfile cycling on hup
+
+------------------------------------------------------------------------
+r245 | khaytsus | 2002-11-08 18:49:30 -0500 (Fri, 08 Nov 2002) | 2 lines
+
+Make the new var browse.nag by accident, fixed to browse_nag now
+
+------------------------------------------------------------------------
+r244 | khaytsus | 2002-11-08 17:19:13 -0500 (Fri, 08 Nov 2002) | 2 lines
+
+Added browse_nag so people can disable server browse nagging.  Defaults on.
+
+------------------------------------------------------------------------
+r243 | khaytsus | 2002-09-25 21:31:50 -0400 (Wed, 25 Sep 2002) | 2 lines
+
+setup.c, mistakenly left a windows.h include, changed to win32-support.h
+
+------------------------------------------------------------------------
+r242 | khaytsus | 2002-09-23 20:13:40 -0400 (Mon, 23 Sep 2002) | 2 lines
+
+win32 changes from Reech
+
+------------------------------------------------------------------------
+r241 | khaytsus | 2002-09-08 17:58:58 -0400 (Sun, 08 Sep 2002) | 2 lines
+
+Really fixed segfault this time in userflags.c
+
+------------------------------------------------------------------------
+r240 | khaytsus | 2002-09-06 06:55:54 -0400 (Fri, 06 Sep 2002) | 2 lines
+
+removed line from userflags.c until I figure out why they cause segfaults
+
+------------------------------------------------------------------------
+r239 | khaytsus | 2002-09-03 17:18:25 -0400 (Tue, 03 Sep 2002) | 2 lines
+
+Hopefully fixed segfault in userflags.c:191
+
+------------------------------------------------------------------------
+r238 | khaytsus | 2002-08-28 18:15:55 -0400 (Wed, 28 Aug 2002) | 2 lines
+
+updated opennap_config.pl
+
+------------------------------------------------------------------------
+r237 | khaytsus | 2002-08-26 21:04:03 -0400 (Mon, 26 Aug 2002) | 2 lines
+
+userflags.c:191 added isuser(con) to keep the X set Y to FRIEND notification on the local server, thanks spyder
+
+------------------------------------------------------------------------
+r236 | masterof822 | 2002-08-26 05:55:38 -0400 (Mon, 26 Aug 2002) | 2 lines
+
+Remove some bugs
+
+------------------------------------------------------------------------
+r235 | leodav | 2002-08-25 10:24:21 -0400 (Sun, 25 Aug 2002) | 2 lines
+
+fixed bans bug ;) it all happened when a banlist got smaller yet the last few bytes/lines remained in the ban-file. that explains duplicate bans and weird partial bans. restructured login.c. added some debugstuff (commented out). did some cosmetics on the source here and there
+
+------------------------------------------------------------------------
+r234 | the_turner | 2002-08-25 06:46:02 -0400 (Sun, 25 Aug 2002) | 13 lines
+
+Fixed Segv in util.c.
+Program received signal SIGSEGV, Segmentation fault.
+fake_fgets(buf=0x807b380 "*!216.4.177.115", max_len=2047, fd=6) at util.c:75
+75              lineptr[0]=inbuf;
+(gdb) bt
+#0  fake_fgets(buf=0x807b380 "*!216.4.177.115", max_len=2047, fd=6) at util.c:75
+#1  0x0805f658 in load_bans () at ban.c:540
+#2  0x0806201b in init_server () at init.c:324
+#3  0x0804abf7 in args (argc=1, argv=0xbffff6e4, sockfdcount=0xbffff678) at main.c:821
+#4  0x0804b1e0 in main (argc=1, argv=0xbffff6e4) at main.c:1146
+#5  0x400719ed in __libc_start_main () from /lib/libc.so.6
+Bounds were not checked when reading characters from input stream.
+
+------------------------------------------------------------------------
+r233 | the_turner | 2002-08-25 02:30:23 -0400 (Sun, 25 Aug 2002) | 5 lines
+
+implemented a function which handles the creation of a global ban record and which
+should be called from each ban issuing function to initialize vars properly.
+Prepared the implementation of deletion stubs via a timestamp which represents
+the time when the ban had been deleted.
+
+------------------------------------------------------------------------
+r232 | the_turner | 2002-08-25 00:19:27 -0400 (Sun, 25 Aug 2002) | 3 lines
+
+Added a check for duplicate ban entries in load_bans as the
+previous bug caused duplicate ban entries in the ban database.
+
+------------------------------------------------------------------------
+r231 | the_turner | 2002-08-25 00:10:18 -0400 (Sun, 25 Aug 2002) | 7 lines
+
+My last commit had been a typical example of fix it broken.
+When reading a string via fake_fgets() the little difference between
+a while and a repeat loop had gotten mixed in my brain and caused
+a string enclosed in quotes to be in the next line.
+This behavior wreaked havoc at least in all banlists which were handled
+via the cvs of yesterday.
+
+------------------------------------------------------------------------
+r230 | the_turner | 2002-08-24 03:32:45 -0400 (Sat, 24 Aug 2002) | 2 lines
+
+Removed a line concerning the debugging of the ban code.
+
+------------------------------------------------------------------------
+r229 | the_turner | 2002-08-24 03:29:13 -0400 (Sat, 24 Aug 2002) | 6 lines
+
+The fake_fgets did not take care of \n enclosed in "" and created a new line whenever this occurred.
+This royally screwed up quite a few banlists where "\n" were in the banreasons.
+Hopefully that had been the cause of the fscked banlists.
+Whoops - forgot to remove the debugging code from ban.c - hopefully the ban_compare thing
+does not fill up the harddisks.
+
+------------------------------------------------------------------------
+r228 | the_turner | 2002-08-24 01:54:35 -0400 (Sat, 24 Aug 2002) | 3 lines
+
+Updated ChangeLog.
+Hopefully found and fixed the duplicate ban issue this time.
+
+------------------------------------------------------------------------
+r227 | leodav | 2002-08-21 11:34:14 -0400 (Wed, 21 Aug 2002) | 2 lines
+
+rollback minor typo (one byte;)
+
+------------------------------------------------------------------------
+r226 | leodav | 2002-08-21 11:20:34 -0400 (Wed, 21 Aug 2002) | 2 lines
+
+updated all cygwin stuff and it's now 100% native/posix you must get latest cygwin for this
+
+------------------------------------------------------------------------
+r225 | leodav | 2002-08-20 18:41:20 -0400 (Tue, 20 Aug 2002) | 2 lines
+
+some more win32 updates and error messages
+
+------------------------------------------------------------------------
+r224 | khaytsus | 2002-08-19 00:56:19 -0400 (Mon, 19 Aug 2002) | 2 lines
+
+added docs/scripts/opennap_config.pl, wintermutes perl script for assisting with editing the opennap config file, added entry to WHATSNEW to match
+
+------------------------------------------------------------------------
+r223 | khaytsus | 2002-08-19 00:04:39 -0400 (Mon, 19 Aug 2002) | 2 lines
+
+win32 worked on in parallel, patches from reech\n removes squid section in main.c, adds io.h and errno.h include for win32
+
+------------------------------------------------------------------------
+r222 | leodav | 2002-08-18 17:03:12 -0400 (Sun, 18 Aug 2002) | 2 lines
+
+made changes for win32 all works now
+
+------------------------------------------------------------------------
+r221 | leodav | 2002-08-18 16:56:03 -0400 (Sun, 18 Aug 2002) | 2 lines
+
+made changes for win32 all works now
+
+------------------------------------------------------------------------
+r220 | the_turner | 2002-08-18 10:43:09 -0400 (Sun, 18 Aug 2002) | 3 lines
+
+Fixed a bug where bans were duplicated during multiple server syncs. I wonder why this
+did not show up earlier.
+
+------------------------------------------------------------------------
+r219 | the_turner | 2002-08-18 06:15:06 -0400 (Sun, 18 Aug 2002) | 7 lines
+
+Re-Added the "recvd server message for local user" with LOG_LEVEL_DEBUG.
+Put the send_msg() to distribute the ON_FRIEND on login into a ISUSER()
+to prevent that every server which handles the message will redistribute
+duplicate 10050s. Only the server the user is local to should set the flag
+in the login procedure as the other servers will handle the login too.
+The 10050 is then spread by the handler.
+
+------------------------------------------------------------------------
+r218 | khaytsus | 2002-08-18 03:36:06 -0400 (Sun, 18 Aug 2002) | 2 lines
+
+removed notify_mods from login.c:897ish
+
+------------------------------------------------------------------------
+r217 | khaytsus | 2002-08-17 15:20:36 -0400 (Sat, 17 Aug 2002) | 2 lines
+
+Small manual and todo changes
+
+------------------------------------------------------------------------
+r216 | the_turner | 2002-08-16 15:45:19 -0400 (Fri, 16 Aug 2002) | 18 lines
+
+Fixed a bug which was introduced while switching from fprintf to sprintf.
+This bug caused the banreasons to be truncated at the 40th char when saved.
+Checked for use of insecure sprintf() instead of the more secure snprintf():
+channel.c:      sprintf (buf, "%.100s %d %.100s \"%.100s\"", chan->name, chan->limit,
+class.c:    sprintf (outbuf,
+class.c:    sprintf (outbuf, "# Hi Mom, We got %s!%s", acl->name, LE);
+class.c:        sprintf (outbuf, "%s%s %3d%s", inet_ntoa (in), maskstr, b->count, LE);
+init.c:    sprintf (outbuf, "%d\n", (int) getpid ());
+level.c:    sprintf (outbuf, "%.40s Changed %.40s's level from %.40s(%d) to %s(%d)",
+userdb.c:    sprintf(outbuf,"%s %s %s %s %d %u %hu", db->nick, db->password, db->email, Levels[db->level], (int) db->created, (int) db->lastSeen, db->flags);
+userdb.c:    sprintf(outbuf,"%s %s unknown %s %d %u %hu", db->nick, db->password,  Levels[db->level], (int) db->created, (int) db->lastSeen, db->flags);
+util.c: sprintf(str, "%ld B", (long) bytes);
+util.c: sprintf(str, "%.2f KB", bytes / 1024.0);
+util.c: sprintf(str, "%.1f KB", bytes / 1024.0);
+util.c: sprintf(str, "%.2f MB", bytes / 1024.0 / 1024.0);
+util.c: sprintf(str, "%.1f MB", bytes / 1024.0 / 1024.0);
+util.c: sprintf(str, "%.1f GB", bytes / 1024.0 / 1024.0 / 1024.0);
+
+------------------------------------------------------------------------
+r215 | the_turner | 2002-08-16 07:54:17 -0400 (Fri, 16 Aug 2002) | 2 lines
+
+mistyped r@ygold in the sample.block file. Fixed!
+
+------------------------------------------------------------------------
+r214 | the_turner | 2002-08-16 01:33:48 -0400 (Fri, 16 Aug 2002) | 3 lines
+
+Added a new expression to the sample.block file.
+Updated ChangeLog.
+
+------------------------------------------------------------------------
+r213 | squash | 2002-08-15 16:18:58 -0400 (Thu, 15 Aug 2002) | 2 lines
+
+Fixed compile error for solaris
+
+------------------------------------------------------------------------
+r212 | leodav | 2002-08-15 06:52:18 -0400 (Thu, 15 Aug 2002) | 2 lines
+
+squash changes cleanup
+
+------------------------------------------------------------------------
+r211 | squash | 2002-08-14 22:52:09 -0400 (Wed, 14 Aug 2002) | 2 lines
+
+Output files don't need execute bit, just read and write
+
+------------------------------------------------------------------------
+r210 | squash | 2002-08-14 22:48:46 -0400 (Wed, 14 Aug 2002) | 2 lines
+
+Introduce a couple warnings to stop a user file eater
+
+------------------------------------------------------------------------
+r209 | khaytsus | 2002-08-14 20:03:10 -0400 (Wed, 14 Aug 2002) | 2 lines
+
+fixed login.c:766 email escape was on the wrong spot
+
+------------------------------------------------------------------------
+r208 | squash | 2002-08-14 17:53:07 -0400 (Wed, 14 Aug 2002) | 2 lines
+
+Escape email out in one more spot
+
+------------------------------------------------------------------------
+r207 | squash | 2002-08-14 17:48:15 -0400 (Wed, 14 Aug 2002) | 2 lines
+
+Fixed a bug with email addresses, thanks to Sgop for pointing it out
+
+------------------------------------------------------------------------
+r206 | leodav | 2002-08-14 17:47:17 -0400 (Wed, 14 Aug 2002) | 2 lines
+
+new directory layout cvs - part 3
+
+------------------------------------------------------------------------
+r205 | leodav | 2002-08-14 17:38:07 -0400 (Wed, 14 Aug 2002) | 2 lines
+
+new directory layout cvs - part 2
+
+------------------------------------------------------------------------
+r204 | leodav | 2002-08-14 17:25:39 -0400 (Wed, 14 Aug 2002) | 2 lines
+
+new directory layout cvs - part 1
+
+------------------------------------------------------------------------
+r203 | squash | 2002-08-14 16:32:53 -0400 (Wed, 14 Aug 2002) | 2 lines
+
+Fixed permissions poblems on create of new files
+
+------------------------------------------------------------------------
+r202 | squash | 2002-08-12 13:50:55 -0400 (Mon, 12 Aug 2002) | 2 lines
+
+Quick fix for linux /proc/pid/status mem usage pulling
+
+------------------------------------------------------------------------
+r201 | squash | 2002-08-12 10:41:02 -0400 (Mon, 12 Aug 2002) | 7 lines
+
+Replaced fopen() and associated commands with open(). Added fake_fgets and fake_fputs which take the same args and fgets or fputs, so it
+isn't any more difficult to use.
+fopen() has a limitation on many platforms that keeps it from using file descriptors above 255. This causes things like server rehashes
+or stats gathering or userfile updating to fail.
+I left fopen() in setup.c and metaserver.c because those dont matter.
+Code has ben tested on solaris 8, solaris 9, and linux.
+
+------------------------------------------------------------------------
+r200 | leodav | 2002-08-11 19:43:19 -0400 (Sun, 11 Aug 2002) | 2 lines
+
+some minor adjustments
+
+------------------------------------------------------------------------
+r199 | the_turner | 2002-08-11 14:47:36 -0400 (Sun, 11 Aug 2002) | 2 lines
+
+Updated sample.config.kaenguru
+
+------------------------------------------------------------------------
+r198 | the_turner | 2002-08-11 02:03:14 -0400 (Sun, 11 Aug 2002) | 3 lines
+
+Changed another strlower() call to inline because of the
+off-by-one thing of the strlower() function call.
+
+------------------------------------------------------------------------
+r197 | the_turner | 2002-08-11 01:22:38 -0400 (Sun, 11 Aug 2002) | 4 lines
+
+Updated ChangeLog.
+Added a "free_cache()" to search.c to erase the SearchCache
+after an exit of main() in a standard way.
+
+------------------------------------------------------------------------
+r196 | the_turner | 2002-08-10 00:38:18 -0400 (Sat, 10 Aug 2002) | 10 lines
+
+Not fixed ...:
+gdb) bt
+#0  0x805d4d1 in queue_data(con=0x8083d00, s=0x0, ssize=0) at buffer.c:474
+#1  0x804c28f in show_motd (con=0x8083d00, tag=0, len=0, pkt=0x0) at motd.c:53
+#2  0x804fc59 in login (con=0x8083d00, tag=2, len=60, pkt=0x80836f4 "MorbidaDeiColli") at login.c:785
+#3  0x805ef6c in dispatch_command (con=0x8083d00, tag=2, len=60, pkt=0x80836f4 "MorbidaDeiColli") at handler.c:434
+#4  0x805f488 in handle_connection (con=0x8083d00) at handler.c:761
+#5  0x804b207 in main (argc=1, argv=0xbffff944) at main.c:1368
+#6  0x4005e9ed in __libc_start_main () from /lib/libc.so.6
+
+------------------------------------------------------------------------
+r195 | the_turner | 2002-08-10 00:34:48 -0400 (Sat, 10 Aug 2002) | 14 lines
+
+Updated Changelog.
+Fixed ( but this should be LEO-approved ;-):
+#0  0x805d4b8 in queue_data(con=0x8477858, s=0x0, ssize=0) at buffer.c:475
+#1  0x804c28f in show_motd (con=0x8477858, tag=0, len=0, pkt=0x0) at motd.c:53
+#2  0x804fc59 in login (con=0x8477858, tag=2, len=60, pkt=0x84778c4 "MorbidaDeiColli") at login.c:785
+#3  0x805ef2c in dispatch_command (con=0x8477858, tag=2, len=60, pkt=0x84778c4 "MorbidaDeiColli") at handler.c:434
+#4  0x805f448 in handle_connection (con=0x8477858) at handler.c:761
+#5  0x804b207 in main (argc=1, argv=0xbffff944) at main.c:1368
+#6  0x4005e9ed in __libc_start_main () from /lib/libc.so.6
+
+Maybe we should make configure exempt from the cvs.
+
+Aren't changelogs something wonderful to communicate? ;-)
+
+------------------------------------------------------------------------
+r194 | leodav | 2002-08-09 17:31:52 -0400 (Fri, 09 Aug 2002) | 2 lines
+
+fixed bug with traffic out being too low
+
+------------------------------------------------------------------------
+r193 | leodav | 2002-08-09 15:13:32 -0400 (Fri, 09 Aug 2002) | 2 lines
+
+moved counting of 10125 to queue_data, moved solaris stats log_message inside the #ifdef/#endif, some minor things
+
+------------------------------------------------------------------------
+r192 | squash | 2002-08-09 10:57:05 -0400 (Fri, 09 Aug 2002) | 2 lines
+
+Added stat.h and fcntl.h on solaris
+
+------------------------------------------------------------------------
+r191 | squash | 2002-08-09 10:55:12 -0400 (Fri, 09 Aug 2002) | 2 lines
+
+types.h is in sys/
+
+------------------------------------------------------------------------
+r190 | squash | 2002-08-09 10:54:14 -0400 (Fri, 09 Aug 2002) | 2 lines
+
+Added types.h include for solaris
+
+------------------------------------------------------------------------
+r189 | squash | 2002-08-09 10:52:54 -0400 (Fri, 09 Aug 2002) | 2 lines
+
+Changed fopen to open on solaris utilization read, fopen appears to max at 25 open descriptors
+
+------------------------------------------------------------------------
+r188 | squash | 2002-08-09 10:16:35 -0400 (Fri, 09 Aug 2002) | 2 lines
+
+Added errno to fopen fail on solaris psinfo read
+
+------------------------------------------------------------------------
+r187 | squash | 2002-08-08 21:14:52 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+Forgot a fclose() in the solaris block
+
+------------------------------------------------------------------------
+r186 | squash | 2002-08-08 20:04:55 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+Another compiler warning on solaris removed
+
+------------------------------------------------------------------------
+r185 | leodav | 2002-08-08 19:28:01 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+added numeric 10125 server send histogram, updated tag2hrf with all known tags
+
+------------------------------------------------------------------------
+r184 | squash | 2002-08-08 16:14:32 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+Logging cpu and memory usage
+
+------------------------------------------------------------------------
+r183 | squash | 2002-08-08 14:06:30 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+Remove warnings in public.c
+
+------------------------------------------------------------------------
+r182 | squash | 2002-08-08 14:05:37 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+Remove warnings in search.c
+
+------------------------------------------------------------------------
+r181 | squash | 2002-08-08 14:04:42 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+Remove warnings in search.c
+
+------------------------------------------------------------------------
+r180 | squash | 2002-08-08 14:00:46 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+Solaris check in configure
+
+------------------------------------------------------------------------
+r179 | squash | 2002-08-08 12:04:03 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+Code cleanups: removed several compiler warnings
+
+------------------------------------------------------------------------
+r178 | squash | 2002-08-08 10:46:44 -0400 (Thu, 08 Aug 2002) | 2 lines
+
+fixed warning about exit call without including stdlib.h
+
+------------------------------------------------------------------------
+r177 | squash | 2002-08-07 22:41:24 -0400 (Wed, 07 Aug 2002) | 2 lines
+
+.
+
+------------------------------------------------------------------------
+r176 | squash | 2002-08-07 10:09:49 -0400 (Wed, 07 Aug 2002) | 2 lines
+
+squash: added support for non-glibc systems (that don't have thier own strsep())
+
+------------------------------------------------------------------------
+r175 | leodav | 2002-08-06 19:01:18 -0400 (Tue, 06 Aug 2002) | 2 lines
+
+oeps made a small mistake with the User_Flags display in the expiring of the dump_userdb so removed it for now
+
+------------------------------------------------------------------------
+r174 | leodav | 2002-08-06 17:14:42 -0400 (Tue, 06 Aug 2002) | 2 lines
+
+changed delimiter for glob_match to ',' *only* so that one can ban a nick/client with a space in it. adjust your configsexport CVS_RSH=ssh, added --enable-promotezlib to configure you now can give away free friend status to get more zlib-enabled users (this really works ;), changed dump_userdb that it ignores users with a userflag set > 0 so it remembers muzzled, friend, criminal even when the user is expired. If you want those users to expire change the userlevel to none for the time being next dump_userdb the user will expire. I think i'll add a second nick_expire-alike var for users with level user and flag > 0
+
+------------------------------------------------------------------------
+r173 | the_turner | 2002-08-06 16:22:07 -0400 (Tue, 06 Aug 2002) | 4 lines
+
+Updated ChangeLog.
+
+Hopefully this commit does not destroy your changes, Leo.
+
+------------------------------------------------------------------------
+r172 | leodav | 2002-08-05 16:49:39 -0400 (Mon, 05 Aug 2002) | 2 lines
+
+fixed bug #591225
+
+------------------------------------------------------------------------
+r171 | leodav | 2002-08-05 16:15:30 -0400 (Mon, 05 Aug 2002) | 2 lines
+
+Added more stats, added tag2hrf (tag to human readable format) it gives the name of a tag, fixed bug #590902, ibl now works with router only, enabled csc support per default, made a beginning with the server histogram 10124
+
+------------------------------------------------------------------------
+r170 | the_turner | 2002-08-04 12:24:15 -0400 (Sun, 04 Aug 2002) | 2 lines
+
+Initial checkin of a sample config of the kaenguru network
+
+------------------------------------------------------------------------
+r169 | the_turner | 2002-08-04 11:45:39 -0400 (Sun, 04 Aug 2002) | 2 lines
+
+Removed some commented out lines in search.c regarding the strlower stuff.
+
+------------------------------------------------------------------------
+r168 | the_turner | 2002-08-04 06:04:35 -0400 (Sun, 04 Aug 2002) | 4 lines
+
+Flags were not reset properly by the "none" keyword.
+Added some debug-loggings to the change_userflags thing.
+Made notify_mods() in userflags networkwide.
+
+------------------------------------------------------------------------
+r167 | leodav | 2002-08-02 16:16:37 -0400 (Fri, 02 Aug 2002) | 2 lines
+
+fixed a lurcking bug with Server_Queue_Length: server was seen as normal user, minor cosmetics in abuse killban reason, added stats for most important main: fd * disconnect reasons, added some coments to CHARTA and TODO, splitted up log output for bad password to normal user: login, mod+ to security and splitted up log for dump_userdb normal to debug and mod+ to server.
+
+------------------------------------------------------------------------
+r166 | the_turner | 2002-08-02 14:29:55 -0400 (Fri, 02 Aug 2002) | 6 lines
+
+Back from the construction site. Updated ChangeLog.
+Added a comment to the TODO about the replication of ON_CRIMINAL.
+Added an stats.search_total++ to the router config of search.c to
+have the stats updated on the hub properly.
+Still searching the freakin' memleak on the router config.
+
+------------------------------------------------------------------------
+r165 | the_turner | 2002-07-30 23:30:44 -0400 (Tue, 30 Jul 2002) | 3 lines
+
+Updated ChangeLog.
+Added LOG_LEVEL_STATS to the default log_level where it had been forgotten.
+
+------------------------------------------------------------------------
+r164 | henning_d | 2002-07-30 23:24:44 -0400 (Tue, 30 Jul 2002) | 3 lines
+
+
+Added a topic concerning checking of flags in login.c
+
+------------------------------------------------------------------------
+r163 | henning_d | 2002-07-30 22:48:34 -0400 (Tue, 30 Jul 2002) | 4 lines
+
+
+userflags will be deleted if userlevel is set to mod+
+(for a mod+ there is no need to be a "friend" and he should not be muzzled)
+
+------------------------------------------------------------------------
+r162 | leodav | 2002-07-29 19:43:02 -0400 (Mon, 29 Jul 2002) | 2 lines
+
+Added Internal Ban List: Now you can control clients who reconnect excessive and bail out with the same error over and over again. Fixed some minor things with the stats/logging.
+
+------------------------------------------------------------------------
+r161 | the_turner | 2002-07-27 02:23:18 -0400 (Sat, 27 Jul 2002) | 3 lines
+
+Hopefully fixed that darn memleak in search.c when resultlists were
+not disposed after a single token did not match any file in the hashlist.
+
+------------------------------------------------------------------------
+r160 | leodav | 2002-07-25 15:23:41 -0400 (Thu, 25 Jul 2002) | 2 lines
+
+added debian packaging support
+
+------------------------------------------------------------------------
+r159 | leodav | 2002-07-25 15:17:56 -0400 (Thu, 25 Jul 2002) | 2 lines
+
+updated INSTALL with advanced configuring
+
+------------------------------------------------------------------------
+r158 | the_turner | 2002-07-25 08:48:16 -0400 (Thu, 25 Jul 2002) | 2 lines
+
+Inserted a FREE() call into glob_match where it had obviously been missing
+
+------------------------------------------------------------------------
+r157 | the_turner | 2002-07-25 01:10:42 -0400 (Thu, 25 Jul 2002) | 3 lines
+
+Updated Changelog.
+Fixed a log_message_level where the Loglevel hid behind quotes.
+
+------------------------------------------------------------------------
+r156 | khaytsus | 2002-07-24 18:47:08 -0400 (Wed, 24 Jul 2002) | 2 lines
+
+Worked with valgrind, re-implimented temporary pointers in glob.c and login.c to fix the leaks there (see http://theblackmoor.net/valgrind for output of various runs), converted remaining log_message's to log_message_level's
+
+------------------------------------------------------------------------
+r155 | leodav | 2002-07-24 16:52:20 -0400 (Wed, 24 Jul 2002) | 2 lines
+
+added z-clients in the stats, updated TODO, removed some comments
+
+------------------------------------------------------------------------
+r154 | the_turner | 2002-07-22 14:07:27 -0400 (Mon, 22 Jul 2002) | 3 lines
+
+Just changed even more log_message to log_message_level. Still 112 more
+occurences of log_message to go ...
+
+------------------------------------------------------------------------
+r153 | the_turner | 2002-07-22 01:27:39 -0400 (Mon, 22 Jul 2002) | 2 lines
+
+Updated ChangeLog as well as TODO.
+
+------------------------------------------------------------------------
+r152 | the_turner | 2002-07-22 01:12:45 -0400 (Mon, 22 Jul 2002) | 8 lines
+
+Reworked the logging thing in that way that log_level is a bitset instead
+of sime discrete values.
+The default value of log_level is
+(LOG_LEVEL_SERVER | LOG_LEVEL_CLIENT | LOG_LEVEL_LOGIN | LOG_LEVEL_FILES | LOG_LEVEL_ERROR | LOG_LEVEL_SECURITY)
+now.
+Reworked some of the log_message to log_message_level. Had to stop because my boss does not
+like any latency on work. ;-)
+
+------------------------------------------------------------------------
+r151 | the_turner | 2002-07-21 15:58:09 -0400 (Sun, 21 Jul 2002) | 5 lines
+
+Updated ChangeLog. Modified the strlen of the banreason in that way
+that the ending \n of the ctime() result gets chopped off.
+There should be no ending \n neither in banreason nor kickreason
+any more.
+
+------------------------------------------------------------------------
+r150 | khaytsus | 2002-07-21 12:22:04 -0400 (Sun, 21 Jul 2002) | 2 lines
+
+fixed segfault in userflags.c:171.  If user was offline and flags set to none, user->flags segs
+
+------------------------------------------------------------------------
+r149 | the_turner | 2002-07-21 06:15:39 -0400 (Sun, 21 Jul 2002) | 5 lines
+
+Added #if defined(WIN32) to the variable declaration of sel_error so
+that the compile runs through the code as clean as a baby ;-)
+Ppl. using WIN32 should verify the assumption that sel_error
+is used in W32 only.
+
+------------------------------------------------------------------------
+r148 | the_turner | 2002-07-21 06:11:45 -0400 (Sun, 21 Jul 2002) | 4 lines
+
+Added Pending_Searches to the output of the logfile where the
+stats are shown. This is to get a longtime behavior of the server.
+Maybe we should syslogify the logfile into a separate channel?
+
+------------------------------------------------------------------------
+r147 | the_turner | 2002-07-21 05:55:10 -0400 (Sun, 21 Jul 2002) | 3 lines
+
+Made the behavior of discipline_block* configurable as far as the kicking
+of mod+ is regarded. Updated manual, sample.config and ChangeLog.
+
+------------------------------------------------------------------------
+r146 | leodav | 2002-07-19 05:21:43 -0400 (Fri, 19 Jul 2002) | 2 lines
+
+one small problem in sending compressed data fixed, all seems csc is operational now, if not just yell ;)
+
+------------------------------------------------------------------------
+r145 | leodav | 2002-07-17 15:58:53 -0400 (Wed, 17 Jul 2002) | 2 lines
+
+some more work on csc, added --enable-csc to configure.in, changed khaytsus tmpptr solution in glob.c, still minor leak left but I think it has got something to do with empty strings being dup'ed
+
+------------------------------------------------------------------------
+r144 | khaytsus | 2002-07-16 13:57:11 -0400 (Tue, 16 Jul 2002) | 2 lines
+
+win32 changes, code should compile clean on vc now, thank to Reech!
+
+------------------------------------------------------------------------
+r143 | khaytsus | 2002-07-15 21:41:37 -0400 (Mon, 15 Jul 2002) | 2 lines
+
+Fixed small typo in login.c, changed nuke behavior to not nuke mod+, as well as fixed the actual nuke in abuse.c.  (turner, let me know if you're okay with this, I haven't been able to find you :)
+
+------------------------------------------------------------------------
+r142 | leodav | 2002-07-15 14:27:30 -0400 (Mon, 15 Jul 2002) | 2 lines
+
+some more work on Client-Server Compression, fixed mem-leak in main.c when a connection was destroyed
+
+------------------------------------------------------------------------
+r141 | the_turner | 2002-07-14 08:16:28 -0400 (Sun, 14 Jul 2002) | 6 lines
+
+Changed behavior of kicked users who were kickbanned by "discipline_block" in
+this way that the user entry gets nuked instead of simply resetting the flag.
+The intention behind this is that users who got kickbanned received a password failure
+as some clients did not register the nick but set a password randomly.
+These users received a "password failure" instead of a "You are banned:".
+
+------------------------------------------------------------------------
+r140 | the_turner | 2002-07-14 03:36:21 -0400 (Sun, 14 Jul 2002) | 3 lines
+
+Added global.notify_user_abuse_frequency to the output of the
+abuse privmsg sent to the users. Updated Changelog.
+
+------------------------------------------------------------------------
+r139 | khaytsus | 2002-07-13 19:34:37 -0400 (Sat, 13 Jul 2002) | 2 lines
+
+updated opennap.dsp for windows vc compiling, possibly BIG memory leak fixes in glob.c and config.c.
+
+------------------------------------------------------------------------
+r138 | leodav | 2002-07-12 17:41:50 -0400 (Fri, 12 Jul 2002) | 2 lines
+
+added yet some more CSC (Client Server Compression) stuff wanna test? #define CSC 1 in config.h
+
+------------------------------------------------------------------------
+r137 | leodav | 2002-07-11 18:19:55 -0400 (Thu, 11 Jul 2002) | 2 lines
+
+added some more preliminary client compress stuff
+
+------------------------------------------------------------------------
+r136 | khaytsus | 2002-07-10 13:43:52 -0400 (Wed, 10 Jul 2002) | 2 lines
+
+Fixed status notification fially, really only notifies from local server now.
+
+------------------------------------------------------------------------
+r135 | leodav | 2002-07-09 17:45:12 -0400 (Tue, 09 Jul 2002) | 2 lines
+
+finished memusage -> mem_usage stuff. added load_avg, updated update_stats with load_avg
+
+------------------------------------------------------------------------
+r134 | khaytsus | 2002-07-09 07:45:23 -0400 (Tue, 09 Jul 2002) | 2 lines
+
+changed to stats.memusage, but still broken, updated README and TODO a bit
+
+------------------------------------------------------------------------
+r133 | khaytsus | 2002-07-09 05:43:21 -0400 (Tue, 09 Jul 2002) | 2 lines
+
+manual and sample.config updates, added limit.h include in main.c to solve BSD compile problem
+
+------------------------------------------------------------------------
+r132 | leodav | 2002-07-09 05:28:53 -0400 (Tue, 09 Jul 2002) | 2 lines
+
+added numeric 609 - logging only, added initial client compression, some minor optical changes, moved client-string stats to lower place in login, added simple Filter stats, added hostname lookup in napigator.c still in test
+
+------------------------------------------------------------------------
+r131 | khaytsus | 2002-07-09 01:19:48 -0400 (Tue, 09 Jul 2002) | 2 lines
+
+users in channels are not ejected, eject_nochannels is there to adjust this behavior but does not currently work, anyone help me with this?
+
+------------------------------------------------------------------------
+r130 | khaytsus | 2002-07-08 20:14:54 -0400 (Mon, 08 Jul 2002) | 2 lines
+
+manual.html changes, TODO updates, and disabled code in server_usage.c for displaying ram usage in /ad stats
+
+------------------------------------------------------------------------
+r129 | khaytsus | 2002-07-08 02:16:51 -0400 (Mon, 08 Jul 2002) | 2 lines
+
+uncommented some lines I left by accident in privmsg.c
+
+------------------------------------------------------------------------
+r128 | khaytsus | 2002-07-08 02:11:33 -0400 (Mon, 08 Jul 2002) | 2 lines
+
+freed a_tmp in config.c:217 and config.c:223 (testing), added set_server_nicks config to limit access to 9999/9998, made mod_notification on userflags only on local server, added a null check on ref->dlist in search.c:348, updated todo, sample.config, manual, other small things
+
+------------------------------------------------------------------------
+r127 | the_turner | 2002-07-07 01:41:04 -0400 (Sun, 07 Jul 2002) | 6 lines
+
+Commented out the strlower function call as this function seems
+to be alignment broken on some installations.
+This brokeness is seen when doing a /raw 10116 on the server.
+If the first byte of each search token is chopped off then you
+are looking at such an installation.
+
+------------------------------------------------------------------------
+r126 | the_turner | 2002-07-06 09:53:42 -0400 (Sat, 06 Jul 2002) | 6 lines
+
+Updated some items in TODO.
+Updated logging of shared files of a user flagged ON_CRIMINAL in that way that
+all files are logged regardless of their name. This measurement should allow
+to refine blocklists and to get a better overview about the whole remaining
+content a user sharing kidporn has.
+
+------------------------------------------------------------------------
+r125 | the_turner | 2002-07-05 01:18:28 -0400 (Fri, 05 Jul 2002) | 5 lines
+
+Some optical changes when sending the ban_reason.
+Presumabely fixed the 19236234 searches/sec bug.
+Added handling of "" when displaying userflags so that "NONE" should be displayed.
+All untested because of time restrictions.
+
+------------------------------------------------------------------------
+r124 | the_turner | 2002-07-05 00:17:52 -0400 (Fri, 05 Jul 2002) | 3 lines
+
+Fixed napigator reporting when the server obtained another
+ip address. Updated changelog.
+
+------------------------------------------------------------------------
+r123 | leodav | 2002-06-30 20:55:28 -0400 (Sun, 30 Jun 2002) | 2 lines
+
+Removed network wide enforcement of client-string check as suggested by KhaytsusToo.
+
+------------------------------------------------------------------------
+r122 | leodav | 2002-06-30 17:21:58 -0400 (Sun, 30 Jun 2002) | 2 lines
+
+Shell script to filter out words from searches that have generated too much hits
+
+------------------------------------------------------------------------
+r121 | leodav | 2002-06-30 16:46:45 -0400 (Sun, 30 Jun 2002) | 2 lines
+
+Updated USE_INVALID_CLIENTS if now works completely at login. Removed fixed drumbeat/macnap killer. Still want to kill those clients? Use 'invalid_clients drumbeat* macnap*' in your config. Fixed some typo's. Changed some cosmetics. Added preliminary dynamic filter support so please have a resonable file_count_threshold like >= 1000
+
+------------------------------------------------------------------------
+r120 | the_turner | 2002-06-29 18:42:54 -0400 (Sat, 29 Jun 2002) | 5 lines
+
+Updated sample.config with the log_level var.
+Updated ChangeLog.
+Forgot to update the freaking manual. ?@?\239?\191?\189! I surely will do next time.
+Hopefully this commit does not destroy your changes, Leo.
+
+------------------------------------------------------------------------
+r119 | leodav | 2002-06-27 19:17:14 -0400 (Thu, 27 Jun 2002) | 2 lines
+
+now more usefull (not complete yet) stats in your &LOG-channel/terminal, changed/moved client-string check (drumbeat), added more fancy motd ugliness to be evaluated.
+
+------------------------------------------------------------------------
+r118 | leodav | 2002-06-27 14:47:29 -0400 (Thu, 27 Jun 2002) | 2 lines
+
+Added 2 new numerics. list_server (9999) - lists the servers file, add_server (9998) adds a temporary server to the servers list. This can come handy if you want to quickly add a server if you don't have a shell. This command is for Elite only.
+
+------------------------------------------------------------------------
+r117 | leodav | 2002-06-27 07:34:22 -0400 (Thu, 27 Jun 2002) | 2 lines
+
+Made the &LOG channel default when you ./configure disable with --disable-log-channel
+
+------------------------------------------------------------------------
+r116 | khaytsus | 2002-06-26 23:24:09 -0400 (Wed, 26 Jun 2002) | 2 lines
+
+fixed segfault in userflags.c, needed check for db, prettified friends display a bit, fixed it so NONE works again for a userflag to clear all flags
+
+------------------------------------------------------------------------
+r115 | leodav | 2002-06-26 16:17:16 -0400 (Wed, 26 Jun 2002) | 2 lines
+
+log_message -> log_message_level. Need more log? /msg operserv config log_level 6 :)
+
+------------------------------------------------------------------------
+r114 | the_turner | 2002-06-26 15:15:40 -0400 (Wed, 26 Jun 2002) | 3 lines
+
+Added some debug output to tokenize() to get hold of a bug which
+cuts off the first byte of a remote search.
+
+------------------------------------------------------------------------
+r113 | the_turner | 2002-06-26 14:13:41 -0400 (Wed, 26 Jun 2002) | 5 lines
+
+Added some check to notify_mods() so that mod+ on the local server
+are notified only.
+Added some check for router config to eject_internal.
+Updated changelog automatically.
+
+------------------------------------------------------------------------
+r112 | leodav | 2002-06-26 13:10:41 -0400 (Wed, 26 Jun 2002) | 2 lines
+
+Updated configure.in, changed default windows SHAREDIR
+
+------------------------------------------------------------------------
+r111 | leodav | 2002-06-25 17:22:02 -0400 (Tue, 25 Jun 2002) | 2 lines
+
+Added log_message_level, new var log_level (0-6), new var log_stdout (bool)
+
+------------------------------------------------------------------------
+r110 | leodav | 2002-06-25 16:20:41 -0400 (Tue, 25 Jun 2002) | 2 lines
+
+test update
+
+------------------------------------------------------------------------
+r109 | the_turner | 2002-06-25 13:30:54 -0400 (Tue, 25 Jun 2002) | 3 lines
+
+Removed debug loggings from userflags.c where some
+weird things were fixed in the prev. release.
+
+------------------------------------------------------------------------
+r108 | the_turner | 2002-06-25 01:28:08 -0400 (Tue, 25 Jun 2002) | 4 lines
+
+Reworked the output of "msg operserv userflags" to print all
+flags instead of ON_FRIEND only. It looks quite horrible.
+So some optical changes are still to be done there.
+
+------------------------------------------------------------------------
+r107 | the_turner | 2002-06-25 00:42:02 -0400 (Tue, 25 Jun 2002) | 4 lines
+
+Corrected manual and sample.config in regard of "max_new_users_per_minute".
+Fixed output error in userflag change notify. Now it prints the flags correctly.
+Corrected the help of operserv in regard of the new flag handler.
+
+------------------------------------------------------------------------
+r106 | the_turner | 2002-06-24 14:07:50 -0400 (Mon, 24 Jun 2002) | 5 lines
+
+Updated ChangeLog.
+Fixed bug in userflags.c where usermode instead flags
+had been tested and printed. There is still some bug occurring
+when userflags are set. So still handle them with care.
+
+------------------------------------------------------------------------
+r105 | the_turner | 2002-06-24 13:57:07 -0400 (Mon, 24 Jun 2002) | 4 lines
+
+Moved the notify_mod() condition global.notify_mod_block inside the
+criminal handler. In this way there are not two messages to maintain
+when crafting some more descriptive message later.
+
+------------------------------------------------------------------------
+r104 | the_turner | 2002-06-24 13:12:30 -0400 (Mon, 24 Jun 2002) | 2 lines
+
+Fixed an uninitialized use of bttl in eject_user_internal.
+
+------------------------------------------------------------------------
+r103 | the_turner | 2002-06-24 12:25:15 -0400 (Mon, 24 Jun 2002) | 3 lines
+
+Updated Changelog.
+Added .gif format to sample.block
+
+------------------------------------------------------------------------
+r102 | khaytsus | 2002-06-24 00:18:12 -0400 (Mon, 24 Jun 2002) | 2 lines
+
+fixed eject_leeches and added notify_mod_block, uncommented p_tmp free's in glob
+
+------------------------------------------------------------------------
+r101 | the_turner | 2002-06-23 03:08:09 -0400 (Sun, 23 Jun 2002) | 3 lines
+
+Updated Changelog.
+Reworked the flags thing so that new flags are easier to introduce.
+
+------------------------------------------------------------------------
+r100 | the_turner | 2002-06-22 18:35:49 -0400 (Sat, 22 Jun 2002) | 3 lines
+
+Added some more delays to the criminal check in abuse.c
+Avoided setting the flag ON_CRIMINAL when already set.
+
+------------------------------------------------------------------------
+r99 | the_turner | 2002-06-22 17:46:14 -0400 (Sat, 22 Jun 2002) | 4 lines
+
+Copied my own sample.block as a new example how to block child porn.
+In conjunction with "discipline_block" this is a quite comprehensive
+weapon against child porn sharers.
+
+------------------------------------------------------------------------
+r98 | the_turner | 2002-06-22 17:24:44 -0400 (Sat, 22 Jun 2002) | 5 lines
+
+Added a notify_mod() each time a file is shared from a suspect
+to have mod+ minding about the one or other innocently banned user.
+Reset the flag "ON_CRIMINAL" after the kickban as this is cumbersome
+to do manually. The logfiles and their extracts are evidence enough.
+
+------------------------------------------------------------------------
+r97 | the_turner | 2002-06-22 14:43:37 -0400 (Sat, 22 Jun 2002) | 5 lines
+
+Fixed bug when a ON_CRIMINAL user was in fact able to share all his
+files. The first file which caused the toggle of the flag had not been
+logged too. This is fixed as well.
+Added a new item to the TODO and removed the blockban thing from it.
+
+------------------------------------------------------------------------
+r96 | the_turner | 2002-06-22 10:31:41 -0400 (Sat, 22 Jun 2002) | 3 lines
+
+Added a ban_user_internal() to handle users who chose to ignore
+themselves.
+
+------------------------------------------------------------------------
+r95 | the_turner | 2002-06-22 09:44:16 -0400 (Sat, 22 Jun 2002) | 3 lines
+
+Corrected Error in abuse.c when a blockfiled user had been
+banned wit "not sharing enough" and kicked with "you shared childporn".
+
+------------------------------------------------------------------------
+r94 | the_turner | 2002-06-22 07:34:22 -0400 (Sat, 22 Jun 2002) | 3 lines
+
+Removed a redundant log_message concerning the discipline_blocked thing.
+Subsequent files of a criminal are hopefully correctly logged now.
+
+------------------------------------------------------------------------
+r93 | the_turner | 2002-06-22 03:19:57 -0400 (Sat, 22 Jun 2002) | 9 lines
+
+Changed behavior of discipline_block in this way that
+a user who shares illegal files would not be banned instantly.
+Instead he is allowed to share *all* his files and they will
+all show up in the logfile after the incident.
+In this way a better justification on the attitude of
+the user can be made and some more words for the blocklist
+can be harvested.
+Updated changelog.
+
+------------------------------------------------------------------------
+r92 | the_turner | 2002-06-21 20:13:21 -0400 (Fri, 21 Jun 2002) | 3 lines
+
+Fixed killing of remote users when they did not abide to the local
+eject_* limits.
+
+------------------------------------------------------------------------
+r91 | the_turner | 2002-06-21 19:30:10 -0400 (Fri, 21 Jun 2002) | 8 lines
+
+Finally found and fixed that &%!@ bug which avoided kicking users
+who did not abide to the eject_rules.
+Made some code beautifications in login.c
+Changed default value for max_new_users_per_minute to 0 to retain old
+behavior by default. Please look into your config to lower your
+limit accordingly when your line breaks down again after starting the
+server.
+
+------------------------------------------------------------------------
+r90 | the_turner | 2002-06-21 18:04:27 -0400 (Fri, 21 Jun 2002) | 6 lines
+
+Fixed a bug where the eject_* limits were not checked
+properly in abuse.c so that no users were ejected due
+to not abiding to the share rules.
+Added the nickname to the "Rejected due to overload" message
+in the logfile.
+
+------------------------------------------------------------------------
+r89 | the_turner | 2002-06-21 17:51:10 -0400 (Fri, 21 Jun 2002) | 3 lines
+
+Removed eject_grace_time_start as this variable is identical
+to Server_Start thus being redundant.
+
+------------------------------------------------------------------------
+r88 | the_turner | 2002-06-21 17:42:44 -0400 (Fri, 21 Jun 2002) | 5 lines
+
+Unified the tban procedure from login.c and abuse.c in one separate
+unit.
+Fixed bug where non-sharing users were banned but not killed.
+Updated ChangeLog.
+
+------------------------------------------------------------------------
+r87 | the_turner | 2002-06-21 16:32:16 -0400 (Fri, 21 Jun 2002) | 3 lines
+
+Added Patch from perrim to let LEVEL_ADMIN list the
+private channels too.
+
+------------------------------------------------------------------------
+r86 | the_turner | 2002-06-20 13:21:47 -0400 (Thu, 20 Jun 2002) | 3 lines
+
+Updated ChangeLog.
+Added two items to the TODO list.
+
+------------------------------------------------------------------------
+r85 | the_turner | 2002-06-19 14:35:50 -0400 (Wed, 19 Jun 2002) | 4 lines
+
+Some code beautifications.
+Added the forgotten var to the manual and the sample.config.
+Updated Changelog. Ready for Beta4 anybody?
+
+------------------------------------------------------------------------
+r84 | the_turner | 2002-06-19 14:18:58 -0400 (Wed, 19 Jun 2002) | 11 lines
+
+Added a new config variable max_new_users_per_minute.
+This one has the purpose to limit the first run onto a freshly
+started opennap server by restricting the number of new users
+when started and sending an appropriate message to the client.
+Changed behavior of "reconnecting too fast" in that way that
+a priviledged user ( mod+ and friend ) are exempt of this limit.
+Updated some of the changelog.
+Removed a lot of c++ style comments as they might break compiling
+on other compilers than gcc.
+Forgot (yawn) to update sample.config and the manual. Volunteers? ;-)
+
+------------------------------------------------------------------------
+r83 | khaytsus | 2002-06-17 00:21:46 -0400 (Mon, 17 Jun 2002) | 2 lines
+
+fixed some opennap.h defs that were in ifndef routing_only, added a ifndef routing_only to main.c around eject_grace_time_start, fixed a ifdef logic in config.c when invalid_nicks/invalid_clients isn't defined
+
+------------------------------------------------------------------------
+r82 | khaytsus | 2002-06-16 02:42:26 -0400 (Sun, 16 Jun 2002) | 2 lines
+
+added protnet and eject_leeches to sample.config
+
+------------------------------------------------------------------------
+r81 | khaytsus | 2002-06-16 02:15:53 -0400 (Sun, 16 Jun 2002) | 2 lines
+
+eject_leeches fix, leech ejection kill message fix, protnet default fix, added protnet to manual
+
+------------------------------------------------------------------------
+r80 | the_turner | 2002-06-13 01:05:57 -0400 (Thu, 13 Jun 2002) | 4 lines
+
+Changed flag for notify_mods() from SERVERLOG_MODE to ABUSE_MODE
+so that a change of usermode to "-abuse" really suppresses the
+abuse messages.
+
+------------------------------------------------------------------------
+r79 | the_turner | 2002-06-13 00:49:25 -0400 (Thu, 13 Jun 2002) | 5 lines
+
+Updated Changelog.
+Added a comment regarding the change of max_connections via "/raw 810".
+This is to prepare the increase of max_connections in discrete steps
+instead of a huge one.
+
+------------------------------------------------------------------------
+r78 | the_turner | 2002-06-13 00:35:45 -0400 (Thu, 13 Jun 2002) | 2 lines
+
+Updated manual and sample.config with the new var "eject_grace_time".
+
+------------------------------------------------------------------------
+r77 | the_turner | 2002-06-13 00:29:40 -0400 (Thu, 13 Jun 2002) | 7 lines
+
+Updated ChangeLog.
+Added configvar "eject_grace_time" to reflect when a server had been
+started and to ignore all eject_limits for this time.
+Removed two items regarding // comments and the eject_grace_time
+from the TODO list. Forgot - as usual - to update the manual.
+Forgot - as unusual - to update sample.config
+
+------------------------------------------------------------------------
+r76 | the_turner | 2002-06-12 23:47:11 -0400 (Wed, 12 Jun 2002) | 2 lines
+
+Reworked *ALL* // comments to /* ... */ ones ... phew ...
+
+------------------------------------------------------------------------
+r75 | the_turner | 2002-06-12 23:29:20 -0400 (Wed, 12 Jun 2002) | 3 lines
+
+Updated Changelog. Changed some of the // comments to /* ... */ because
+these create warnings and errors on non gnu compilers.
+
+------------------------------------------------------------------------
+r74 | khaytsus | 2002-06-12 16:19:21 -0400 (Wed, 12 Jun 2002) | 2 lines
+
+fixed eject_when_full, ejected when off, added eject_leeches config, manual to match
+
+------------------------------------------------------------------------
+r73 | khaytsus | 2002-06-12 02:05:32 -0400 (Wed, 12 Jun 2002) | 2 lines
+
+added discipline_block and discipline_block_ban_ttl, killbans users who share blocked files, off by default
+
+------------------------------------------------------------------------
+r72 | the_turner | 2002-06-12 01:01:45 -0400 (Wed, 12 Jun 2002) | 2 lines
+
+Added a new item to the TODO list.
+
+------------------------------------------------------------------------
+r71 | the_turner | 2002-06-12 00:05:47 -0400 (Wed, 12 Jun 2002) | 2 lines
+
+Added bzip2compression item to the to do list.
+
+------------------------------------------------------------------------
+r70 | the_turner | 2002-06-11 23:56:23 -0400 (Tue, 11 Jun 2002) | 3 lines
+
+Fixed a bug where global.discipline_ignorers_ban_ttl had been tested for
+zero instead of non-zero.
+
+------------------------------------------------------------------------
+r69 | the_turner | 2002-06-11 23:51:19 -0400 (Tue, 11 Jun 2002) | 3 lines
+
+Changed default value of max_reason to 96 to reflect the changes
+in automatic banning by "eject_also_bans".
+
+------------------------------------------------------------------------
+r68 | khaytsus | 2002-06-11 23:04:09 -0400 (Tue, 11 Jun 2002) | 2 lines
+
+added level checks to discipline_ignorers, don't kill mod+
+
+------------------------------------------------------------------------
+r67 | khaytsus | 2002-06-11 21:06:16 -0400 (Tue, 11 Jun 2002) | 2 lines
+
+winter_mute protnet convertion from global to config var, email fix
+
+------------------------------------------------------------------------
+r66 | the_turner | 2002-06-11 01:17:15 -0400 (Tue, 11 Jun 2002) | 2 lines
+
+Added the forgotten new config vars to the manual.
+
+------------------------------------------------------------------------
+r65 | the_turner | 2002-06-11 00:31:28 -0400 (Tue, 11 Jun 2002) | 4 lines
+
+Added new config vars "discipline_ignorers" and "discipline_ignorers_ban_ttl".
+These new vars take care of the case when a user ignores a mod+.
+Added new vars to sample.config. Forgot to update the manual ;-)
+
+------------------------------------------------------------------------
+r64 | the_turner | 2002-06-10 23:49:15 -0400 (Mon, 10 Jun 2002) | 2 lines
+
+Fixed perms problem in histogram. User are no longer able to get the histogram.
+
+------------------------------------------------------------------------
+r63 | the_turner | 2002-06-10 18:05:08 -0400 (Mon, 10 Jun 2002) | 6 lines
+
+Added filesize to the logging of blocked files.
+Changed 211-browse behavior this way that if a user ever
+did a 640-browse then this user is not privmsgd any more.
+Added a usermode "ABUSE" which is settable by operserv
+so that abuse messages are not sent to the user mentioned.
+
+------------------------------------------------------------------------
+r62 | the_turner | 2002-06-10 17:42:09 -0400 (Mon, 10 Jun 2002) | 8 lines
+
+Added some more patches of Khaytsus regarding logging of blocked files etc.
+These patches might be the founding of the "blockban" method mentioned
+some commits ago.
+Introduced new config var "level_to_set_flags" to get the setting
+of flags a bit more flexible. Now it is possible to determine the level
+which is able to set flags like "FRIEND" in runtime.
+Updated Changelog.
+
+------------------------------------------------------------------------
+r61 | the_turner | 2002-06-10 16:02:24 -0400 (Mon, 10 Jun 2002) | 2 lines
+
+Added some topics from khaytsus to the TODO list.
+
+------------------------------------------------------------------------
+r60 | the_turner | 2002-06-10 15:58:29 -0400 (Mon, 10 Jun 2002) | 2 lines
+
+Added a TODO.
+
+------------------------------------------------------------------------
+r59 | the_turner | 2002-06-10 14:37:00 -0400 (Mon, 10 Jun 2002) | 2 lines
+
+Added spike, winter_mute and acetyl to the WHATSNEW file.
+
+------------------------------------------------------------------------
+r58 | the_turner | 2002-06-10 14:14:05 -0400 (Mon, 10 Jun 2002) | 2 lines
+
+Added TODO topic.
+
+------------------------------------------------------------------------
+r57 | the_turner | 2002-06-10 05:34:17 -0400 (Mon, 10 Jun 2002) | 2 lines
+
+Added Routercheck in abuse.c in check_eject_limits
+
+------------------------------------------------------------------------
+r56 | the_turner | 2002-06-10 01:27:43 -0400 (Mon, 10 Jun 2002) | 6 lines
+
+Updated Changelog.
+Moved the checks of a violation of eject_limits into a separate
+function to enhance maintainability of this quite complex
+boolean expression.
+Changed ban reason of banned users who banned because of LEVEL_LEECH.
+
+------------------------------------------------------------------------
+r55 | the_turner | 2002-06-09 11:35:13 -0400 (Sun, 09 Jun 2002) | 2 lines
+
+Fixed a segfault in login.c
+
+------------------------------------------------------------------------
+r54 | the_turner | 2002-06-09 09:29:32 -0400 (Sun, 09 Jun 2002) | 5 lines
+
+Made Friends excempt from bans again. The fact that you are only banning
+someone who isn't friendly enforces you to demote the user again.
+Fixed a bug in abuse.c where a "max_tags_per_minute" of 0 always
+triggered an abuse instead of no abuse reporting.
+
+------------------------------------------------------------------------
+r53 | the_turner | 2002-06-09 08:02:34 -0400 (Sun, 09 Jun 2002) | 3 lines
+
+Updated ChangeLog. Fixed bug in login.c where the abuse-prevention counters
+were not initialized properly.
+
+------------------------------------------------------------------------
+r52 | kaenguru | 2002-06-09 07:30:13 -0400 (Sun, 09 Jun 2002) | 3 lines
+
+
+fixed any bug
+
+------------------------------------------------------------------------
+r51 | kaenguru | 2002-06-09 07:21:30 -0400 (Sun, 09 Jun 2002) | 2 lines
+
+*** empty log message ***
+
+------------------------------------------------------------------------
+r50 | the_turner | 2002-06-09 07:21:28 -0400 (Sun, 09 Jun 2002) | 3 lines
+
+Really Really and once again REALLY promised ... Tomorrow
+I'll start learning the fmt parameters of printf. Promised. Really.
+
+------------------------------------------------------------------------
+r49 | kaenguru | 2002-06-09 06:46:50 -0400 (Sun, 09 Jun 2002) | 3 lines
+
+
+fixed modt
+
+------------------------------------------------------------------------
+r48 | the_turner | 2002-06-09 06:33:06 -0400 (Sun, 09 Jun 2002) | 3 lines
+
+Redid the ./autogen.sh and the distclean process.
+Added ban_user_internal to the check in abuse.c
+
+------------------------------------------------------------------------
+r47 | the_turner | 2002-06-09 05:32:06 -0400 (Sun, 09 Jun 2002) | 3 lines
+
+An empty searchcache resulted in a segfault when querying it.
+Fixed in list.c - empty lists are not even tried to sort.
+
+------------------------------------------------------------------------
+r46 | the_turner | 2002-06-09 05:21:55 -0400 (Sun, 09 Jun 2002) | 3 lines
+
+updated changelog. Revived Hennings last fixes which got lost when
+the NE-Patch was merged.
+
+------------------------------------------------------------------------
+r45 | the_turner | 2002-06-09 03:30:26 -0400 (Sun, 09 Jun 2002) | 7 lines
+
+Got a HUGE patch from Khaytsus who incorporated a lot of changes from
+his network. Most important are:
+- Protnet
+- configurable "invalid client" and "invalid nick"
+- and many many more
+A big THANKS and lots of good kharma to those guys at NE :-)
+
+------------------------------------------------------------------------
+r44 | the_turner | 2002-06-09 01:11:59 -0400 (Sun, 09 Jun 2002) | 4 lines
+
+Revived ban_user_internal and finally made it working. Now
+eject_also_bans works as expected and bans users who are
+not abiding by the share rules.
+
+------------------------------------------------------------------------
+r43 | the_turner | 2002-06-08 17:38:46 -0400 (Sat, 08 Jun 2002) | 2 lines
+
+Added a WHATSNEW file to the repository.
+
+------------------------------------------------------------------------
+r42 | kaenguru | 2002-06-08 16:11:58 -0400 (Sat, 08 Jun 2002) | 3 lines
+
+
+fix some errors :-)
+
+------------------------------------------------------------------------
+r41 | henning_d | 2002-06-08 14:19:33 -0400 (Sat, 08 Jun 2002) | 4 lines
+
+
+if the flags of a not registered user should be set to none, he gets registered
+now the mod+ gets an error-message
+
+------------------------------------------------------------------------
+r40 | kaenguru | 2002-06-08 13:52:23 -0400 (Sat, 08 Jun 2002) | 3 lines
+
+
+revised the whole manual and adapted to the newest version
+
+------------------------------------------------------------------------
+r39 | the_turner | 2002-06-08 13:47:10 -0400 (Sat, 08 Jun 2002) | 5 lines
+
+Updated ChangeLog
+On advice of Khay: Fixed a bug in browse.c where max_browses were
+circumvented when the client sent an unparseable data.max and
+when both clients were connected to the same server.
+
+------------------------------------------------------------------------
+r38 | kaenguru | 2002-06-08 13:36:04 -0400 (Sat, 08 Jun 2002) | 3 lines
+
+
+revised the whole manual and adapted to the newest version
+
+------------------------------------------------------------------------
+r37 | the_turner | 2002-06-08 10:01:29 -0400 (Sat, 08 Jun 2002) | 3 lines
+
+Fixed bug in add_file.c where the min_file_size never had been checked properly.
+Reformatted output of 10116 and added the number of results in the search entry.
+
+------------------------------------------------------------------------
+r36 | the_turner | 2002-06-08 09:04:30 -0400 (Sat, 08 Jun 2002) | 3 lines
+
+Implemented sorted searchlist.
+Removed one more debugging log from ban.c
+
+------------------------------------------------------------------------
+r35 | the_turner | 2002-06-08 02:19:04 -0400 (Sat, 08 Jun 2002) | 6 lines
+
+Added new config vars "eject_also_bans" and "eject_ban_ttl" to sample.config
+and config.c.
+Added new variables to sample.config
+Added a new variable to the cache entry -> ResultCount
+Added some FIXMEs to points which seem appropriate.
+
+------------------------------------------------------------------------
+r34 | the_turner | 2002-06-07 20:09:17 -0400 (Fri, 07 Jun 2002) | 4 lines
+
+Updated ChangeLog.
+Removed Statistics module from the TODO.
+Added a CPU-reducer to the TODO
+
+------------------------------------------------------------------------
+r33 | the_turner | 2002-06-07 19:41:20 -0400 (Fri, 07 Jun 2002) | 5 lines
+
+Removed debuglogging from syncban().
+Added purging of cache records when the search_max_search_cache_entries
+shrinked.
+Fixed a bug when SearchEntries has been increased when it shouldn't.
+
+------------------------------------------------------------------------
+r32 | the_turner | 2002-06-07 17:30:56 -0400 (Fri, 07 Jun 2002) | 2 lines
+
+Updated Changelog.
+
+------------------------------------------------------------------------
+r31 | henning_d | 2002-06-07 17:16:49 -0400 (Fri, 07 Jun 2002) | 3 lines
+
+
+fixed a bug that prevented deleting of the firend flag
+
+------------------------------------------------------------------------
+r30 | the_turner | 2002-06-07 17:03:26 -0400 (Fri, 07 Jun 2002) | 6 lines
+
+Implemented the statistics module on search caching.
+The handler now knows about a 10116 which means MSG_SERVER_CACHE_STATS
+This handler produces a unsorted list of all searches which are cached.
+Still have to add the list of results to the cache entry so that this
+statistics just have some informational value to the mod+ on the server.
+
+------------------------------------------------------------------------
+r29 | henning_d | 2002-06-07 13:18:18 -0400 (Fri, 07 Jun 2002) | 3 lines
+
+
+no longer trys to set a flag which is already set
+
+------------------------------------------------------------------------
+r28 | henning_d | 2002-06-07 12:06:57 -0400 (Fri, 07 Jun 2002) | 3 lines
+
+
+added a better syncronisation of the friend flag between servers
+
+------------------------------------------------------------------------
+r27 | the_turner | 2002-06-07 01:23:49 -0400 (Fri, 07 Jun 2002) | 2 lines
+
+Added struct, comment and configvar for search caching.
+
+------------------------------------------------------------------------
+r26 | the_turner | 2002-06-06 13:04:34 -0400 (Thu, 06 Jun 2002) | 5 lines
+
+cvs server: re-adding file depcomp (in place of dead revision 1.2)
+cvs server: use 'cvs commit' to add this file permanently
+
+VS: ----------------------------------------------------------------------
+
+------------------------------------------------------------------------
+r25 | the_turner | 2002-06-06 13:03:31 -0400 (Thu, 06 Jun 2002) | 4 lines
+
+Some weird things happened to the configure script. depcomp was
+first missing from the repository. autogen.sh of course
+created a new one. But is this really expected behavior?
+
+------------------------------------------------------------------------
+r24 | the_turner | 2002-06-06 13:00:34 -0400 (Thu, 06 Jun 2002) | 3 lines
+
+Added "dropbanned.pl" to the repository.
+Updated Changelog and Makefile.in.
+
+------------------------------------------------------------------------
+r23 | henning_d | 2002-06-06 08:43:23 -0400 (Thu, 06 Jun 2002) | 3 lines
+
+
+rebuilded configure with new version number 0.45
+
+------------------------------------------------------------------------
+r22 | henning_d | 2002-06-06 08:36:09 -0400 (Thu, 06 Jun 2002) | 5 lines
+
+
+pass_message_args() always sends Friend status to the peers, because
+it has used the string "Friend" and not the var "flags".
+now it is using the flags variable.
+
+------------------------------------------------------------------------
+r21 | the_turner | 2002-06-05 15:41:00 -0400 (Wed, 05 Jun 2002) | 2 lines
+
+Changed versionnumber and package information to 0.45 and opennap-ng
+
+------------------------------------------------------------------------
+r20 | the_turner | 2002-06-05 12:20:41 -0400 (Wed, 05 Jun 2002) | 2 lines
+
+Updated local Changelog.
+
+------------------------------------------------------------------------
+r19 | henning_d | 2002-06-05 12:03:34 -0400 (Wed, 05 Jun 2002) | 4 lines
+
+
+added support to print all users with flag "Friend" set
+ (hopefully with no bugs)
+
+------------------------------------------------------------------------
+r18 | the_turner | 2002-06-05 01:36:34 -0400 (Wed, 05 Jun 2002) | 4 lines
+
+Finally squished this fscking tban bug by replacing the FIELDS() macro
+with the corresponding expression. Removed DEBUG-logging again and reset
+the normal log into ban.c.
+
+------------------------------------------------------------------------
+r17 | the_turner | 2002-06-05 01:00:11 -0400 (Wed, 05 Jun 2002) | 3 lines
+
+Added some debug logging to synch.c and ban.c because
+the starttime seems not to get transmitted properly.
+
+------------------------------------------------------------------------
+r16 | henning_d | 2002-06-04 20:52:24 -0400 (Tue, 04 Jun 2002) | 4 lines
+
+
+again, a stupid bug: mixed up & and |
+so setting the userflags to "none" muzzles the user ... ooops :-)
+
+------------------------------------------------------------------------
+r15 | henning_d | 2002-06-04 20:22:06 -0400 (Tue, 04 Jun 2002) | 5 lines
+
+
+i hope i finaly got it
+the ON_FRIEND flag was not re-set on login, so it's 0 if eject_user()
+checks for it and a friend gets killed if he shares not enough
+
+------------------------------------------------------------------------
+r14 | henning_d | 2002-06-04 19:42:39 -0400 (Tue, 04 Jun 2002) | 3 lines
+
+
+"Friends" where affected by eject_client() ... fixed it.
+
+------------------------------------------------------------------------
+r13 | henning_d | 2002-06-04 19:24:48 -0400 (Tue, 04 Jun 2002) | 4 lines
+
+
+Fixed stupid bug: mixed up ON_FRIEND and ON_MUZZLED
+forgot a return;
+
+------------------------------------------------------------------------
+r12 | henning_d | 2002-06-04 18:41:47 -0400 (Tue, 04 Jun 2002) | 3 lines
+
+
+Fixed a bug which might have damaged the userdb
+
+------------------------------------------------------------------------
+r11 | henning_d | 2002-06-04 18:07:22 -0400 (Tue, 04 Jun 2002) | 5 lines
+
+
+Now checking ON_FRIEND in login.c
+  removed "muzzled" from USER struct and added "flags" instead, which stores
+  ON_MUZZLED and ON_FRIEND
+
+------------------------------------------------------------------------
+r10 | the_turner | 2002-06-04 15:14:16 -0400 (Tue, 04 Jun 2002) | 2 lines
+
+Changed starttime from int to time_t and changed %u to %lu
+
+------------------------------------------------------------------------
+r9 | henning_d | 2002-06-04 15:03:12 -0400 (Tue, 04 Jun 2002) | 5 lines
+
+
+Added new flag ON_FRIEND and a new handler change_userflags (10050)
+  to change this flag
+  the handler is located in userflags.c
+
+------------------------------------------------------------------------
+r8 | the_turner | 2002-06-04 14:22:13 -0400 (Tue, 04 Jun 2002) | 2 lines
+
+Casted time_t to int when transmitting it.
+
+------------------------------------------------------------------------
+r7 | the_turner | 2002-06-03 17:03:24 -0400 (Mon, 03 Jun 2002) | 3 lines
+
+Added a new item to the TODO list concerning the load of a freshly started
+well established server.
+
+------------------------------------------------------------------------
+r6 | the_turner | 2002-06-03 14:19:53 -0400 (Mon, 03 Jun 2002) | 2 lines
+
+Fixed a format bug when transferring the banlists
+
+------------------------------------------------------------------------
+r5 | the_turner | 2002-06-02 13:28:48 -0400 (Sun, 02 Jun 2002) | 3 lines
+
+Added some new points to the TODO list which were originating
+in the Oldnap network. Thanks dudes for the ideas!
+
+------------------------------------------------------------------------
+r4 | the_turner | 2002-06-02 01:47:08 -0400 (Sun, 02 Jun 2002) | 8 lines
+
+Added new var "allow_dynamic_ghosts". This var changes the behaviour
+of the ghosting mechanism to that way that ghosts are allowed
+from different IP addresses now. Due to security concerns the
+default value is set to 0. Removed this item from the TODO.
+Added an example  of "allow_dynamic_ghosts" to the sample.config.
+Added an example of the previously defined var "ghost_kill" to the sample.config.
+Fixed some spelling errors in the TODO regarding replication.
+
+------------------------------------------------------------------------
+r3 | the_turner | 2002-06-01 10:28:16 -0400 (Sat, 01 Jun 2002) | 4 lines
+
+Moved ChangeLog to ChangeLog.kaenguru to reflect these changes
+which were done in Pre-Sourceforge times. A new ChangeLog
+will be started here on SourceForge.
+
+------------------------------------------------------------------------
+r2 | the_turner | 2002-06-01 10:06:01 -0400 (Sat, 01 Jun 2002) | 2 lines
+
+Initial revision
+
+------------------------------------------------------------------------
+r1 | (no author) | 2002-06-01 10:06:01 -0400 (Sat, 01 Jun 2002) | 1 line
+
+New repository initialized by cvs2svn.
+------------------------------------------------------------------------

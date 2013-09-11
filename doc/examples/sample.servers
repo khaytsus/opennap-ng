@@ -1,0 +1,18 @@
+# sample servers file for opennap 0.37
+#
+# Lines beginning with a hash (#) are comments and are ignored.  The format
+# of each line should be:
+#
+# <server> <password> <local_pass> <port> [ <alias> ]
+#
+# server	the dns name for the server
+# password	remote server's password
+# local_pass	password to use to authenticate to remote server
+# port		port the remote server is listening on for server connects
+# alias		{OPTIONAL} name to use instead of DNS name when refering to
+#		this server.  if an alias is defined, the server will
+#		prevent use of the dns name in all operations (even a server
+#		connect with the dns name will fail).
+#
+# Example:
+# opennap.other.domain.com opennapishere thisIsMyPassword 8888

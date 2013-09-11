@@ -1,0 +1,20 @@
+win98
+
+<mian> On Win9x machines, there's a quite-low limit imposed by the kernel:
+100 connections. You can increase this limit by editing the registry key
+HKLM\System\CurrentControlSet\Services\VxD\MSTCP\MaxConnections.  On Windows
+95, the key is a DWORD; on Windows 98, it's a string. I've seen some reports
+of instability when this value is increased to more than a few times its
+default value.
+<mian> I have seen reports of a 64 MB Windows NT 4.0 machine hitting the
+wall at 1,500 connections, a 128 MB machine at around 4,000 connections, and
+a 192 MB machine maxing out at 4,700 connections. It would appear that on
+these machines, each connection is using between 4 KB and 6 KB. The
+discrepancy between these numbers and the 10 KB number above is probably due
+to the fact that in these servers, not all connections were sending and
+receiving a
+<mian> only be using about 2 KB each
+
+<mian> drscholl: no idea then :( but here's a good page with all the info
+          http://www.cyberport.com/~tangent/programming/winsock/advanced.html
+

@@ -1,0 +1,28 @@
+Advanced Installation
+=====================
+You can run opennap-ng as a seperate user process. Create a user named
+`opennap-ng' and configure like this:
+
+  $ ./configure --prefix=/home/opennap-ng --sysconfdir=/home \
+       --datadir=/home --sbindir=/home/opennap-ng --with-uid=opennap-ng \
+       --with-gid=users
+
+This example assumes the standard groupname is `users', else check with
+`$ id opennap-ng' and change accordingly. After configuring build
+opennap-ng:
+
+  $ make
+  
+and finally install as user opennap-ng:
+
+  $ make install
+
+
+The advantage is that all files live in the home directory of user
+`opennap-ng' and the paths are hardcoded. You still can supply the option
+`-c .' to opennap for running from any other directory.
+
+If you want to give shell access to other (trusted) admins, then you only
+have to grant them access to the user `opennap-ng'.
+
+

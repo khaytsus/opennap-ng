@@ -1,0 +1,5406 @@
+2001-09-29  drscholl  <drscholl@users.sourceforge.net>
+
+	* opennap.h, add_file.c, configure.in:
+	fix off by one error in kOMaxTokens.  5-bits is range 0..31, not 32
+
+2001-09-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, opennap.h, search.c:
+	use an array instead of LIST to hold the set of FileList structs that each
+	file is a member of.  at time of indexing, we know how many pointers there
+	are and this value never changes for the duration the user is logged in.
+	thus, we remove 4 bytes of memory per indexed _word_ since we don't need to
+	store the *next pointer of the LIST struct.
+
+2001-09-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	use SOMAXCONN for the listen() argument instead of our own define
+
+2001-09-24  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, win32-support.h:
+	if select() returns ENOTSOCK, do a sanity check to remove the bad fd
+	and attempt to continue
+
+	* class.c, client_quit.c, config.c, config.h.in, configure, configure.in, debug.c, download.c, filter.c, free_user.c, handler.c, hash.c, hash.h, init.c, join.c, kick.c, level.c, login.c, main.c, manual.html, metaserver.c, metaserver.dsp, mkpass.dsp, motd.c, muzzle.c, napigator.c, network.c, opennap.dsp, opennap.dsw, opennap.h, opennap.opt, part.c, part_channel.c, privmsg.c, public.c, remove_connection.c, remove_file.c, sample.config, search.c, server_connect.c, server_links.c, server_login.c, serverlib.c, setup.c, setup.dsp, synch.c, topic.c, upload_complete.c, userdb.c, util.c, whois.c, win32-support.h, ChangeLog, Makefile.am, Makefile.in, NEWS, README, TODO, add_file.c, announce.c, browse.c, buffer.c, change.c, channel.c:
+	merged changes from HEAD
+
+	* main.c:
+	bail out of main loop if we get 5 select() errors in a row so that we don't
+	bog down the machine.
+
+	* Makefile.am, metaserver.c, opennap.h, search.c, win32-support.h:
+	break out win32 support definitions into a separate file so that they can
+	be shared between opennap and the metaserver.
+
+	if file sharing is not allowed, return the end-of-search message
+	immediately when a search request is received.
+
+	* add_file.c, debug.c, opennap.h, search.c:
+	change FLIST -> FileList
+
+	FileList now contains a doubly linked list of all matching files.  Each
+	DATUM now contains a list of TokenRef items which allows a file to be
+	quickly removed from the FileList without needing to traverse the list.
+
+2001-09-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, filter.c, hash.c, hash.h, init.c:
+	increase hash table sizes
+		Users -> 1027
+		Who_Was -> 1027
+		File_Table -> 4001
+		MD5 -> 4001
+
+	add hash_compare_string_insensitive() which uses strcasecmp() and is the
+	default hash compare function.  hash_compare_string() uses strcmp().
+
+	changed Filter, File_Table and MD5 to use new hash_compare_string() since
+	those words are already inserted as lower case.
+
+2001-09-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* setup.dsp, metaserver.dsp, opennap.dsp, opennap.opt:
+	bump up FD_SETSIZE to 4096 for Win32 build just in case
+
+	* metaserver.dsp, opennap.dsp, opennap.opt, setup.dsp:
+	should set FD_SETSIZE=1024 on win32 builds
+
+	* metaserver.dsp, mkpass.dsp, opennap.dsp, opennap.dsw, opennap.opt, setup.dsp:
+	update win32 build files
+
+	* README, main.c:
+	don't reset TIMEOUT if Flood_Time == 0 to avoid 100% cpu usage
+
+	* config.h.in, configure, configure.in, manual.html, metaserver.c, sample.config:
+	configure needs to check for syslog()
+
+	fix metaserver.c compile for unix
+
+	remove config_dir from sample.conf, since its no longer valid
+
+	update last modified date in manual.html
+
+	* manual.html:
+	fixed entry for index_ignore_suffix, it had the name index_path_depth
+
+	* metaserver.c, metaserver.dsp, opennap.dsw:
+	ported metaserver to vc++
+
+2001-09-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* setup.dsp, metaserver.dsp, opennap.dsp, opennap.opt:
+	bump up FD_SETSIZE to 4096 for Win32 build just in case
+
+	* metaserver.dsp, opennap.dsp, opennap.opt, setup.dsp:
+	should set FD_SETSIZE=1024 on win32 builds
+
+	* metaserver.dsp, mkpass.dsp, opennap.dsp, opennap.dsw, opennap.opt, setup.dsp:
+	update win32 build files
+
+	* README, main.c:
+	don't reset TIMEOUT if Flood_Time == 0 to avoid 100% cpu usage
+
+	* config.h.in, configure, configure.in, manual.html, metaserver.c, sample.config:
+	configure needs to check for syslog()
+
+	fix metaserver.c compile for unix
+
+	remove config_dir from sample.conf, since its no longer valid
+
+	update last modified date in manual.html
+
+	* manual.html:
+	fixed entry for index_ignore_suffix, it had the name index_path_depth
+
+	* metaserver.c, metaserver.dsp, opennap.dsw:
+	ported metaserver to vc++
+
+2001-09-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* setup.dsp, metaserver.dsp, opennap.dsp, opennap.opt:
+	bump up FD_SETSIZE to 4096 for Win32 build just in case
+
+	* metaserver.dsp, opennap.dsp, opennap.opt, setup.dsp:
+	should set FD_SETSIZE=1024 on win32 builds
+
+	* metaserver.dsp, mkpass.dsp, opennap.dsp, opennap.dsw, opennap.opt, setup.dsp:
+	update win32 build files
+
+	* README, main.c:
+	don't reset TIMEOUT if Flood_Time == 0 to avoid 100% cpu usage
+
+	* config.h.in, configure, configure.in, manual.html, metaserver.c, sample.config:
+	configure needs to check for syslog()
+
+	fix metaserver.c compile for unix
+
+	remove config_dir from sample.conf, since its no longer valid
+
+	update last modified date in manual.html
+
+	* manual.html:
+	fixed entry for index_ignore_suffix, it had the name index_path_depth
+
+	* metaserver.c, metaserver.dsp, opennap.dsw:
+	ported metaserver to vc++
+
+	* Makefile.in, config.c, configure, configure.in, network.c:
+	update for clean compile under unix
+
+	* add_file.c, announce.c, buffer.c, change.c, channel.c, class.c, client_quit.c, config.c, download.c, filter.c, free_user.c, handler.c, init.c, join.c, kick.c, level.c, login.c, main.c, motd.c, muzzle.c, napigator.c, network.c, opennap.dsp, opennap.dsw, opennap.h, part.c, part_channel.c, privmsg.c, public.c, remove_connection.c, remove_file.c, search.c, server_connect.c, server_links.c, server_login.c, serverlib.c, setup.c, setup.dsp, synch.c, topic.c, upload_complete.c, userdb.c, util.c, whois.c:
+	change log() -> log_message() since the former is a standard math function
+
+	updated to compile under vc++ 6.0
+
+2001-09-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, TODO:
+	updated TODO list to speed up deletion of DATUM from the FLIST structs
+
+	* config.c, login.c, opennap.h:
+	added missing config option `restrict_registration'
+
+	config() didn't increment `line' so it always reported error on line 0
+
+	* ChangeLog: updating ChangeLog
+
+	* ChangeLog, NEWS, README, manual.html:
+	updated documentation for 0.43 release
+
+2001-09-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* config.c, login.c, opennap.h:
+	added missing config option `restrict_registration'
+
+	config() didn't increment `line' so it always reported error on line 0
+
+	* ChangeLog: updating ChangeLog
+
+	* ChangeLog, NEWS, README, manual.html:
+	updated documentation for 0.43 release
+
+2001-09-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, README, manual.html:
+	updated documentation for 0.43 release
+
+2001-09-20  drscholl  <drscholl@users.sourceforge.net>
+
+	* util.c:
+	fixed compile error for --enable-router
+
+	* ChangeLog, NEWS, add_file.c, browse.c, config.c, login.c, main.c, manual.html, opennap.h, sample.config:
+	updated ChangeLog file
+
+	added eject_after config variable, updated manual and sample.config
+
+	max_result was not checked for 0 allowing unlimited browsing
+
+	add_file() and friends had an off by one error when checking for max files
+	shared
+
+	* main.c, remove_file.c, whois.c:
+	remove_file() should not use next_arg() since the filename might contain spaces
+
+	reap_dead_connection() should attempt to remove the context from the flooder
+	list.
+
+	use MSG_SERVER_ERROR to report bad whois argument instead of PRIVMSG.
+
+2001-09-18  drscholl  <drscholl@users.sourceforge.net>
+
+	* change.c, search.c:
+	Fixed possible core when nuking a mod+ that is currently logged in.  The
+	user's context was not getting removed from the Mods list, so the next
+	message sent to mods+ dereference a bad pointer if the target user
+	subsequently logged out.
+
+	Fixed bug where a user could get unlimited search results by appending a
+	"MAX_RESULTS 0" to the search request.
+
+2001-08-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* announce.c, config.h.in:
+	remote_notify_mods() should check that the message was received from a
+	server.
+
+2001-08-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, config.c, main.c, opennap.h, sample.config, util.c:
+	merged changes to HEAD rev into this branch
+
+2001-08-14  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, config.c, main.c, opennap.h, sample.config, util.c:
+	committed patch opennap-0.42-0.42+jnl(a).diff
+		From: Jason Legate <jlegate@alienchick.com>)
+
+		adds index_ignore_suffix and index_path_depth variables
+
+2001-07-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* io.c:
+	loop over return kevent structs was wrong
+
+	* io.c, io.h:
+	fixed io.c to compile under freebsd 4.3-stable
+
+	* config.h.in, configure, configure.in, io.c, io.h:
+	added freebsd kqueue() support to the io library
+
+2001-07-18  drscholl  <drscholl@users.sourceforge.net>
+
+	* io.c:
+	with realtime signals enabled and under heavy load, the timers might never
+	execute given the way it was implemented.
+
+	* buffer.c, config.c, configure.in, debug.c, handler.c, main.c, opennap.h, serverlib.c:
+	remove refcount from CONNECTION struct
+
+	destroy_connection() puts struct on Destroy list, which is reaped at the
+	end of the io_handler() call
+
+	check return from send_queued_data() in queue_data()
+
+	remove server_chunk support, its useless
+
+	fix compiler warnings in debug code
+
+2001-07-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* debug.c, debug.h:
+	add new debug code
+
+	* serverlib.c, synch.c, topic.c, upload_complete.c, userdb.c, usermode.c, util.c, whois.c, Makefile.am, Makefile.in, add_file.c, announce.c, ban.c, browse.c, buffer.c, change.c, channel.c, class.c, client_quit.c, config.c, debug.c, debug.h, download.c, filter.c, free_user.c, handler.c, hash.c, hashlist.c, hashlist.h, hotlist.c, init.c, io.c, join.c, kick.c, kill_user.c, level.c, list.c, list.h, list_channels.c, list_users.c, login.c, main.c, motd.c, muzzle.c, napigator.c, opennap.h, part.c, part_channel.c, ping.c, privmsg.c, public.c, remove_connection.c, remove_file.c, resume.c, search.c, server_connect.c, server_links.c, server_login.c, server_usage.c:
+	removed old debug code
+
+2001-07-09  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c, server_login.c, server_usage.c, synch.c, userdb.c, util.c, whois.c, Makefile.am, Makefile.in, ban.c, buffer.c, channel.c, config.h.in, configure, configure.in, debug.h, free_user.c, handler.c, init.c, io.c, io.h, join.c, login.c, main.c, opennap.h:
+	debugged io_*() support, reworked opennap to make use of it.
+
+	added support for timers directly in the io_poll() call so there is no
+	need to exit the loop. this is important for the Linux Real Time signal
+	support.
+
+	destroy_connection() now directly free's the resources instead of just
+	queuing it for deletion.
+
+	queue_data() will now attempt to write() to a server connection
+	immediately if there is no other pending data to send.  this was required
+	for the linux rt signal support since there is no way to flush queued up
+	data short of the socket becoming writable again.
+
+	log() now detects repeated messages ala syslog()
+
+	Current_Time is now just a #define to the IO struct clock since it gets
+	updated very frequently.
+
+	when USE_RTSIG is defined, handle_connection() will attempt to read
+	multiple commands per call from a normal USER connection.  see the comment
+	near the end of the function for caveats.
+
+2001-07-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* configure.in, io.c, io.h, main.c:
+	add better support for asynchronous server events during processing of
+	realtime signals
+
+	* io.c, io.h:
+	New file.
+
+	* Makefile.am, Makefile.in, acconfig.h, buffer.c, config.h.in, configure, configure.in, handler.c, io.c, io.h, main.c, napigator.c, opennap.h, server_connect.c:
+	wrote generic io_*() api for handling i/o multiplexing
+
+	added Linux RT signal support via --enable-rtsig
+
+2001-07-06  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, README:
+	updated ChangeLog and README for 0.42 release
+
+	* NEWS, search.c:
+	fixed crash in search_result_end().  CHECK_SERVER_CLASS() should be
+	used here.
+
+2001-05-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	fixed segfaults with active list code. should work ok now.
+
+	* buffer.c, debug.h, handler.c, main.c, napigator.c, opennap.h, server_connect.c, server_login.c:
+	more active_list fixes.  still doens't work.
+
+2001-05-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, opennap.h:
+	begin coding for active/inactive poll lists for better cpu performance
+
+2001-04-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* napster.txt, network.c, sample.config:
+	updated napster.txt and sample.config
+
+2001-03-12  drscholl  <drscholl@users.sourceforge.net>
+
+	* init.c, napigator.c:
+	fixed compilation error with --enable-router
+
+2001-03-09  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	fixed logic to select leeches over users even if leech is sharing more files
+	than a normal user
+
+	* config.c, login.c, manual.html, opennap.h, sample.config:
+	added eject_limit config var to set the min # of files a client must share
+	to avoid being ejected
+
+	* main.c:
+	need SOCKOPTCAST for setsockopt() call
+
+	close stat server socket when error from nonblocking connect is detected,
+	and mark fd as -1 so that it will reconnect on the next click
+
+2001-03-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, NEWS, config.c, config.h.in, join.c, manual.html, napigator.c, notes.txt, part_channel.c, server_connect.c, win98se_max_conn.reg, ChangeLog, FAQ, Makefile.am:
+	fixed config parser newline bug
+
+	update for buliding under win32
+
+2001-03-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* class.c, configure.in, kill_user.c, main.c, metaserver.c, opennap.dsp, opennap.dsw, opennap.h, opennap.opt, search.c, server_connect.c, userdb.c, util.c:
+	updated for compilation with ms vc++ 6.0
+
+2001-03-06  drscholl  <drscholl@users.sourceforge.net>
+
+	* NEWS, config.c, manual.html:
+	revert config file parsing to <= .40 so quotes are not required for
+	multiword values
+
+	* part.c, part_channel.c, ping.c, privmsg.c, proxy-client.c, public.c, redirect.c, regex.c, regex.h, remove_connection.c, remove_file.c, resume.c, search.c, server_connect.c, server_links.c, server_login.c, server_usage.c, serverlib.c, setup.c, spyserv.c, stamp-h.in, synch.c, timer.c, topic.c, upload_complete.c, userdb.c, usermode.c, util.c, whois.c, Makefile.am, Makefile.in, _regex.h, add_file.c, announce.c, ban.c, browse.c, buffer.c, change.c, channel.c, class.c, config.c, config.h.in, configure, configure.in, download.c, fast_snprintf.c, filter.c, free_user.c, getopt.c, glob.c, handler.c, hash.c, hashlist.c, hotlist.c, init.c, join.c, kick.c, kill_user.c, level.c, list.c, list_channels.c, list_users.c, login.c, main.c, mkpass.c, motd.c, muzzle.c, napigator.c, network.c, opennap.h:
+	renamed regex.h -> _regex.h to avoid conflicts
+
+	include config.h first in every file
+
+	* Makefile.am, Makefile.in, acconfig.h, aclocal.m4, config.h.in, configure, configure.in, filter.c, init.c, metaserver.c, opennap.h, regex.c, regex.h, setup.c:
+	added regex 0.12 since regcomp() is broken under cygwin
+
+	moved defines to config.h
+
+2001-03-05  drscholl  <drscholl@users.sourceforge.net>
+
+	* config.c, login.c, opennap.h:
+	removed restricted_registration and made registered_only work as it should
+	have
+
+	* config.c, init.c, opennap.h:
+	reload config when receiving the HUP signal
+
+2001-03-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* NEWS, config.c, configure, configure.in, main.c, opennap.h:
+	added remote_config boolean config option to enable/disable remote
+	administration of the server
+
+	stat_server_user and stat_server_pass are now hidden, and can't be queried
+	remotely
+
+2001-03-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* README: updated README for .41 release
+
+	* manual.html, sample.block, ChangeLog, NEWS, config.c, configure, configure.in, login.c:
+	updated manual.
+
+	recode login around ON_GHOST_KILL  to make the code clearer.
+
+	automatically set FD_SETSIZE=1024 when compiling under CYGWIN
+
+	* manual.html, napigator.c, opennap.h, sample.config, Makefile.in, config.c, configure, init.c, main.c:
+	check connection result to stats server.
+
+	added report_ip, report_port, report_name for use with napigator stats
+	server.
+
+2001-03-01  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, Makefile.in, configure, configure.in, init.c:
+	enable signal handling under win32/cygwin
+
+2001-02-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* manual.html, opennap.h, Makefile.in, config.c, configure, configure.in, login.c:
+	added boolean restrict_registratration to disallow auto registration by
+	clients. useful for implementing closed servers.
+
+	* sample.block:
+	compacted sample.block to group names by the first letter.  this reduces
+	the number of expressions that are needed to be matched against each
+	shared file.
+
+	* configure.in:
+	fixed bug #233526   should use $enableval instead of $withval for the
+	chroot test in configure.in
+
+	* main.c: added poll() debugging
+
+2001-02-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, README, manual.html, sample.block:
+	updated ChangeLog, NEWS, manual.html
+
+2001-02-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, config.c, opennap.h:
+	added allow_share config boolean option to disallow sharing files
+	completely
+
+	* filter.c:
+	commented out log message in is_blocked()
+
+	* Makefile.in, add_file.c, config.c, configure, configure.in, filter.c, sample.block:
+	block file changed to list of regular expressions instead of hash table of
+	words.  this more effectively blocks individual files without affecting
+	as many unrelated files.
+
+	* sample.block, Makefile.am:
+	added sample block file
+
+	* add_file.c, filter.c, init.c, opennap.h:
+	added `block' file which contains one word per line.  if a shared file
+	contains any of the keywords in the file, the file will not be indexed at
+	all, and thus will not be able to be xferred.  note that if the filename
+	exists on the remote server, no blocking is done locally, so all of the
+	servers must act in conjunction to block inappropriate material.
+
+2001-02-17  drscholl  <drscholl@users.sourceforge.net>
+
+	* configure, configure.in, main.c, napigator.c, opennap.h:
+	global.fdmap should be sized according to global.max_fd
+
+2001-02-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* napigator.c:
+	hash string was not \0 terminated
+
+	* Makefile.am, Makefile.in, add_file.c, announce.c, ban.c, browse.c, buffer.c, change.c, channel.c, class.c, client_quit.c, config.c, debug.c, download.c, fast_snprintf.c, filter.c, free_user.c, getopt.c, glob.c, handler.c, hash.c, hashlist.c, hotlist.c, init.c, join.c, kick.c, kill_user.c, level.c, list.c, list_channels.c, list_users.c, login.c, main.c, metaserver.c, mkpass.c, motd.c, muzzle.c, napigator.c, network.c, opennap.h, part.c, part_channel.c, ping.c, privmsg.c, proxy-client.c, public.c, redirect.c, remove_connection.c, remove_file.c, resume.c, sample.config, search.c, server_connect.c, server_login.c, serverlib.c, setup.c, spyserv.c, synch.c, topic.c, upload_complete.c, userdb.c, usermode.c, util.c, whois.c:
+	updated copyright date to cover 2001
+
+	added add_fd()/remove_fd() to handle manipulation of the global.poll array
+
+	added support for pushing stats to napigator as part of their new
+	architecture.
+
+2001-02-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, remove_connection.c:
+	fixed crash on server shutdown with debugging enabled
+
+	* main.c:
+	fixed broken compile with select()-only support
+
+	* config.c, handler.c, opennap.h:
+	added `min_read' variable to log() when only reading a small amount of data
+	from a server link
+
+	* server_login.c, server_usage.c, synch.c, timer.c, userdb.c, util.c, whois.c, TODO, ban.c, buffer.c, channel.c, free_user.c, handler.c, init.c, join.c, login.c, main.c, opennap.h, search.c:
+	added a global_t to use as a global namespace
+
+	when using poll(), keep a global.fdmap[] array to map the fd to the
+	global.poll[] entry associated with the fd to allow skipping of unimportant
+	descriptors
+
+2001-02-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, metaserver.c, privmsg.c:
+	sig_meta was never reset
+
+2001-02-05  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, Makefile.in, channel.c, class.c, configure, configure.in, kick.c, main.c, metaserver.c, opennap.h, sample.conf, sample.config:
+	renamed sample.conf -> sample.config
+
+	remove TS code from all but channel_op.
+
+	servers will no longer correct channel ops.  based upon the timestamp they
+	will just affect the local server and assume the remote side will do the
+	same.
+
+2001-02-02  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS:
+	updated ChangeLog
+
+	updated NEWS file
+
+2001-01-31  drscholl  <drscholl@users.sourceforge.net>
+
+	* metaserver.c:
+	added q's metaserver patch to read servers from a config file
+
+2001-01-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* buffer.c, config.c, main.c, opennap.h:
+	added `server_chunk' config var to control minimum packet size sent between
+	servers.
+
+2001-01-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	skipped already killed clients when looking to eject nonsharing users
+
+	* whois.c:
+	whowas should require mod+ level, should have change which_server
+
+2001-01-24  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, userdb.c:
+	fixed buffer overrun in main.c when initializing the Poll[] and Clients[]
+	arrays
+
+2001-01-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	fixed bug where opennap allocated 1 extra struct pollfd
+
+	* buffer.c, class.c, handler.c, login.c, main.c, opennap.h, server_connect.c, server_usage.c:
+	removed dup2() and added a .id to the CONNECTION* struct.  use Poll[con->id]
+	instead of Poll[con->fd] since the fd's are no longer in order.
+
+	* class.c, debug.h:
+	local var acc was never initialized in generic_acl_add()
+
+	* class.c:
+	generic_acl_load should not assume the file is already sorted
+
+	fixed generic_acl_del to handle masks correctly
+
+	* class.c, main.c, opennap.h:
+	fixed broken class add routines
+
+2001-01-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* class.c:
+	don't print msg if we recv a class command with the same count
+
+	* change.c, main.c, privmsg.c, whois.c:
+	don't allow admin to change elite password
+
+	move `operserv server' to `nickserv server' and only require user+ level
+
+2001-01-16  drscholl  <drscholl@users.sourceforge.net>
+
+	* FAQ, config.c, list_users.c, login.c, main.c, manual.html, opennap.h, server_connect.c:
+	added variable to turn off ghost kills in order to reduce cross server
+	traffic
+
+	added auto_link boolean variable
+
+2001-01-09  drscholl  <drscholl@users.sourceforge.net>
+
+	* class.c, opennap.h:
+	if any i:lines exist, don't allow a connection unless the ip matches an item
+	on the list.
+
+	don't use mask when its 0xffffffff during a acl_sync()
+
+	added prototypes for new acl functions
+
+	* network.c, class.c:
+	fixed sorted insert in generic_acl_add()
+
+	* class.c, network.c:
+	fixed coredump in generic_acl_del() with no host
+
+	is_address() should use a mask of 0xffffffff when no mask is given
+
+	sort ipmasks using compare_ipmask
+
+	* class.c, handler.c, init.c, main.c, opennap.h, synch.c:
+	added support for e:lines, d:lines and i:lines
+
+	added ability to delete connection class
+
+	* class.c, handler.c, opennap.h:
+	added generic acl list handler functions
+
+	* main.c: sigh.  more poll() checking
+
+	* main.c, channel.c:
+	added more poll() debugging
+
+	load_channels() did not close the fd for the channels file
+
+2001-01-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* list_users.c:
+	forgot to remove ntohl() from list_users.c.  ip and mask are already in
+	little endian format
+
+	* class.c, list_users.c, network.c:
+	fixed is_address() to return little endian format
+
+	* TODO, class.c, config.c, free_user.c, init.c, login.c, main.c, manual.html, opennap.h, whois.c:
+	added support for blocking clients that reconnect or register nicks too fast
+
+	* list_users.c:
+	fixed potential segfault if the ip was missing in a list_users() command
+	with the `i' flag
+
+	* class.c, list_users.c:
+	fixed list_users() to accept a mask
+
+	class.c needs sys/types.h
+
+	* configure, configure.in, hash.h, main.c, metaserver.c, network.c, opennap.h, server_links.c, channel.c:
+	added support for compining under Cygwin
+
+	* TODO, add_file.c, class.c, opennap.h, search.c:
+	add support for prefixing search terms with a minus sign (`-') to indicate
+	words which should be excluded when matching.  this augments the FILENAME
+	EXCLUDES support which already exists
+
+	* class.c:
+	notify_mods() message didn't have the mask displayed
+
+	* class.c, configure, configure.in, handler.c, init.c, kill_user.c, list_users.c, login.c, main.c, network.c, opennap.h, util.c, Makefile.am, Makefile.in:
+	removed tcp-wrappers support.  it was messing up the newly rewritten
+	select/poll input handler, and it really isn't needed anymore.
+
+	added colten edward's connection class patch (with cleanups)
+
+	* TODO, browse.c, config.c, main.c, manual.html, opennap.h, server_connect.c:
+	added remote_browse config var to turn off remote browsing
+
+	* opennap.h:
+	need extra level of parenthesis around the BSWAP macros
+
+2001-01-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* part.c, topic.c:
+	part() could send an error message to a remote server
+
+	fixed part() and topic() to prefix error messages with the command that was
+	executed
+
+	* server_connect.c:
+	don't use the server's external ip address when connecting a local server
+
+2001-01-06  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, browse.c, download.c, free_user.c, handler.c, join.c, login.c, main.c, network.c, opennap.h, server_connect.c, server_login.c, whois.c:
+	added even more debugging for poll() support
+
+	use BSWAP32() in calls to my_ntoa()
+
+	* FAQ, README, kill_user.c, main.c, manual.html, network.c, remove_connection.c, search.c, server_connect.c, server_login.c:
+	added fd numbers to the log() statements in add_client()
+
+	updated FAQ
+
+	cleanup fixes for failure modes in network.c
+
+	updated manual with recently variable additions
+
+2001-01-05  drscholl  <drscholl@users.sourceforge.net>
+
+	* buffer.c, change.c, main.c, opennap.h, search.c:
+	check for ENOBUFS after WRITE() to check for non-permanent error
+
+	don't allow non-mods+ to nuke another users
+
+	call expire_searches() directly from the main loop rather than from a timer
+	to prevent searches from backing up too much
+
+	* README, buffer.c, main.c, opennap.h, search.c, server_usage.c, timer.c:
+	store pending remote search requests in a fifo order, with a pointer to the
+	tail for fast appends.
+
+	added # of pending searches to the server stats reply
+
+	added timer_set_interval() to allow modifying the interval at which existing
+	events are rescheduled
+
+	add_timer() now returns the reference number of the created timer
+
+	allocate timer refnums in strictly ascending order
+
+	reworked send_queued_data() to write() until there is no more data queued,
+	or until the socket's buffer is full.  also, for server links we want to
+	always make sure there is at least 16k of compressed output available in
+	order to keep the socket's output buffer full, and avoid unnecessary trips
+	through the main loop.
+
+2001-01-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, remove_connection.c, search.c:
+	fixed consistency checks for Clients[] and Poll[] arrays
+
+	test for searches <= 0 in search() was incorrect.  a 0 value is perfectly
+	valid (no searches yet).
+
+	* buffer.c, handler.c, main.c, network.c, opennap.h, search.c, server_connect.c:
+	change set_read and set_write to macros
+
+	rewrote add_client to include common code from accept_connection() and
+	try_connect()
+
+	added extensive checking in add_client and reap_dead_connnection to ensure
+	that the Clients[] and Poll[] arrays look correct
+
+	* main.c, search.c:
+	fixed bug in generate_request.  need to check for type == -1 (ANY)
+
+	fixed typo in main.c
+
+2001-01-02  drscholl  <drscholl@users.sourceforge.net>
+
+	* COPYING, INSTALL, Makefile.in, aclocal.m4, configure, install-sh, main.c, missing, mkinstalldirs, opennap.h:
+	need to include files so that autoconf is not require to build from cvs
+
+	* README, aclocal.m4, handler.c, main.c, opennap.h:
+	added q's server numeric histogram patch
+
+	removed aclocal.m4 from CVS repository -- generated by autogen.sh
+
+	* configure:
+	forgot to remove configure script -- now generated by autogen.sh
+
+	* COPYING, INSTALL, Makefile.in, autogen.sh, install-sh, missing, mkinstalldirs:
+	use autogen.sh to rebuild the CVS sources
+
+2001-01-01  drscholl  <drscholl@users.sourceforge.net>
+
+	* server_connect.c, main.c:
+	reorder operations in main event loop so that reap_connections() is called
+	last.
+
+2000-12-31  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c, handler.c:
+	disable 10301 command
+
+	* buffer.c, init.c, main.c:
+	fixed obscure bug where the destroy list was not properly updated
+
+	* config.c, init.c, main.c, search.c, server_connect.c:
+	zero out unused Poll[] structs
+
+	* main.c, server_usage.c:
+	need to cast double to int
+
+	* server_usage.c, main.c:
+	remove (int) casts where they aren't needed
+
+	* main.c, opennap.h, privmsg.c, remove_connection.c, resume.c, search.c, server_connect.c, server_links.c, server_usage.c, serverlib.c, setup.c, upload_complete.c, userdb.c, usermode.c, util.c, whois.c, announce.c, ban.c, browse.c, channel.c, config.c, debug.c, download.c, filter.c, free_user.c, handler.c, init.c, join.c, kick.c, kill_user.c, level.c, login.c:
+	use %d instead of %f in places where it doesn't matter
+
+	fixed indentation
+
+	removed .last_browse member of USER
+
+	remove all reference to fast_snprintf
+
+2000-12-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, Makefile.in, handler.c, main.c, opennap.h, server_links.c, server_usage.c:
+	removed fast_snprintf
+
+	* fast_snprintf.c:
+	fixed fast_snprintf() to use va_arg correctly
+
+	* fast_snprintf.c, login.c, main.c:
+	fast_snprintf should bail out if the size of the output buffer is 0
+
+2000-12-29  drscholl  <drscholl@users.sourceforge.net>
+
+	* fast_snprintf.c, main.c:
+	use DIGIT() for %u and %d since its faster than ignoring leading 0s anyway
+
+	* configure, configure.in, main.c, napster.txt:
+	handle poll() errors to differentiate error type
+
+	* ban.c, fast_snprintf.c:
+	remove support for %ld.  change one occurance to %u in ban.c
+
+	* fast_snprintf.c:
+	handle negative numbers for %d in fast_snprintf
+
+	* handler.c:
+	changed server flood protection to automatically flood control all commands
+	except for those marked F_EXEMPT
+
+	* fast_snprintf.c, motd.c:
+	use double for %f conversion in fast_snprintf
+
+2000-12-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* download.c, napster.txt, search.c:
+	consider 8-bit chars to be in WORD_CHAR() class so that foreign users can
+	use opennap.
+
+	updated napster.txt with recent news
+
+	numeric 607 now has the requestor's linespeed as the last parameter in the
+	message, to be consistent with napster.com servers
+
+2000-12-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* fast_snprintf.c:
+	added fallback mode for %d so large ints can be handled gracefully
+
+	* add_file.c, ban.c, buffer.c, change.c, channel.c, config.c, download.c, filter.c, join.c, kick.c, login.c, motd.c, privmsg.c, resume.c, server_connect.c, server_links.c, server_login.c, server_usage.c, synch.c, upload_complete.c, userdb.c, whois.c:
+	need to use %u instead of %d for large integers
+
+	* list_users.c: need to clear ON_GFLAG_CHANNEL
+
+	* list_users.c:
+	fixed list_users() to accept multiple flags (q)
+
+	* main.c, fast_snprintf.c:
+	fixed compilation warnings in fast_snprintf.c
+
+	fixed server_input() to work with select() based systems
+
+	* config.c, list.c, list.h, main.c:
+	added additional arg to list callback functions
+
+	pre-read server links in the main event loop in attempt to avoid going
+	through the main loop when there is heavy server->server traffic
+
+	* config.c, init.c, level.c, list_users.c, login.c, main.c, opennap.h, remove_connection.c, usermode.c, browse.c:
+	commited q's last_browse patch to prevent a client from browsing the same
+	client twice for flood-control
+
+	commited q's list_users patch for exteneded functionality: -C #<channel>
+	for listing users in a single channel and -u for only listing LEVEL_USER
+	clients.
+
+	* browse.c, fast_snprintf.c, search.c:
+	use same case for %d as %hu
+
+	use %u for file sizes since %d can only handle 0..99,999
+
+	* Makefile.am, Makefile.in, add_file.c, ban.c, channel.c, config.c, fast_snprintf.c, filter.c, free_user.c, handler.c, init.c, kill_user.c, login.c, main.c, opennap.h, remove_file.c, search.c, server_connect.c, server_links.c, server_usage.c, serverlib.c, userdb.c, usermode.c, util.c, whois.c:
+	added optimized snprintf() routine
+
+	* browse.c:
+	server should always return 640 in response to a 640
+
+2000-12-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c:
+	browse_direct should check user->shared instead of user->sharing
+
+2000-12-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* proxy-client.c: saved new client proxy code.
+
+	* add_file.c, buffer.c, init.c, main.c:
+	need to zero the pollfd structs for fds 0, 1, 2
+
+	unshare (110) should return the number of files unshared
+
+	* browse.c, buffer.c, handler.c, main.c, napster.txt, server_connect.c:
+	fixed commands for new browse support.
+
+	added support for firewalled browse request
+
+2000-12-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	added debug info for logging unknown commands
+
+	* handler.c, napster.txt:
+	server should ignore the 920 command and not bomb out on it
+
+	* browse.c, handler.c, napster.txt, opennap.h:
+	added support for the new direct client browsing commands in napster beta8
+
+2000-12-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, server_connect.c:
+	old fd must be closed after dup2
+
+	* main.c:
+	not all connection ports were listened on
+
+	* main.c:
+	handle new connections after main i/o loop so that new entries in poll() are
+	not consulted
+
+	* main.c, opennap.h, server_connect.c:
+	fixed broken poll() implementation.  pollfd structs were not properly
+	initialized
+
+	* main.c:
+	use getsockopt() to fetch the error code for the poll() error
+
+	* search.c, server_connect.c:
+	fixed core in server_disconnect
+
+	fixed off by one error in max search results
+
+2000-12-18  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c: removed msg about swapping fds
+
+	* Makefile.am, Makefile.in, announce.c, buffer.c, configure, configure.in, handler.c, init.c, libpoll.c, libpoll.h, login.c, main.c, opennap.h, remove_connection.c, server_connect.c, serverlib.c:
+	removed libpoll and coded direct array access using fd as the index.
+
+2000-12-12  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog: post 0.38 commit
+
+	* ChangeLog, NEWS, README, hash.h, kill_user.c, libpoll.c, libpoll.h, opennap.dsp, opennap.opt:
+	fixes to compile under Win32 again.
+
+2000-12-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, kill_user.c:
+	bsd need sys/types.h before sys/socket.h
+
+2000-12-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* kill_user.c, opennap.h, handler.c, README:
+	added q's mass kill by ip command
+
+2000-12-05  drscholl  <drscholl@users.sourceforge.net>
+
+	* server_connect.c:
+	fixed core in server_disconnect
+
+	* add_file.c, kill_user.c, level.c, login.c, main.c, manual.html, network.c, opennap.h, remove_connection.c, util.c, whois.c, ChangeLog:
+	locally connected mods+ are now kept in the Mods global list, to make
+	notify_mods() more efficient.
+
+	fixed buffer overrun bug in strfcpy
+
+	whois checked the wrong CONNECTION* to determine whether the target of the
+	whois request is local
+
+2000-12-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* buffer.c, channel.c, configure, configure.in, free_user.c, handler.c, init.c, join.c, kick.c, main.c, opennap.h, part.c, part_channel.c, public.c, synch.c, topic.c, usermode.c, util.c, whois.c:
+	added local channels (not synched across linked servers)
+
+	added --enable-log-channel which sends the console output to channel &LOG
+	in addition to printing on the terminal
+
+	fixed usermode -whois
+
+	client version string is returned with who-was reply
+
+2000-12-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, handler.c, opennap.h, usermode.c, whois.c:
+	use separate numeric for remote whois notification so that the whois message
+	can be turned off with usermode -whois
+
+	* main.c, manual.html, muzzle.c, opennap.h, privmsg.c, server_login.c, server_usage.c, usermode.c, channel.c, configure, configure.in, free_user.c, handler.c, init.c, level.c, list_channels.c, login.c:
+	added usermode -msg to allow a user to turn off private msgs
+
+	added a nickserv usermode command for use by non-mod users
+
+	cloaked users should not be counted in channel user counts
+
+	don't allow non-mod users to change their own level
+
+	use a hashlist to store client version strings for memory savings
+
+2000-12-02  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, free_user.c:
+	Local file count was not updated when a local user unshared all files
+
+2000-11-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	wrong errno was used in handle_io.  should use the result of getsockopt()
+	instead of errno in the log message
+
+2000-11-29  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, TODO, config.c, main.c, opennap.h, search.c:
+	updated ChangeLog
+
+	added `max_searches' configuration variable to cap the number of pending
+	search requests each client is allowed
+
+	* README, handler.c, login.c, opennap.h, remove_connection.c, server_connect.c, server_links.c, server_login.c, synch.c:
+	reworked server link info messages.
+
+	use server_error to handle message 0
+
+	server_quit is now deprecated.  use server_disconnect for both manual and
+	detected splits
+
+2000-11-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, hashlist.c, hashlist.h:
+	fixed bug with hotlist.  when `data' is specified for the hashlist_remove,
+	don't decrement the `count' if the `data' is not found on the list.
+
+	* hashlist.c, hotlist.c, main.c:
+	added more debugging to catch the hotlist bug
+
+2000-11-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* hashlist.c, hotlist.c:
+	added debugging to help find the hotlist bug
+
+2000-11-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, whois.c:
+	updated ChangeLog
+
+	nick should be returned when whois has no info for the requested nick
+
+2000-11-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, userdb.c:
+	patchnap no longer needs to be included in the source distribution
+
+	fixed indentation in userdb.c
+
+	* search.c:
+	keep track of search count when in routing-only mode
+
+	* hashlist.c:
+	don't assert when the list count is >0 but list==NULL
+
+	* configure.in, configure:
+	configure script was incorrect
+
+	* opennap.h, search.c, serverlib.c, TODO, add_file.c, configure.in, free_user.c, kill_user.c, libpoll.c, login.c:
+	updated TODO file
+
+	fixed indentation on a few files
+
+	removed debug statement from libpoll.c
+
+	added --disable-kqueue to configure
+
+2000-11-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c:
+	fixed browse/browse_new to not return the client's ip address if no files
+	are shared.
+
+	* hashlist.c, remove_connection.c:
+	fixed bug in hashlist_remove which caused the haslist to always be freed
+	even when other entries exist
+
+	* browse.c, filter.c, free_user.c, hashlist.c, hashlist.h, hotlist.c, login.c, napster.txt, opennap.h, remove_connection.c, remove_file.c, serverlib.c:
+	fixed new_browse to allow browsing across a routing-only server
+
+	fixed some bugs in the new hotlist/hashlist code
+
+2000-11-16  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, Makefile.in, NEWS, free_user.c, handler.c, hash.c, hash.h, hashlist.c, hashlist.h, hotlist.c, init.c, login.c, main.c, opennap.h, patchnap.c, remove_connection.c, server_usage.c, serverlib.c:
+	patchnap is no longer needed since nap is now Free Software
+
+	max_clones is now global instead of per-server
+
+	added general purpose hash+list routines
+
+	numeric 10013 is no longer needed, removed from handler table
+
+	hash table functions updated to provide support for any type of key, not
+	just a string
+
+2000-11-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, README, browse.c, main.c, napster.txt, opennap.h, privmsg.c:
+	updated ChangeLog with recent entries
+
+	the ip address of the client is now returned with the end-browse-list
+	numeric, per the official servers
+
+	added redirect and cycle to operserv
+
+2000-11-12  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c:
+	fixed segfault in fdb_add when memory is exhausted
+
+2000-11-10  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c, main.c, opennap.h:
+	--enable-version-stats did not work with --enable-router
+
+2000-11-06  drscholl  <drscholl@users.sourceforge.net>
+
+	* client_quit.c, sample.conf:
+	fixed bug in client_quit where it was testing for local users rather than
+	remote users
+
+2000-11-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	added check for missing param in check_password()
+
+	* libpoll.c, libpoll.h, server_login.c:
+	allow max_time_delta and warn_time_delta to be 0 to disable the clock sync
+	check.
+
+	fixed bug when using select() which causes a segfault
+
+2000-11-02  drscholl  <drscholl@users.sourceforge.net>
+
+	* .indent.pro, NEWS, README, client_quit.c, config.c, configure, configure.in, free_user.c, handler.c, init.c, main.c, manual.html, opennap.h, whois.c:
+	added who-was support
+
+2000-10-31  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, TODO, config.c, join.c, opennap.h:
+	added option boolean `irc_channels' to control whether to enforce channel
+	names must begin with # or &.  set by default to behave the same as previous
+	versions.
+
+2000-10-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, README, init.c, main.c, opennap.dsp, opennap.dsw, opennap.opt, server_links.c:
+	pre 0.37 release commit
+
+	* sample.conf, whois.c:
+	whois should use next_arg() to trim whitespaces
+
+	fixed whois to use the same message as the official server when the target
+	nickname is not online or registered
+
+2000-10-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* privmsg.c:
+	added `nuke' to the list of operserv commands
+
+2000-10-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* server_connect.c, util.c:
+	fixed broken remote server connect
+
+	* handler.c, join.c, login.c, opennap.h:
+	added stub function ignore_command to silently handle numerics that we
+	ignore
+
+	* .indent.pro, libpoll.c, main.c:
+	reverted indentation style
+
+	Login_Timeout support was never readded after changing over to use libpoll.c
+
+2000-10-17  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	fixed eject_client not too boot mods+ and to eject leeches before users.
+
+	* download.c, login.c:
+	upload_request() used the wrong offsets into av[]
+
+	* main.c:
+	prevent segfault when no context for a fd is passed into handle_io()
+
+	* level.c:
+	fixed level() to ensure that the sender's level is mod+ in the case where
+	the local server has no record of the target user.
+
+	* .indent.pro, download.c:
+	reverted indent style to original
+
+	fixed bug which caused a download to fail between client 2 server hops away
+
+	* privmsg.c:
+	fixed server crash when nickserv is called with no args
+
+	* muzzle.c, synch.c:
+	don't pass a muzzle command if a local user is not a mod+
+
+2000-10-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c:
+	fixed bug in browse when a user is logged into a server compiled as
+	a router.
+
+2000-10-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* change.c, topic.c:
+	fixed bug in nuke.  the error message when permission is denied tried to
+	send the message back to the (possibly nonexistent) user that was nuked.
+
+	fixed bug in topic when the channel name was not present
+
+2000-09-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c:
+	fixed core in browse() when no nick is given
+
+	* server_connect.c, channel.c, main.c:
+	added more log info when channel_op needs to resync a server
+
+2000-09-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* util.c:
+	next_arg() should return null when an empty string is passed in
+
+	* change.c:
+	fixed bug in cloak which cause it not to allow any user to cloak
+
+2000-09-20  drscholl  <drscholl@users.sourceforge.net>
+
+	* serverlib.c:
+	pop_user_server() printed the value of the pointer instead of the nickname
+	when an error occurred.
+
+	* main.c:
+	destroy_connection had wrong test for con->destroy
+
+	* main.c:
+	allow destroy_connection() to handle the case where the connection is marked
+	as destroyed but not placed on the Destroy list
+
+2000-09-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* change.c, free_user.c, level.c, login.c, muzzle.c, opennap.h, userdb.c:
+	rewrote muzzle to be more clear
+
+	server no longer saves cloak state when a mod+ logs out.  was casusing too
+	many server desyncs.
+
+	* change.c, join.c:
+	server generated kicks on desync now state why the user was kicked
+
+	fixed bad send_user() call in nuke()
+
+	* change.c:
+	always propogate a nuke command if the account is not locally registered
+	and the user is not logged in since other servers might have a db entry for
+	it.
+
+	* login.c, synch.c:
+	removed ts from level commands
+
+	* channel.c:
+	fixed crash in channel_wallop() when the wallop was sent by a server
+
+	* main.c:
+	catch memory alloc fail in destroy_connection()
+
+	* main.c:
+	added print out of number of fds in the Poll_Context in update_stats() for
+	systems with poll() just to verify libpoll is not losing fds
+
+	* free_user.c, kill_user.c, remove_connection.c:
+	set the memory used by USER and CONNECTION structs to 0xff before free'g
+	to catch bad refs
+
+	.killed should be set prior to calling destroy_connection
+
+2000-09-18  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	last seen time is not necessary to sync up the user db
+
+	* change.c, level.c:
+	cloak() should send the absolute state when relaying to peer servers
+
+	allow a user to nuke their own account.  nuke now tells the user that their
+	account was nuked if they are logged in at the moment.
+
+	* level.c:
+	fixed possible desync when the received server message was malformed
+
+	* motd.c:
+	motd now displays the name of the server you are connected to
+
+	* change.c, level.c, login.c, opennap.h, privmsg.c, synch.c, userdb.c:
+	reverted ts changes in level.c.
+
+	changed .timestamp to .created for USERDB struct.  once set it should not
+	be modified unless a collision has occured.
+
+2000-09-16  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	update_stats() now prints the time at which the server was started
+
+	* level.c, ChangeLog:
+	fixed bug in timestamp code for level().  the oldest change should be
+	dropped, not the newest.
+
+	level() will now correct for server desync when it detects that a remote
+	user has no privilege to execute the change.
+
+	updated ChangeLog with recent CVS entries.
+
+2000-09-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c:
+	fixed find_search to print a single dot (.) for each exipred request instead
+	of a line for each request. the id strings are not really important info
+
+	* opennap.h, init.c, main.c:
+	setting the Server_Ip and Interface was still broken with the new
+	server_alias config var
+
+	* manual.html, opennap.h, sample.conf, server_connect.c, init.c, main.c, config.c:
+	added `server_alias' variable to use when the server should be aliased
+
+	prevent certains vars from being reset after the server first loads the
+	config file
+
+2000-09-14  drscholl  <drscholl@users.sourceforge.net>
+
+	* manual.html, server_links.c:
+	empty, or lines that start with a whitspace char are now ignored in the
+	servers file
+
+	* init.c, level.c, libpoll.c, libpoll.h, main.c:
+	fixed compilation errors with -DROUTING_ONLY=1
+
+2000-09-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	use getsockopt() to fetch the reason error was returned from poll/select
+
+	* main.c, remove_connection.c:
+	when not in debug mode, write 0xff bytes to the free'd connection structs
+
+	add check in handle_io() to ensure the fd matches the fd in the connection
+	struct passed back
+
+	* buffer.c, main.c:
+	added fd # to log message when a socket error occurs
+
+	send_queued_data() should error if you try to send to a destroyed connection
+
+	* handler.c, libpoll.c, login.c:
+	collapse POLLNVAL/POLLHUP/POLLERR check into a single if statement
+
+	udpated flood protection
+
+2000-09-12  drscholl  <drscholl@users.sourceforge.net>
+
+	* server_connect.c:
+	fixed bug in killserver where you could not kill the server you are
+	connected to
+
+	* server_connect.c:
+	server_disconnect disconnected the user issuing the disconnect, not the
+	server
+
+	* channel.c, kill_user.c, login.c, muzzle.c:
+	fixed kill_user() to use pop_user_server()
+
+	fixed bug in channel_op() where the "Server " prefix was the only thing sent
+
+	* login.c:
+	fixed login() so that it only sends a KILL back to the server where the
+	login request came from when an error is detected.  its not necessary to
+	pass this message to all peer servers.
+
+	* libpoll.c, libpoll.h, main.c:
+	lp_dispatch now returns LP_ERROR when an error condition on the socket has
+	been detected (hangup, error, invalid)
+
+	* libpoll.c:
+	added checking for other POLL* bits
+
+	* libpoll.c:
+	warn when bits other than POLLIN/POLLOUT are set in .revents
+
+	* libpoll.c, libpoll.h, main.c:
+	make libpoll a little cleaner when using poll() by first assignin a local
+	var `pfd' to the struct pollfd entry
+
+	* libpoll.c:
+	lp_clear() should unset the current state of the fds from the last
+	poll/select so that the next lp_dispatch() will not invoke the callback
+	routine for that fd
+
+	* join.c:
+	when a user gains chanops by joining a new channel, the msg was not prefixed
+	with "Server"
+
+	* ban.c, channel.c, config.c, kick.c, kill_user.c, level.c, libpoll.c, muzzle.c, opennap.h, privmsg.c, server_links.c, server_login.c:
+	fixed libpoll finally
+
+	prefix Server to all actions preformed by servers in notify_ops/notify_mods
+	calls
+
+	* config.c, libpoll.c:
+	more verbose error message when select() fails
+
+	* init.c, libpoll.c:
+	print warning when sigpipe is caught
+
+	* libpoll.c:
+	fixed copile error for select() based systems
+
+	* buffer.c, libpoll.c, libpoll.h:
+	more libpoll debugging
+
+	* libpoll.c:
+	fixed compile error on systems with only select()
+
+	* part_channel.c, libpoll.c, main.c:
+	dont call list_delete() on chan->invited when null
+
+	more libpoll debugging
+
+	* join.c, libpoll.c:
+	added more libpoll debug statements
+
+	dont call list_delete() on chan->invited when its null
+
+	* libpoll.c:
+	added additional libpoll debugging
+
+	* join.c, libpoll.c:
+	added missing set of .magic for channels
+
+	changed realloc to REALLOC() in libpoll
+
+	* libpoll.c:
+	added debugging support for libpoll
+
+	* main.c:
+	dont clear the fd in report_stats().  its the listen fd, not the client's fd
+
+	* libpoll.c, libpoll.h, change.c:
+	memset() the pollfd struct when moving it to fill holes
+
+	* change.c, main.c:
+	reason when altering another users password should be optional
+
+	* main.c:
+	stats port fd was not cleared when closing it
+
+2000-09-11  drscholl  <drscholl@users.sourceforge.net>
+
+	* init.c:
+	fixed bug with umask where it should have use 077 instead of 0777
+
+	* libpoll.c:
+	when moving the last element of the poll_fd[] array to fill holes, we need
+	to update the .pollfd_offset of the corresponding lp_fd_ctx
+
+	* libpoll.c, libpoll.h, server_connect.c:
+	need to keep int offset into .poll_fd[] array since it can be realloc'd
+
+	* init.c, libpoll.c, napster.txt:
+	make hash table buckets a prime (1027)
+
+	updated napster.txt with new 110 message
+
+	* login.c, main.c, opennap.h, privmsg.c, search.c, server_usage.c, add_file.c, config.c, handler.c, init.c, kill_user.c, libpoll.c:
+	changed bytes in/out counters to double
+
+	prevent clients from using the alias names of servers
+
+	fixed bug in issuing remote searches where the generated id was not sent
+	when searches originated at the local server
+
+	libpoll.c needed <string.h>
+
+	* handler.c, login.c, main.c, opennap.h:
+	changed unsigned to u_ defs
+
+	* aclocal.m4, configure, main.c, Makefile.in:
+	rewrote main to use list_free() and list_foreach().
+
+	reduce timeout for lp_poll() when there are clients on the flood list
+
+	* main.c:
+	Destroy list was not NULL'd when delete all items in the list
+
+	* main.c:
+	added debug check of connection struct in Destroy list
+
+	* Makefile.in, aclocal.m4, configure, configure.in:
+	check for poll() and kqueue()
+
+	* libpoll.c, libpoll.h:
+	forgot to commit new libpoll files
+
+	* Makefile.am, Makefile.in, add_file.c, ban.c, buffer.c, config.c, free_user.c, handler.c, init.c, kill_user.c, login.c, main.c, opennap.h, privmsg.c, remove_file.c, server_connect.c, server_login.c, serverlib.c, .indent.pro:
+	incorporated new libpoll library into main branch
+
+	added extensive checking to prevent negative total library size bug
+
+	changed indent style for a few files with new .indent.pro
+
+2000-09-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c, privmsg.c, server_connect.c:
+	fixed bug in server_connect() where auth->alias was used without being
+	checked for NULL
+
+	added "register" command to NickServ to allow a user to register their own
+	nick if not previously done.
+
+	modified register_user() to allow for servers registering user accounts
+	(needed for /m NickServ register)
+
+	* TODO, init.c, list.c, list.h, server_links.c:
+	added signal handler to catch sigsegv and wipe the user/server passwords
+	from memory before dumping core when not in debug mode
+
+	* ChangeLog, README:
+	updated ChangeLog with recent entries
+
+	updated README on server connect to what this version supports
+
+	* server_connect.c:
+	removed <port> arg from server connect command.  servers will need to be
+	upgraded to interoperate with this version anyway.
+
+	* sample.servers, search.c, server_connect.c, server_links.c, server_login.c, NEWS, README, add_file.c, browse.c, config.c, configure, configure.in, filter.c, free_user.c, handler.c, init.c, login.c, main.c, manual.html, opennap.h, remove_file.c:
+	committed routing-only server patch enabled via --enable-routing
+
+2000-09-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* libpoll.c, libpoll.h:
+	New file.
+
+	* configure, configure.in, handler.c, libpoll.c, libpoll.h, main.c, opennap.h, server_connect.c, serverlib.c, Makefile.am, Makefile.in, buffer.c:
+	initial import of the libpoll patch to support select/poll and simplify
+	the main event loop
+
+2000-09-06  drscholl  <drscholl@users.sourceforge.net>
+
+	* channel.c, napster.txt, opennap.h, util.c:
+	sync_channel_bans() used the server ban numeric instead of the channel ban
+	numeric
+
+	added a few missing hex codes to napster.txt
+
+2000-09-05  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, handler.c, opennap.h, server_links.c:
+	added ping_all_servers() command (10120) to trigger the lag detection
+
+	* ChangeLog, NEWS, init.c, join.c, main.c, opennap.h, sample.servers, server_login.c:
+	more security fixes.  don't allow config file or ports to be specified on
+	the command line when running as root to prevent local users on the system
+	from attempting to exploit it.
+
+2000-09-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* join.c:
+	fixed bug in join() where cross-server joins were always considere desynced
+
+	* server_login.c:
+	fixed bad format in time_check()
+
+	* kick.c:
+	fixed bug in kick() where it could not handle kicks generated by a peer
+	server
+
+2000-09-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* sample.conf:
+	removed outdated variables from sample.conf
+
+	* config.c, configure, configure.in, init.c, main.c, manual.html, opennap.h:
+	Removed config_dir, uid and gid config variables.  For security, values
+	about the operating system should not be revelead in case a admin+ user
+	level is compromised.  The -c command line option now specifies the
+	directory where configuration files are found, rather than the master config
+	file.  uid/gid can be specified as part of the configure script (still
+	defaulting to nobody/nobody).
+
+	added --enable-chroot configure option to allow opennap to be run in a jail.
+	imediately after reading the command line arguments, opennap will chroot()
+	to the configuration directory before reading any config files.
+
+2000-09-02  drscholl  <drscholl@users.sourceforge.net>
+
+	* config.c, configure, configure.in, handler.c, init.c, main.c, opennap.h, server_login.c, synch.c, README:
+	added support for chroot()
+
+	added time_check() function to detect clock skew when linking servers.  if
+	the delta is more than Max_Time_Delta, the link will be closed.  if it is
+	more than Warn_Time_Delta, it will notify the mods but let the link
+	continue.
+
+	* manual.html, privmsg.c, sample.conf:
+	added /m chanserv level  command
+
+	removed channel_limit from sample.conf
+
+2000-09-01  drscholl  <drscholl@users.sourceforge.net>
+
+	* config.c, main.c, manual.html, opennap.h:
+	removed Channel_Limit.  its now always set to 0 by default
+
+	* channel.c, free_user.c, join.c, opennap.h, part_channel.c, serverlib.c, synch.c:
+	join() should send kick messages to servers which it detects are desynched.
+
+	fixed TS code to ignore TS==0 from a remote server when the local TS > 0.
+
+	remove .invited member from USER since it's not necessary
+
+	always attempt to remove the user from the .invited list of a channel in
+	case the channel was set -INVITE after the user was invited.
+
+	default channel limit set to 0 instead of Channel_Limit
+
+	* channel.c:
+	fixed bug in channel ban where it was impossible to ban someone
+
+	* manual.html, whois.c:
+	fixed bug in which_server() where pkt was used instead of nick when doing
+	hash_lookup()
+
+	* main.c, manual.html, privmsg.c, remove_connection.c, server_links.c:
+	updated the manual with even more information
+
+	added NickServ pseudo user and the "ghost" command
+
+2000-08-31  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, Makefile.in, announce.c, kill_user.c, login.c, main.c, napster.txt, opennap.h, remove_connection.c, search.c, server_connect.c, serverlib.c, start_opennap:
+	modified handle_io() to fill up the holes created by disconnected clients
+	in the Clients[] array.  all loops over Clients[] should now use Num_Clients
+	as the basis and there is no need to check for NULL entries any more.
+
+	added start_opennap script to facilitate backing up of gmon.out for
+	profiling.
+
+2000-08-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* whois.c:
+	which_server() should strip trailing whitespace from the nick before
+	attempting to look up the user
+
+	* search.c, server_links.c:
+	server_pong was checking the wrong arg for detecting the response to an
+	auto-sping.
+
+	* handler.c, search.c:
+	added error message to the user when a search contains no valid search terms
+
+	fixed compilation warning about min,max possibly being used uninitialized
+
+	server_pong was not put in the handler table so it was never called
+
+	* README, handler.c, opennap.h, privmsg.c, whois.c:
+	added a new command (10119) to display which server a particular user is on.
+	also accessable via /msg operserv server <user>
+
+	* search.c:
+	forgot to init .maxsize and .maxduration
+
+2000-08-29  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, channel.c, search.c:
+	added support for filtering search results by excluding certains words
+
+	added support for filtering search based upon file size or mp3 play time.
+
+	* usermode.c:
+	forgot to add "PING" user mode so users can toggle it
+
+	* README, config.c, login.c, main.c, opennap.h, search.c, server_links.c:
+	added new numeric 10022 for server->server pong response.  a 750 to a remote
+	server will return a 10022 instead of a 750.
+
+	added new config var `ping_interval' so specify how often (in seconds) the
+	server should ping its peer servers.
+
+	added new user mode +PING which controls the server lag detection
+	notifications to mods+
+
+	fixed bug in fdb_search where it would return all files which matched the
+	word with the fewest matching entries in it instead of checking for all
+	search terms.
+
+	* server_links.c:
+	changed ping_server to use the same numeric for the server response instead
+	of using send_user()
+
+2000-08-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* channel.c:
+	allow mods+ to invite without being in a channel
+
+	* channel.c:
+	the notify_ops() call was testing for the server ban instead of channel ban
+
+	* join.c:
+	server should only set a user as channel operator when a new channel is
+	created when the user is local.  otherwise it should rely on the remote
+	server to specify which user gets opped.
+
+2000-08-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	fixed bug where server->server data wasn't sent if it had all pending data
+	had been compressed the previous time, but not all sent.
+
+2000-08-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* channel.c, opennap.h, public.c, synch.c:
+	bug in channel_op when used to voice a user it set the operator bit instead.
+
+2000-08-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* napster.txt, search.c:
+	support the LOCAL_ONLY keyword in searches (same as LOCAL), as this is what
+	the official napster servers use.
+
+	* channel.c:
+	channel bans were still using the wrong numerics
+
+	* channel.c, list_channels.c, privmsg.c:
+	fixed bug when channel bans not being set
+
+	* main.c:
+	when shutting down, just close client fd's without calling remove_connection
+	to save time.
+
+2000-08-24  drscholl  <drscholl@users.sourceforge.net>
+
+	* join.c:
+	added comment about why we dont give automatic ops to users in predefined
+	channels
+
+	* channel.c:
+	fixed memory leak when unbanning from a channel. the BAN struct was never
+	free'd.
+
+	the reason string was never truncated for channel ban/unban
+
+	* channel.c, join.c, kick.c, login.c:
+	channel limit and level did not handle the case where the TS was the same,
+	but the values different
+
+	* channel.c:
+	fixed bug in channel_mode where an op could not change the mode
+
+	* channel.c, kick.c, opennap.h:
+	fixed bug where it was impossible to kick a user from a channel
+
+	* config.c:
+	server should notify mods+ when a server variable is changed
+
+	* channel.c, join.c, TODO:
+	fixed timestamp code on channel limit and mode.  timestamps were not
+	propogated for all server->server links
+
+	reworked code in channel ops/voice to avoid using goto statements.
+
+	* ban.c, channel.c, handler.c, join.c, kick.c, list_channels.c, main.c, opennap.h, part_channel.c, public.c, serverlib.c, synch.c:
+	changed model to allow the first user in a non registered channel to gain
+	ops, and to allow ops to create other ops.
+
+	beefed up channel timestamps to prevent riding netsplits to gain channel
+	privileges.
+
+2000-08-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, manual.html, motd.c, opennap.h, remove_connection.c, sample.conf, search.c, server_login.c, server_usage.c, FAQ, Makefile.am, Makefile.in, README, add_file.c, announce.c, config.c, configure, configure.in, handler.c, init.c, list.c, list.h, login.c:
+	merged the toklist branch into headrev
+
+2000-08-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* manual.html: New file.
+
+	* manual.html, config.c:
+	began working on manual.html, opennap's ref manual
+
+	* FAQ, Makefile.am, Makefile.in, login.c, main.c, motd.c, opennap.h, search.c:
+	added faq about error 10054 under windows.
+
+	number of connections to the server is now sent in the motd
+
+	* README, configure, configure.in, handler.c, init.c, login.c, main.c, opennap.h, server_usage.c:
+	added support for tracking client versions.  numeric 10118 will cause the
+	server to dump it's version/count list.  enabled with configure
+	--enable-version-stats
+
+	* README, add_file.c, opennap.h, search.c:
+	fixed memory leak when removing files from the database
+
+2000-08-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, search.c:
+	"any" was not accepted as a valid file type when issuing a search request
+
+2000-08-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	created new function handle_io() to contain the client input/output loop
+
+	* README:
+	added additional information to the README
+
+	* handler.c:
+	handle_connection() should read() from server sockets until it returns -1,
+	errno EWOULDBLOCK
+
+	* add_file.c, list.c, list.h, main.c, search.c, server_login.c:
+	created list_push() function to place a new list element at the head of a
+	list.
+
+	changed from list_append() to list_push() in many places where the order
+	doesn't count.  list traversal was eating much cpu needlessly.
+
+	collapsed the two loops over Max_Clients in main() which handle input/output
+	to clients.  given that the write phase has to wait for select() anyway,
+	there is no reason to separate the two.  should save some time in the main
+	loop.
+
+2000-08-17  drscholl  <drscholl@users.sourceforge.net>
+
+	* announce.c, ban.c, login.c:
+	connections from banned clients are now only displayed on the server to
+	which the connection was made.
+
+2000-08-16  drscholl  <drscholl@users.sourceforge.net>
+
+	* remove_connection.c, sample.conf, search.c, add_file.c, announce.c, config.c, init.c, list.c, list.h, main.c, opennap.h:
+	changed db to use list of search tokens for matching rather than string
+	comparisons
+
+2000-08-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, configure, configure.in, main.c:
+	added --enable-gprof configure option to compile with -pg
+
+	fixed compile error when free'ing Filter hash table
+
+	* announce.c, list.c, list.h:
+	announce() should check for the user's level when sending a message from a
+	cloaked user so that it shows the real nick for privileged users.
+
+	added list_foreach() function
+
+2000-08-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* NEWS, README, opennap.dsp, opennap.dsw, opennap.h, opennap.opt, ChangeLog:
+	updated win32 build files
+
+	* TODO, browse.c, resume.c:
+	fixes to compile with --enable-resume
+
+2000-08-10  drscholl  <drscholl@users.sourceforge.net>
+
+	* channel.c, synch.c:
+	when syncing bans, the server should just say that it set the ban so that
+	pop_user_server() doesnt return NULL for *sendernick.
+
+2000-08-09  drscholl  <drscholl@users.sourceforge.net>
+
+	* NEWS, sample.conf:
+	added additional information about flood control to the NEWS and sample.conf
+	files
+
+	* NEWS, TODO, config.c, handler.c, join.c, login.c, main.c, opennap.h, sample.conf, usermode.c:
+	comma (,) is no longer a valid char in nicks/channels
+
+	added server-side flood protection controlled by new config vars
+	`flood_commands' and `flood_time'.  mods+ notification is controlled by
+	usermode FLOOD.
+
+2000-08-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* change.c:
+	change_pass() now reports back success to the user
+
+	* ban.c, config.c, filter.c, login.c, main.c, opennap.h:
+	changed search token filter to be a hash table.  linked list traversal
+	consumed too much cpu time
+
+	notify_mods() call in ban() used sender instead of sendernick as as arg.
+
+	check_ban() should be called prior to eject_client() in login()
+
+	* search.c, level.c:
+	find_search() had %d instead of %s to print out the id of expired searches
+
+	* level.c:
+	level() should force an update when it detects an out of date timestamp so
+	that desyncs are corrected.
+
+	* NEWS, config.c, login.c, opennap.h, sample.conf:
+	made the ejection of nonsharing clients a boolean configuration option
+
+	* ChangeLog, Makefile.am, Makefile.in, NEWS, TODO, config.c, filter.c, handler.c, init.c, kill_user.c, main.c, opennap.h, sample.filter, search.c:
+	search token filtering is now configurable instead of hardcoded.  opennap
+	now reads the `filter' file to determine which words to ignore.
+
+	server_stats() should not use `tag' since it is called by login() with no
+	arguments.
+
+2000-08-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, Makefile.in, NEWS, browse.c, configure, configure.in, handler.c, join.c, login.c, main.c, napster.txt, opennap.h, opennap.init:
+	changed basename() to my_basename() to avoid compilation errors on some
+	systems.
+
+	look for -lz in /usr/local/lib
+
+	opennap should return message 13 when receving unknown commands prior to
+	receipt of the login (2) message.
+
+	added support for tcp_wrappers
+
+	mods+ could not bypass the strict channel join setting
+
+	opennap should send the 316 numeric prior to disconnecting clients to be
+	compatible with the napster.com servers
+
+	updated napster.txt with new information
+
+	sysv-init style script for starting opennap at boot from
+	Geoffrey Lee <snailtalk@linux-mandrake.com>
+
+2000-08-05  drscholl  <drscholl@users.sourceforge.net>
+
+	* configure, configure.in, init.c, login.c:
+	check for -lz in /usr/local/lib
+
+	cast pid_t to int in dump_pid()
+
+	added eject_client() to find a client with 0 files shared that has been
+	connected the longest and kill it.  if the server is full, login() will call
+	eject_client() to try and kill someone else to make room for the current
+	login.
+
+2000-08-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* ban.c, main.c, opennap.h, redirect.c, synch.c, README:
+	extended the ban command to accept a timeout
+
+	* Makefile.am, Makefile.in, README, handler.c, join.c, napster.txt, opennap.h, redirect.c, synch.c, whois.c:
+	added support for client redirect (821) and client cycle (822) numerics
+
+	changed set chan level to 823 to match official servers
+
+	updated napster.txt with new information obtained from release of nap source
+
+	the whowas response should have quoted the user's level similar to the whois
+	response
+
+2000-08-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* FAQ, add_file.c, handler.c, remove_file.c, synch.c:
+	added more checking to prevent a user's library size from being negative
+
+2000-07-31  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c:
+	finally found buffer overrun in add_directory().  strncpy() does not write
+	a \0 to the end of the string if all the space was used up before getting to
+	the end of the string
+
+2000-07-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, glob.c, search.c:
+	rewrote tokenize() to reduce the number of strcmp() calls when reaping bad
+	tokens.
+
+	glob_match() was not case-insensitive
+
+2000-07-29  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, config.c, main.c, opennap.h, sample.conf, server_usage.c:
+	added stats reporting for total bytes sent/received
+
+	server_usage() now reports searches/sec and total bytes in/out
+
+2000-07-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c: reverted previous changes
+
+	* add_file.c, download.c, init.c, main.c, opennap.h, remove_file.c, search.c, upload_complete.c, util.c:
+	reverted back to storing full pathnames in the DATUM struct.  it was causing
+	too much load having to regenerate the filename every time match() needed to
+	be called.
+
+	* config.c, join.c, main.c, opennap.h, search.c, server_usage.c:
+	added `search_timeout' variable to set the expiration time of remote
+	searches (default: 180 secs)
+
+	bytes in/out was not time averaged in server_usage()
+
+	* channel.c, free_user.c, login.c, main.c, opennap.h, remove_connection.c, synch.c:
+	cache the server names so that each USER struct can reference it a single
+	time instead of once for each user
+
+	* configure, configure.in:
+	fixed bug in configure which causes DEBUG to always be set
+
+	* download.c, upload_complete.c:
+	reorganized code in download() to lookup the user's file only once
+
+	* TODO, add_file.c, download.c, opennap.h, remove_file.c, search.c, upload_complete.c, util.c:
+	added more strict checking to make sure the directory name also matches when
+	looking up a file by its basename
+
+	* browse.c, download.c, opennap.h, remove_file.c, upload_complete.c, util.c, add_file.c:
+	modified hash table of user's files to index by only the pathname instead of
+	the full directory name since that is no longer available
+
+	* add_file.c, browse.c, download.c, resume.c:
+	fixed many other places where the full filename was not returned
+
+	* search.c:
+	search did not return the full pathname of the shared files
+
+	* add_file.c, browse.c, init.c, main.c, opennap.h, search.c, TODO:
+	created new hash table `Paths' for storing the directory components of
+	shared files a single time for all files in the same directory.
+
+2000-07-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* channel.c, sample.channels:
+	altered channels file so that # is no longer considered a comment in
+	`version 1' files.
+
+	* NEWS, join.c, login.c:
+	channel names must now begin with # or &.  join will automatically prepend a
+	hash (#) if missing
+
+	* configure, configure.in:
+	debugging is no longer enabled by default.  use `configure --enable-debug'
+	to turn it on
+
+	* add_file.c, main.c, opennap.h:
+	change Num_Gigs to a double.  unsigned int was running out at 4096 GB.
+
+	* Makefile.am, Makefile.in, NEWS, README, ban.c, channel.c, configure, configure.in, download.c, glob.c, join.c, list_users.c, login.c, napster.txt, opennap.h, resume.c, search.c, synch.c, upload_complete.c, util.c, whois.c:
+	imported changes from adns branch, without adns support
+
+	* NEWS, join.c:
+	fixed bug in channel rollover code causing an infinite loop
+
+2000-07-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* channel.c:
+	fixed bug which prevented registered channels from being dropped
+
+	* remove_connection.c:
+	check to make sure con->dns != 0 before calling adns_cancel()
+
+	* upload_complete.c:
+	fixed bug with downloads not working.  forgot to switch .host to .ip
+	in the download responses
+
+2000-07-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	added adns_if_noserverwarn to adns_init() to turn off warnings
+
+	* login.c, main.c:
+	login() did not convert the uint32 ip address to dot-quad before using it
+	as the host name
+
+	* server_connect.c:
+	.resolved should be set when making an outgoing server connection so the
+	connection doesnt time out waiting for a nonexistent dns lookup
+
+	* configure, configure.in:
+	configure should use `if test' rather than `if ['
+
+	* README, list_users.c, whois.c:
+	added the client ip address in dot-quad format to the end of the global user
+	list response, and the whois response
+
+	* configure, configure.in:
+	configure should look for -ladns in /usr/local/lib as well
+
+	* glob.c: New file.
+
+	* glob.c: forgot to add glob.c
+
+	* Makefile.am, Makefile.in, NEWS, ban.c, channel.c, configure, configure.in, download.c, join.c, list_users.c, login.c, main.c, napster.txt, opennap.h, remove_connection.c, resume.c, search.c, synch.c, whois.c:
+	added initial support for adns to add reverse dns lookups for client
+	connections.
+
+2000-07-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, Makefile.in, README, configure, setup.c:
+	fixed setup.c to compile under win32
+
+	updated ChangeLog with recent CVS log entries.
+
+2000-07-20  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	clone checker and max connections should only be checked for user logins,
+	not server logins.
+
+	* napster.txt:
+	updated napster.txt on the 870 (add directory) command
+
+	* add_file.c, handler.c, search.c:
+	fixed possible buffer overrun in add_directory()
+
+	fixed handle_connection() to avoid sending MSG_SERVER_USER_SHARING commands
+	after every MSG_CLIENT_ADD_DIRECTORY command.
+
+	added the server from which the command came to the log() messages generated
+	by remote_search() and remote_search_result()
+
+2000-07-16  drscholl  <drscholl@users.sourceforge.net>
+
+	* config.c, login.c, main.c, opennap.h, sample.conf:
+	added clone checking controlled by new `max_clones' config var.
+
+2000-07-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c:
+	fixed bug in new_browse() where no results would be returned in
+	max_browse_results was set to 0 (which should mean unlimited)
+
+2000-07-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, configure.in, opennap.h:
+	fixed buffer overflow in add_directory() when the directory portion of the
+	filename was >=255 chars
+
+2000-07-06  drscholl  <drscholl@users.sourceforge.net>
+
+	* server_usage.c:
+	added bytes in and bytes out to the server stats
+
+2000-07-02  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, opennap.h, privmsg.c:
+	changed rehash numeric to 10117 to avoid conflict with old server ping
+	numeric
+
+	added `rehash' to the list of operserv commands
+
+	* README, config.c, handler.c, opennap.h:
+	added rehash (10116) command to cause a server to reload it config files
+
+	* README, add_file.c, server_connect.c:
+	log message for bitrateToMask() said freqToMask
+
+	server_connect should check for missing host argument
+
+2000-06-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* muzzle.c:
+	added missing return when attempting to unmuzzle a user that isnt muzzled
+
+2000-06-29  drscholl  <drscholl@users.sourceforge.net>
+
+	* channel.c:
+	channel_voice() did not check for permission to execute the command
+
+	* browse.c, channel.c, muzzle.c, serverlib.c:
+	fixed compilation warnings about unused `len'
+
+	pop_user_server() had a bad log() message with the message tag value causing
+	a segfault
+
+	muzzle() should ensure that db is not NULL before using it
+
+2000-06-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* whois.c:
+	append_string() allocated extra space but didnt copy the data to append
+
+	* channel.c, join.c:
+	bugfixes from panasync.  join() was setting the wrong user to channel
+	operator since chanUser was reused for sending a join message to all clients
+	in the channel.
+
+	in channel_muzzle(), need to check for sender!=NULL when checking the user
+	level permission
+
+2000-06-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c, channel.c, muzzle.c, whois.c:
+	muzzled users should not be able to channel wallop
+
+2000-06-24  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, README:
+	post 0.34 release commit
+
+2000-06-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, channel.c:
+	channel_mode should not allow a user below the channel level to change
+	the mode
+
+2000-06-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, README, channel.c, handler.c, opennap.h, privmsg.c, public.c, serverlib.c, synch.c:
+	added channel voice and muzzle commands
+
+	* channel.c, join.c, opennap.h, usermode.c:
+	removed channel and topic usermode flags since they are no longer used
+
+	reworked join() to allow channel ops to bypass the +INVITE and limit checks
+
+	* channel.c, configure, configure.in, join.c, kick.c, opennap.h, topic.c:
+	updated version to 0.34
+
+	removed notify_mods() from all channel specific calls.  notify_ops() will
+	now notify mods+ in the channel.
+
+2000-06-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* napster.txt, privmsg.c:
+	added invite and mode command to chanserv
+
+	* README, browse.c, handler.c, opennap.h, whois.c:
+	added new experimental browse command (10301/10302) for more compact browse
+	listings
+
+2000-06-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, channel.c, opennap.h, synch.c, topic.c:
+	added +TOPIC channel mode to allow any user to change the topic
+
+2000-06-17  drscholl  <drscholl@users.sourceforge.net>
+
+	* channel.c:
+	invite message printed the wrong user for who issued the invite
+
+	* README, channel.c, free_user.c, handler.c, join.c, opennap.h, serverlib.c, synch.c, util.c:
+	added +INVITE channel mode
+
+	* README, channel.c, opennap.h, public.c, synch.c:
+	added +MODERATED channel mode - only ops and mods+ can speak in public
+
+	* README, channel.c, handler.c, join.c, list_channels.c, opennap.h, part_channel.c, synch.c, whois.c:
+	added channel_mode(10209) command
+
+	added +PRIVATE channel mode to make the channel not show up in the channel
+	lists or whois response
+
+2000-06-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* network.c: solaris doesnt define INADDR_NONE
+
+	* buffer.c:
+	avoid coredump in queue_data() when buffer_new() fails
+
+	* search.c, server_usage.c:
+	server stat message should use %u for the number of total kbytes
+
+	search expected "EQUALS" intead of "EQUAL TO"
+
+2000-06-14  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, channel.c, handler.c, opennap.h, privmsg.c:
+	added channel_wallop (10208) command to send a message to all mods+ and
+	channel operators for a specified channel
+
+	* config.c:
+	default max_nick_length changed to 19 since the win32 napster client can't
+	cope with anything longer than this
+
+	* userdb.c:
+	expired nicks weren't removed from User_Db until the server restarted
+
+	* login.c, userdb.c:
+	need to use strtoul() to convert ip address from string to unsigned int
+	instead of atoi()
+
+	* Makefile.am, Makefile.in, add_file.c, buffer.c, free_user.c, init.c, login.c, main.c, mempool.c, mempool.h, opennap.h, remove_connection.c, search.c, serverlib.c:
+	removed mempool code.  it turned out to be less efficient that malloc/free
+
+2000-06-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* buffer.c, login.c, server_connect.c, server_login.c, serverlib.c:
+	buffer_queue() did not set the .datasize after copying data
+
+	* buffer.c:
+	fixed buffer_queue() to handle input larger than BUFFER_SIZE bytes
+
+	* remove_connection.c:
+	fixed memory leak with free'g the input buffers for client connections
+
+	* buffer.c: fixed bug in buffer_compress()
+
+	* buffer.c, debug.c, free_user.c, init.c, login.c, main.c, mempool.c, opennap.h, remove_connection.c, serverlib.c, util.c:
+	added memory pool management for users, connections, send queue buffers
+
+	* Makefile.am, Makefile.in, add_file.c, init.c, main.c, mempool.c, mempool.h, opennap.h, search.c:
+	added initial support for memory pools
+
+2000-06-11  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, login.c:
+	servers should not issue KILL messages to the server from which a nick
+	collision occurs
+
+2000-06-10  drscholl  <drscholl@users.sourceforge.net>
+
+	* setup.c, Makefile.in, TODO, search.c:
+	rewrote search_internal() to be able to parse arbitrary length search
+	strings
+
+	setup should create files as -rw-------
+
+	* Makefile.in, TODO, configure, configure.in, free_user.c, kill_user.c, login.c, opennap.h, synch.c:
+	added .killed member to CONNECTION so that a QUIT is not issued when a local
+	user is killed (the KILL is sufficient)
+
+	consolodated the MSG_SERVER_USER_IP message into MSG_CLIENT_LOGIN so that
+	nick collision can be handled more gracefully.  This allows the server to
+	reject the newer user instead of rejecting both clients.
+
+2000-06-09  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, channel.c, configure, configure.in, muzzle.c:
+	check for -lsocket (needed for os/2)
+
+	fixed segfault in muzzle() for log message when the user is already muzzled
+	and the user is not logged in
+
+	* NEWS, README, configure, configure.in, opennap.h:
+	post 0.32 commit
+
+2000-06-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* channel.c, login.c:
+	bug in channel_op() allows any user to make themself a channel operator.
+	missing a return statement after the permission denied message
+
+	servers now synch the user level when a user logs in to ensure all servers
+	have the same settings
+
+	* Makefile.in, NEWS, README, motd.c, opennap.h, opennap.opt, setup.dsp, ChangeLog:
+	updated for 0.31 release
+
+	motd.c was missing stdlib.h for free()
+
+	updated project files for Win32 build
+
+	* server_login.c:
+	server link log messages are important after all
+
+	* kill_user.c, search.c:
+	removed log() message from kill_user().  notify_mods() is sufficient
+
+
+	removed old log() in search_callback().  problem seems to be fixed.
+
+	* server_login.c:
+	added more notify_mods() calls in server_login() indicating server link
+	failures
+
+2000-06-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* motd.c:
+	the motd file is now loaded into memory once at startup to reduce the
+	overhead of fileio every time a user logs in
+
+2000-06-06  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c:
+	removed log message for bitrate test since it seems to be working
+
+	* search.c:
+	added a log() message to search_callback() to print why the minbitrate test
+	fails for a search to track down the problem we have seen
+
+	* list_users.c:
+	added new flags to global_user_list():
+		z	muzzled users
+		c	cloaked users
+
+	* ban.c, login.c, main.c, opennap.h, util.c:
+	moved check for ip bans to login() so that the user name can be printed in
+	the mod notification
+
+	fixed ban save/load to store all bans in the long format.  bans are now
+	restored to the same order they were dumped, so that the older bans are last
+
+	* search.c:
+	max linespeed and frequency checked for "at most" when the correct string is
+	"at best"
+
+2000-06-05  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c:
+	"at most" qualifiers were not passed to peer servers properly
+
+	* tresolv.c, tresolv.h, whois.c, Makefile.am, Makefile.in, configure, configure.in, main.c:
+	removed tresolv code since it wont work effectively
+
+2000-06-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c:
+	bitrate/samplerate search criteria weren't using BitRate and SampleRate
+
+	* configure, free_user.c, login.c, opennap.h, serverlib.c, whois.c:
+	initial changes to integrate support for dns names in opennap
+
+	* configure, configure.in, whois.c:
+	changed whois to report the dns name for local users
+
+	* Makefile.am, Makefile.in, ban.c, configure, configure.in, main.c, tresolv.c, tresolv.h:
+	added threaded dns lookup routines
+
+2000-06-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, configure, configure.in, privmsg.c:
+	changed server link documentation in README to only describe the method of
+	putting both passwords in the file
+
+	added op and deop commands to chanserv.  removed help for these items in
+	operserv.
+
+	* config.c:
+	allow mods+ to query config variables but not set them
+
+	* main.c, server_connect.c:
+	added notify_mods() to report server link failures
+
+	* search.c:
+	added "mp3z" to the list of tokens to ignore in filenames
+
+	* change.c, handler.c, opennap.h:
+	accept the change_email command even if its not supported
+
+	* login.c:
+	removed extraneous log messages from login()
+
+	added notify_mods() message to register_user()
+
+	* add_file.c, remove_file.c:
+	removed log message from remove_file() when the file requested is not shared
+
+	removed log message from add_file() for duplicates
+
+	instead of calling strlen() just calculate the difference between av[0] and
+	av[1] to detect long filenames in add_file/share_file
+
+	* main.c, server_usage.c:
+	added number of registered users to the server stats command
+
+	* add_file.c, config.c, init.c, main.c, motd.c, opennap.h, search.c:
+	motd is now only fopen'd once since it gets used all the time.
+
+	* ChangeLog, Makefile.am, Makefile.in, ban.c, configure, configure.in, kick.c, level.c, login.c, napster.txt, opennap.h, sample.conf:
+	fixed core in level().  user might be NULL so don't operate on it.
+
+	* config.c:
+	changed nick_expire to 31 days by default
+
+	* announce.c, buffer.c, handler.c, search.c:
+	removed several unnecessary log entries
+
+	error message from read() and write() should include the host for which the
+	error occured for better debugging
+
+2000-06-02  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, change.c, join.c, level.c, login.c, muzzle.c, opennap.h, synch.c, userdb.c:
+	added timestamps to the channel modes on synch
+
+	changed the .created member of USERDB to be .timestamp.  This field is now
+	used to keep track of when the entry was last modified so it can be used to
+	synch servers better.
+
+	fixed synch of cloak status.  added ability to absolutely turn cloak on in a
+	server->server message
+
+	rewrote level() to be much cleaner
+
+	muzzle status was not correctly restored from the users file upon startup
+
+	new function create_db() created a USERDB struct based on a USER struct to
+	avoid duplicate code in level() and muzzle()
+
+	* channel.c, handler.c, join.c, level.c, opennap.h, privmsg.c, synch.c, README:
+	added timestamp to channels so that servers can sync the level and limit
+	properly
+
+	added drop channel (10207) command to turn a persistent channel into a
+	normal channel
+
+	* TODO, add_file.c:
+	prevent refcount overflow by discarding tokens in excess of 30
+
+2000-06-01  drscholl  <drscholl@users.sourceforge.net>
+
+	* hotlist.c:
+	only send the notice about the hotlist limit once to avoid flooding the
+	client
+
+	* main.c:
+	added dump_state() to dump all state info (users/channels/bans) to disk
+	on a periodic basis.
+
+	* add_file.c:
+	freqToMask() and bitrateToMask() now display the user and client info in
+	their error messages for debugging
+
+	* change.c, configure, configure.in, handler.c, level.c, login.c, muzzle.c, opennap.h, userdb.c, whois.c:
+	support for keeping client email address is now turned off by default.
+	added --enable-email configure option to turn it back on
+
+	* add_file.c, config.c, main.c, opennap.h:
+	added max_path variable to limit the length of a filename to the add_file()
+	command (default: 256)
+
+	* add_file.c:
+	add-directory() should process the rest of the line when it detects a
+	duplicate rather than aborting
+
+	* add_file.c, browse.c:
+	the browse result didnt use BitRate and SampleRate to get the real values
+
+	* add_file.c, browse.c, opennap.h, search.c:
+	compacted the DATUM struct since the bitrate and samplerate can only have a
+	few defined values
+
+	->hash member of DATUM should not be present when resume is disabled.
+
+	* login.c, opennap.h:
+	dont need the ->hash member of DATUM struct when compiling without resume
+	support
+
+	changed kill message for ghosts in login()  to include the name of the
+	server where the ghost is connected
+
+	* login.c: ghost code was still buggy
+
+	* login.c:
+	fixed broken ghost code which caused a server core
+
+	* synch.c:
+	syncing the chanops didnt including the :sender parameter
+
+	* channel.c, login.c, remove_connection.c:
+	fixed login() to allow the ghost detection to proceed with the login without
+	killing both connections
+
+2000-05-31  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, README:
+	updated files for 0.30 release
+
+	* announce.c, login.c:
+	announce() should use Operator as the nick when the user is cloaked
+
+	invalid_nick() should not allow `operator'
+
+	* login.c:
+	forgot to issue a KILL when terminating a ghost
+
+	* login.c, napster.txt:
+	server will now terminate old connections if a client logs in from the same
+	ip for the same nick.  this allows clients to kill their own ghosts.
+
+	* ban.c, browse.c, change.c, channel.c, hotlist.c, join.c, level.c, login.c, opennap.h, privmsg.c, sample.conf, serverlib.c:
+	added generic invalid_nick_msg() function
+
+	* ban.c, change.c, config.c, kick.c, kill_user.c, main.c, muzzle.c, opennap.h, serverlib.c:
+	added max_reason configuration variable to limit the size of the reason
+	strings in the muzzle/kick/kill messages
+
+	* FAQ, config.c, list_users.c, part.c, public.c:
+	re-added the form_message() calls for public() and emote()
+
+	* config.c, configure, configure.in, login.c, main.c, napster.txt, opennap.h, sample.conf, topic.c:
+	added max_client_string config variable to limit the length of the client
+	version string in the login command
+
+	strlen() returns ssize_t so have to cast the Max_* to unsigned to avoid
+	compiler warnings
+
+	* Makefile.in, ban.c, config.c, download.c, hotlist.c, main.c, muzzle.c, opennap.h, privmsg.c, sample.conf, topic.c:
+	added max_ignore config var to limit user lists
+
+	added max_hotlist config var to limit user lists
+
+	added max_topic config var to limit channel topics
+
+	more fixes to detect invalid nicknames before they are used
+
+	* hotlist.c:
+	dont allow invalid nicks to be added to the hotlist
+
+	* login.c:
+	fixed bug in register_user() where the number of args was not checked
+
+	fixed bug in register_user() where an invalid nick could be registered
+
+	fixed bug in register_nick() where invalid nick was not checked for
+
+	* add_file.c, ban.c, browse.c, buffer.c, change.c, channel.c, client_quit.c, config.c, debug.c, download.c, getopt.c, handler.c, hash.c, hotlist.c, join.c, kick.c, kill_user.c, level.c, list.c, list_users.c, login.c, main.c, md5.c, metaserver.c, motd.c, muzzle.c, network.c, opennap.h, part.c, part_channel.c, patchnap.c, ping.c, privmsg.c, public.c, remove_connection.c, remove_file.c, resume.c, search.c, server_connect.c, server_links.c, server_login.c, serverlib.c, spyserv.c, synch.c, timer.c, topic.c, upload_complete.c, userdb.c, usermode.c, whois.c:
+	more checks to make sure that invalid channels and nicks are not passed back
+	to the client or to other servers
+
+	* change.c, download.c, kick.c, kill_user.c, opennap.h, privmsg.c, serverlib.c, whois.c:
+	modified nosuchuser() not to take the nick as an argument to prevent buffer
+	overflows
+
+	* config.c, configure, configure.in, join.c, kick.c, list_users.c, main.c, opennap.h, part.c, public.c, serverlib.c, topic.c, ChangeLog, NEWS, channel.c:
+	added exhaustive checks to make sure the channel name is valid in all
+	commands
+
+	* Makefile.in, buffer.c:
+	fixed buffer overflow when output to the client is larger than 1024 bytes in
+	one command
+
+	* ChangeLog, NEWS, main.c:
+	updated ChangeLog and NEWS for 0.28 release
+
+	schedule dump_channels() to happen at the user_db_interval
+
+2000-05-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* opennap.dsp, opennap.h, opennap.opt, remove_connection.c, sample.channels, server_login.c, topic.c, Makefile.in, README, buffer.c, config.c, configure, configure.in, handler.c, main.c:
+	zlib is now a requirement to compile.  removed all HAVE_LIBZ conditional
+	code.
+
+	fixed bug in topic() which caused a buffer overrun in the new code to change
+	\r and \n to space
+
+	* topic.c:
+	convert \r and \n in channel topics to space chars to avoid problems when
+	writing out the channels file
+
+2000-05-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, add_file.c, download.c, upload_complete.c:
+	if resume support is disabled, dont store the md5 hash value and just return
+	a bogus zero value wherever it is called for
+
+2000-05-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, channel.c, main.c, opennap.h, part_channel.c, privmsg.c, synch.c:
+	added missing headers for clean compile with debug turned off
+
+	channel ops can now be specified in the `channels' file.
+
+	the channels file is now written out when opennap exits
+
+	* ban.c, network.c:
+	use nlogerr() in bind_interface()
+
+	* server_connect.c:
+	complete_connect() should abort if con->destroy is already set because the
+	error will have been cleared and check_status() will report no error
+
+2000-05-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* network.c:
+	use inet_addr() to detect dot-quad format hostnames since gethostbyname() is
+	unreliable under win95
+
+	* README, channel.c, configure, configure.in, handler.c, join.c, kick.c, list_users.c, login.c, main.c, napster.txt, opennap.h, part_channel.c, privmsg.c, public.c, serverlib.c, synch.c, topic.c:
+	added support for channel operators
+
+2000-05-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* buffer.c:
+	fixed crash when opennap is compiled with zlib and linking to a server with
+	compression turned off
+
+	* ChangeLog, NEWS, ban.c:
+	fixed spelling error of Connection in ban.c
+
+	updated ChangeLog
+
+	* config.c, privmsg.c:
+	fixes to compile cleanly with debugging off
+
+2000-05-24  drscholl  <drscholl@users.sourceforge.net>
+
+	* napster.txt:
+	updated spec wrt to the login messages
+
+	* README, TODO, handler.c, opennap.h, usermode.c:
+	changed user_mode() to user_mode_cmd() to avoid conflict with the
+	user_mode macro defined in <asm/ptrace.h> under Linux.  This was causing
+	problems under LinuxPPC.
+
+	* list_users.c:
+	allow * to be specified for the server in global_user_list() to match users
+	on all servers (for use with the optional flags)
+
+	* Makefile.am, Makefile.in, buffer.c, config.c, handler.c, init.c, list_users.c, main.c, network.c, opennap.h, remove_connection.c, server_login.c:
+	added `l' flag to global_user_list() to match leeches
+
+	rewrote global_user_list_cb() because it did not work for multiple flags
+
+	fixed connect() failure under win32 (linking now works!)
+
+	fixed to bypass calls to zlib when the compression level is 0 since the
+	windows version is not complied with zlib at all.
+
+	* Makefile.am, Makefile.in:
+	fixed makefile.am to add logchk and remove README.WIN32 and README.UNIX
+
+	* logchk: added logchk script
+
+	* README.WIN32, TODO:
+	removed README.WIN32
+
+	MISSING LOG ENTRIES:
+
+	fixed bug in public() where the server should not use `tag' to send the
+	message to the cl ients since the server uses 403 instead of 402
+
+	added napchk script from wolf
+
+	added -b command line option to run opennap in the background.
+	$config_dir/log is opened as stdout to catch output from the process.
+
+	the pid is now stored in $config_dir/pid when opennap starts up to
+	facilitate external scripts to restart it when it dies
+
+	configure now checks for mlockall()
+
+	split Win32 and Unix installation notes into separate files for clarity
+
+	updated TODO file
+
+	the global MD5 hash table should not be compiled in when RESUME is
+	undefined, and the garbage collection should not be scheduled (was causing a
+	crash in the win32 build)
+
+	ignore search matches when both parties are firewalled
+
+	added README.WIN32 and README.UNIX to EXTRA_DIST
+
+	check for valid (>0) file size when adding files
+
+	privileged users should see who send publics and emotes even when other
+	users are cloaked.
+
+	Current_Time needs to be set in mkpass.c prior to calling init_random()
+
+	corrected mispelling of 'Foreward' in napster.txt
+
+	* join.c, login.c:
+	added $ to the list of characters not allowed in nick or channel names.
+	many clients use this character to denote a variable
+
+	* README.WIN32, init.c:
+	need <limits.h> for _POSIX_PATH_MAX
+
+	* README, README.UNIX, README.WIN32:
+	rewrote installation instructions to reflect the new setup utility
+
+	* Makefile.am, Makefile.in, opennap.dsw, opennap.opt, setup.c, setup.dsp:
+	added setup utility
+
+2000-05-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, NEWS, public.c:
+	fixed bug in public() where the server should not use `tag' to send the
+	message to the cl ients since the server uses 403 instead of 402
+
+	MISSING LOG ENTRIES:
+
+	added napchk script from wolf
+
+	added -b command line option to run opennap in the background.
+	$config_dir/log is opened as stdout to catch output from the process.
+
+	the pid is now stored in $config_dir/pid when opennap starts up to
+	facilitate external scripts to restart it when it dies
+
+	configure now checks for mlockall()
+
+	split Win32 and Unix installation notes into separate files for clarity
+
+	updated TODO file
+
+	the global MD5 hash table should not be compiled in when RESUME is
+	undefined, and the garbage collection should not be scheduled (was causing a
+	crash in the win32 build)
+
+	ignore search matches when both parties are firewalled
+
+	added README.WIN32 and README.UNIX to EXTRA_DIST
+
+	check for valid (>0) file size when adding files
+
+	privileged users should see who send publics and emotes even when other
+	users are cloaked.
+
+	Current_Time needs to be set in mkpass.c prior to calling init_random()
+
+	corrected mispelling of 'Foreward' in napster.txt
+
+	* Makefile.am, napchk:
+	added napchk script from wolf
+
+	MISSING LOG ENTRIES:
+
+	added -b command line option to run opennap in the background.
+	$config_dir/log is opened as stdout to catch output from the process.
+
+	the pid is now stored in $config_dir/pid when opennap starts up to
+	facilitate external scripts to restart it when it dies
+
+	configure now checks for mlockall()
+
+	split Win32 and Unix installation notes into separate files for clarity
+
+	updated TODO file
+
+	the global MD5 hash table should not be compiled in when RESUME is
+	undefined, and the garbage collection should not be scheduled (was causing a
+	crash in the win32 build)
+
+	ignore search matches when both parties are firewalled
+
+	added README.WIN32 and README.UNIX to EXTRA_DIST
+
+	check for valid (>0) file size when adding files
+
+	privileged users should see who send publics and emotes even when other
+	users are cloaked.
+
+	Current_Time needs to be set in mkpass.c prior to calling init_random()
+
+	corrected mispelling of 'Foreward' in napster.txt
+
+	* login.c:
+	fixed bug in login.c where it should have tested for
+	MSG_CLIENT_LOGIN_REGISTER instead of MSG_CLIENT_REGISTER.  this was causing
+	automatic registration of all users who weren't already registered.
+
+	* Makefile.am, Makefile.in:
+	added README.WIN32 and README.UNIX to EXTRA_DIST
+
+	* Makefile.in, list_users.c, opennap.h, whois.c:
+	added support for the global user list (831) command
+
+2000-05-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* sample.conf:
+	updated sample configuration file with new `server_ports' variable
+
+	* config.c, configure, configure.in, main.c, network.c, opennap.h, resume.c:
+	support for resume is now turned off by default, use configure
+	--enable-resume to turn it back on
+
+	added support for a list type configuration variable
+
+	boolean config vars could not be set by default or reset via the client
+
+	removed server_port configuration variable
+
+	created new list configuration variable `server_ports' which contains a
+	space separated list of ports to listen on for incoming connections
+
+	* server_connect.c, serverlib.c:
+	need to check for null return from next_arg() in kill_server() to prevent
+	segfault
+
+	* add_file.c:
+	check for valid (>0) file size when adding files
+
+	* public.c:
+	privileged users should see who send publics and emotes even when other
+	users are cloaked.
+
+2000-05-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* public.c:
+	fixed problem with emote() not working over server links
+
+	* init.c, main.c:
+	fixes to compile under os/2
+
+	* README, README.UNIX, README.WIN32:
+	split Win32 and Unix installation notes into separate files for clarity
+
+	* README, mkpass.c, napster.txt:
+	Current_Time needs to be set in mkpass.c prior to calling init_random()
+
+	corrected mispelling of 'Foreward' in napster.txt
+
+2000-05-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, util.c:
+	print_args() should not print to stderr so that when in background mode it
+	will get saved in the log file
+
+	* Makefile.in, config.c, configure, configure.in, init.c, main.c, opennap.h, util.c:
+	added -b command line option to run opennap in the background.
+	$config_dir/log is opened as stdout to catch output from the process.
+
+	the pid is now stored in $config_dir/pid when opennap starts up to
+	facilitate external scripts to restart it when it dies
+
+	configure now checks for mlockall()
+
+2000-05-18  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, main.c:
+	updated TODO file
+
+	the global MD5 hash table should not be compiled in when RESUME is
+	undefined, and the garbage collection should not be scheduled (was causing a
+	crash in the win32 build)
+
+	* search.c:
+	ignore search matches when both parties are firewalled
+
+2000-05-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, README, login.c, opennap.dsp, opennap.h, opennap.opt:
+	updated build for Win32 platforms
+
+	* Makefile.in, kick.c:
+	the reason in clear_channel() is not quoted from the client, so use
+	next_arg() instead of split_line() to parse the input
+
+2000-05-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* configure.in, init.c, join.c, login.c, main.c, opennap.h, resume.c, sample.conf, Makefile.in, README, add_file.c, config.c, configure:
+	added --disable-resume to turn off server support for resume searching
+
+	added `lock_memory' configuration variable to prevent the process from being
+	swapped
+
+	added `registered_only' configuration variable to only allow registered
+	users to log in
+
+	added `auto_register' configuration variable to automatically register users
+	upon login
+
+2000-05-09  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, config.c, handler.c, opennap.h, privmsg.c, util.c:
+	added command 870 for new share file supported in beta6
+
+	next_arg() now handles quoted parameters
+
+	* server_login.c:
+	get_server_pass() should return `server_password' if no local password is
+	specified
+
+	* ChangeLog:
+	updated the ChangeLog file with recent modifications.
+
+	failed log message from the previous commit:
+
+	modified get_server_pass() to optionally return the local password to use
+	(if specified in the config file) to avoid parsing the file twice.
+
+	* server_login.c:
+	modified get_server_pass() to optionally return the local password to use
+	(if specified in the config file) to avoid parsing the file twice.
+
+	* Makefile.am, Makefile.in, README, server_login.c, textdb.c, textdb.h:
+	rewrote get_server_pass() to use its own simple parsing routine to fetch the
+	password instead of using the textdb_*() functions.
+
+	added support for using different server passwords with each linked server
+	rather than always using the value of `server_password'.  if a local
+	password is specified in the `servers' it will override the default
+	password.
+
+	* napster.txt, opennap.h, privmsg.c:
+	added missing 325 server response when the user to ignore is already ignored
+
+2000-05-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* handler.c, kick.c, napster.txt, network.c, opennap.h, privmsg.c, server_links.c:
+	added entries for the server-side ignore list to the handler array.
+
+	update napster.txt with the numerics for server-side ignore
+
+	kick() should call notify_mods() prior to part_channel() in case the channel
+	is destroyed by kicking the last user out (Greg Prosser
+	<greg@snickers.org>).
+
+	set_limit() should just warn if FD_SETSIZE is smaller than the set hard
+	limit for max file descriptors.
+
+2000-05-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, change.c, download.c, hotlist.c, join.c, opennap.h, part.c, part_channel.c, ping.c, privmsg.c, public.c, remove_connection.c, serverlib.c, usermode.c, util.c:
+	added server-side ignore/unignore functionality.  this is not able to be
+	called by the user yet since the numerics are unknown
+
+	changed join/part to show the joins/parts to privileged users regardless of
+	the cloak status
+
+	added CLOAK usermode to en/disable the server notifications
+
+	* handler.c, init.c, join.c, login.c, main.c, napster.txt, opennap.h, part.c, public.c, util.c:
+	increased hash table size to 521 for users and hotlist for better
+	performance with many users
+
+	public() and emote() now find the channel by looking through the users
+	joined channel list with find_channel() instead of calling hash_lookup()
+
+	removed many extraneous log() messages about command parsing errors
+
+	switched to using ISUSER(user->con) instead of testing user->local
+
+	* hash.c, sample.conf:
+	replace hash function with the `ElfHash' used in the ELF loader since it
+	produces MANY less collisions
+
+2000-04-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, handler.c, opennap.h, server_links.c:
+	changed numeric for server ping to 750 to match the official servers
+
+	* change.c, level.c:
+	setlinespeed didn't actually change the user's speed in the USER struct
+
+	* login.c: exempt mods+ from server bans
+
+	* Makefile.am, Makefile.in, TODO, change.c, handler.c, muzzle.c, napster.txt, opennap.h, unmuzzle.c:
+	consolodated the muzzle/unmuzzle code into one function
+
+	extended muzzle/unmuzzle to allow change for a registered user that is not
+	currently logged in
+
+2000-04-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog:
+	updated ChangeLog with recent activity
+
+	missing log entries from last commit:
+
+	* change.c, join.c, public.c, whois.c:
+	publics and emotes should not be cloaked when the channel level is mod+
+
+	whois should show Cloaked state for privileged users
+
+	whois should hide channel membership for nonprivileged users when they
+	perform a whois on a cloaked user
+
+	added a period at the end of the notification of cloak status.
+
+	* change.c, level.c, login.c, muzzle.c, opennap.h, unmuzzle.c, userdb.c:
+	changed muzzle field in USERDB to flags and use the ON_* bitmasks instead
+	of individual fields.
+
+	cloak state is now saved in the userdb and restored when the user logs back
+	in.
+
+	* README, handler.c, opennap.h, server_links.c:
+	added ping_server() command (10116)
+
+2000-04-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, privmsg.c:
+	added cloak to the list of operserv commands
+
+	* Makefile.in, change.c, kick.c, kill_user.c, list_users.c, muzzle.c, opennap.h, serverlib.c, unmuzzle.c:
+	kill, muzzle, unmuzzle and kick should not display the issuer's nick if they
+	are cloaked
+
+	cloak() should call notify_mods()
+
+	* README, TODO, browse.c, change.c, channel.c, handler.c, join.c, muzzle.c, napster.txt, opennap.h, part_channel.c, patchnap.c, privmsg.c, public.c, whois.c:
+	updated napster.txt with new findings from the linux nap v1.0 beta
+
+	changed numeric for the kick command to 829, per nap v1.0 beta
+
+	changed numerics for channel ban, unban and list per nap v1.0 beta
+
+	renamed chanban, chanunban, chanbanlist operserv commands to cban, cunban
+	and cbanlist.
+
+	added cbanclear to operserv commands
+
+	added the clear channel ban list command (424)
+
+	added the cloak user command (625).  for cloaked users, parts/joins are not
+	sent and public messages show up as being from `Operator' instead of the
+	real nick that sent it.
+
+	added stub routine for global user list.
+
+	updated patchnap.c for linux nap v1.0 beta
+
+	* FAQ, README, privmsg.c:
+	added chanban and chanunban commands to operserv
+
+	added FAQ about max_browse_result/client_queue_length
+
+	* Makefile.in, channel.c:
+	fixed channel ban notify_mods() messages which were missing channel names
+
+	* README, ban.c, channel.c, configure, configure.in, handler.c, join.c, opennap.h, serverlib.c, util.c:
+	added first cut at channel bans
+
+2000-04-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, login.c, muzzle.c:
+	changed notification messages in login() wrt restoring muzzled state to
+	match those in the muzzle() command.
+
+	fixed muzzle() to allow for automatic server muzzling by avoiding a call to
+	pop_user(), which assumes a real user issued the command
+
+	* napster.txt:
+	updated protocol spec with additional info from Thomas van der Heijden
+	<thom@bart.nl>
+
+	* whois.c:
+	consolodated the whois response formation instead of separate commands for
+	each case.  now normal users can see whether another user is muzzled
+
+	* login.c, muzzle.c, opennap.h, unmuzzle.c, userdb.c:
+	muzzle status is now saved in the user db so that it gets restored when the
+	user logs in again
+
+	* mkpass.c, opennap.h, usermode.c, util.c, Makefile.in, announce.c, configure, configure.in, handler.c, init.c, main.c:
+	added WALLOP user mode to disable wallops
+
+	use srand() and rand() to generate random numbers instead of hashing input
+	data with md5.  the md5 code seems to generate lots of unaligned memory
+	accesses on alpha, and it really isnt critical to have cryptographic quality
+	random numbers.  it should also reduce the cpu usage since it no longer has
+	to hash all input.
+
+	* join.c:
+	added support for automatic creation of rollover channels for predefined
+	channels
+
+	* login.c:
+	check for get_level() == -1 in reginfo()
+
+2000-04-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, opennap.h:
+	Num_Gigs should be unsigned int to prevent a negative count when going about
+	2TB library size.
+
+2000-04-24  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, userdb.c:
+	check for valid level when reading the userdb from disk
+
+2000-04-20  drscholl  <drscholl@users.sourceforge.net>
+
+	* ban.c, synch.c:
+	fixed loading and saving of bans to get the correct ban type
+
+2000-04-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, opennap.dsp, opennap.opt:
+	updated win32 projects files for 0.25
+
+2000-04-18  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, Makefile.am:
+	post 0.25 release commit
+
+	forgot to add sample.channels to EXTRA_DIST in Makefile.am
+
+	* NEWS, README, TODO, configure, sample.conf:
+	final changes for 0.25 release
+
+	* ChangeLog, channel.c, configure.in, login.c, opennap.h, sample.channels, search.c:
+	added "live" to the list of words to ignore in searches
+
+	restored full ChangeLog
+
+	updated version to 0.25
+
+	allow the channels file to contain blank lines
+
+2000-04-17  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, ban.c, sample.conf:
+	fixed ban() not to check for permission from commands received from other
+	servers so that syncing will work properly
+
+	removed old entries from sample.conf
+
+	* muzzle.c, napster.txt, sample.channels, search.c, server_login.c, unmuzzle.c:
+	muzzle() should error if user is already muzzled
+
+	unmuzzle() should error if user is not muzzled
+
+	updated napster.txt to reflect the new use of 401 (part)
+
+	added "f" to the list of words to ignore in searches
+
+	avoid infinite loop in mark_links() by checking for a link already marked
+	before recursing on it
+
+	added sample.channels file
+
+2000-04-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, Makefile.in, ban.c, channel.c, config.c, init.c, main.c, motd.c, opennap.h, part_channel.c, sample.conf, server_login.c, userdb.c:
+	added `channels' config file to predefine persistent channels
+
+	removed user_db_path, server_db_path and motd_path config variables.
+
+	added config_dir variable to control where opennap should look for the
+	users, servers, motd, bans and channels files
+
+	* Makefile.in, login.c:
+	fixed bug in bad password error message which caused a crash
+
+2000-04-14  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am:
+	added usermode.c to compile list
+
+	* ChangeLog:
+	updated ChangeLog with recent entries
+
+	* level.c:
+	allow users to demote their user level again
+
+	* level.c:
+	fixed bug in new level() code where an elite could not set another elite to
+	a lower level
+
+	* search.c:
+	added "downloads" to the list of words to ignore on searches
+
+2000-04-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, announce.c, ban.c, handler.c, login.c, opennap.h, util.c:
+	added remote_notify_mods() command to allow a server to broadcast a message
+	to remote mods
+
+	server will no longer delink when a bad command is received.
+
+	user and host ban messages are now sent to all mods on all servers
+
+	all mods+ are notified when a user fails to log in as a privileged user
+
+	* join.c, level.c, login.c:
+	don't allow % in either nicknames or channel names for safety
+
+	fixed bug in format for log() message in channel_level() when a user tries
+	to set a channel to a level above their own
+
+	fixed bug in level() where the notification about the level change was sent
+	to the user who issued the change instead of the target user
+
+	* config.c, login.c, main.c, opennap.h, userdb.c:
+	removed Check_Expire global variable
+
+	added nick expiration to dump_userdb()
+
+	* ban.c, level.c, main.c, search.c:
+	allow the setuserlevel command to work when the user is registered but not
+	logged in
+
+	set SO_REUSEADDR on the stats port
+
+2000-04-12  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c: added additional debugging checks
+
+	* remove_connection.c, whois.c:
+	hash_free() was not called to free a local user's list of files
+
+	* kick.c, napster.txt:
+	clear_channel() needs to be careful about walking the list of users in a
+	channel since the call to part_channel() could free the current list pointer
+
+	* config.c, handler.c, main.c, opennap.h, sample.conf, util.c:
+	added max_command_length config var to control the max allowed length of a
+	client command
+
+	* ban.c, login.c, muzzle.c, unmuzzle.c, whois.c:
+	unban had a bug where it would tell you the ban was not found even if it
+	was.
+
+	muzzle and unmuzzle should optionally take a reason argument.
+
+	whois should display Muzzled instead of Active for muzzled users
+
+	* config.c, remove_connection.c, sample.conf:
+	no need to null out the uopt->files member in remove_connection()
+
+	changed default value of collect_interval to 300
+
+	added max_browse_result to sample.conf
+
+2000-04-11  drscholl  <drscholl@users.sourceforge.net>
+
+	* change.c, login.c, search.c:
+	the reason for a nuke is not required
+
+	added 'home' to the list of words to ignore in searches
+
+	* opennap.h, remove_file.c, serverlib.c, topic.c, upload_complete.c, userdb.c, usermode.c, whois.c, add_file.c, browse.c, change.c, download.c, free_user.c, level.c, login.c:
+	moved the list of shared files into the USEROPT struct since it only needs
+	to be present for locally connected users
+
+	change_pass(), alter_pass() and nuke() should releay the command to other
+	servers before checking if the account is locally registered, since the
+	userdb may not be entirely replicated
+
+	userdb_dump() sould unlink() User_Db_Path before calling rename() since it
+	causes an error under win32
+
+	notify_mods() is called with new usermode TOPIC when a topic of a channel
+	has been changed
+
+	compacted whois() to use the same snprintf() call for level>=moderator
+
+	* change.c, level.c, login.c, serverlib.c, usermode.c:
+	change_pass() and change_email() need to check for bad user input
+
+	added include files to prevent compiler warnings
+
+	* login.c:
+	register_user() did not call generate_pass() to generate the md5 password
+
+	* change.c:
+	alter password command was sending the md5-hashed password instead of the
+	raw password
+
+	* usermode.c:
+	usermode.c needs stdio.h for snprintf()
+
+	* handler.c, resume.c, search.c:
+	removed extraneous log messages
+
+	ignore the word "download" in searches
+
+2000-04-10  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c:
+	added "download" to the list of words to ignore when searching
+
+	* search.c:
+	added new words to ignore in the search table: scour, media, agent, on,
+	stuff
+
+	* usermode.c:
+	adding missing PORT string in User_Modes
+
+	initial mode should be set from current user mode in user_mode()
+
+	* kick.c, usermode.c:
+	fixed compilation warnings for usermode code
+
+	* usermode.c:
+	added new function handler user_mode()
+
+	* Makefile.in, ban.c, change.c, download.c, handler.c, hotlist.c, join.c, kick.c, kill_user.c, level.c, login.c, muzzle.c, opennap.h, privmsg.c, remove_connection.c, server_connect.c, server_login.c, serverlib.c, unmuzzle.c:
+	patch from colten edwards to allow ircd-like user levels to enable or
+	disable many server messages to privileged users
+
+	* ChangeLog, NEWS, sample.conf, sample.users:
+	final updates for 0.24 release
+
+	* README, add_file.c, search.c:
+	ignore "2" in filenames since it is a frequent occurance
+
+	* free_user.c:
+	update the last seen time for registered nicks when a user logs off
+
+	* login.c:
+	server should send a KILL when it detects a remote user with an invalid
+	nick
+
+	* change.c, serverlib.c:
+	change_email() did not prefix the server->server messgae with the nick of
+	the user who issued the command
+
+	nosuchchannel() and unparsable() now check for ISUSER() to avoid the need to
+	check every time those functions need to be called
+
+	* change.c:
+	the server-server message for change_pass() did not contain the user who
+	changed the password
+
+2000-04-09  drscholl  <drscholl@users.sourceforge.net>
+
+	* handler.c, join.c, kick.c, opennap.h:
+	added the clear channel (820) command
+
+2000-04-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* handler.c:
+	handle_connection() should send the USER_SHARING message prior to execution
+	of the callback so that the proper information is sent to users when the
+	user joins a channel for the first time.
+
+	* free_user.c, handler.c, init.c:
+	Local_Files was not decremented in free_user()
+
+	added sig handler to call md_cleanup() on SIGUSR1
+
+	* main.c, server_connect.c:
+	fixed core in update_stats() on new log message for number of local files
+
+	login timer was not set on server connections
+
+	* README, handler.c, privmsg.c:
+	added the config and reconfig commands to OperServ
+
+	updated comment above the share/unshare termination detection to indicate
+	that if a user does not issue any more commands after sharing/unsharing,
+	the information will not get passed to the peer servers
+
+	* add_file.c, handler.c, opennap.h, remove_file.c:
+	add_file()/remove_file() now set a flag in the USER struct.
+	handle_connection() then checks for the end of the share/unshare messags
+	from the client by checking for a command other than share/unshare and
+	passes the final results to the peer servers
+
+2000-04-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, main.c, opennap.h, remove_file.c, resume.c:
+	server now keeps track of how many files are available from local users
+	and displays this info in update_stats()
+
+	removed prototypes for outdated functions from opennap.h
+
+	* add_file.c, join.c, kick.c, login.c, main.c, muzzle.c, napster.txt, opennap.h, remove_file.c, serverlib.c, synch.c:
+	created new util functions nosuchchannel() and unparsable()
+
+	the optional reason in the muzzle command should be quoted if present
+
+	the optional reason in the kick command should be quoted if present
+
+	channel_limit() now only checks for privilege for local users so that the
+	limits can be synced by servers when linking
+
+	* README, userdb.c, util.c:
+	updated installation instructions
+
+	userdb_init() should only rewind() if the first line doesn't contain the
+	version information
+
+	log() no longer prefixes messages with `opennap: '
+
+	* Makefile.am, Makefile.in, buffer.c, handler.c, main.c, mkpass.c, mkpass.dsp, network.c, opennap.dsp, opennap.dsw, opennap.h, opennap.opt, opennap.plg, serverlib.c, snprintf.c, util.c:
+	added mkpass project to win32 workspace
+
+	created new macro N_ERRNO to be used in place of error when checking error
+	conditions from socket related function calls.  win32 uses h_errno so this
+	should be used as a wrapper to make the code cleaner
+
+	added new macro nlogerr() which is like logerr() but should be used when
+	priting errors from socket related functions
+
+	* TODO, login.c:
+	major cleanup of login().  password should not be checked until after the
+	check for a user already logged in to prevent password guessing
+
+	* Makefile.in, kick.c, main.c, search.c:
+	missing channel name in the notify_mods() call in kick()
+
+	ignore "rock" and "new" in search strings
+
+	* NEWS, README, config.c, configure, configure.in, main.c, opennap.h, sample.conf, search.c:
+	updated version number to 0.24
+
+	added login timeout detection.  default is to close client connections if
+	they have no logged in within 60 seconds
+
+	added "me", "to" and "rock" to the list of words to ignore in the search
+	table since over 5000 entries were detected
+
+2000-04-06  drscholl  <drscholl@users.sourceforge.net>
+
+	* change.c, opennap.h:
+	allow nuke_user() to take an optional reason for the revocation
+
+	* login.c:
+	delay setting the user's level from the db until after the notify_mods()
+	call so that the user is not notified twice of their change in status.
+
+	* Makefile.am, Makefile.in, config.c, handler.c, join.c, kick.c, list_channels.c, login.c, main.c, napster.txt, opennap.h, part.c, privmsg.c, sample.conf, server_usage.c:
+	added kick.c for the kick() function
+
+	added channel limit (826) command to specify the max users allowed in a
+	channel.
+
+	added full channnel list (827) command to show all channels with min level
+	and user limit
+
+	made the stats command accessable to normal users
+
+	fixed find_handler() search that could end up in an infinite loop in certain
+	cases.
+
+	* TODO, login.c, napster.txt:
+	updated TODO file
+
+	fix for coredump when a nonregistered user attempts to log in
+
+	updated napster.txt with new protocol findings
+
+2000-04-05  drscholl  <drscholl@users.sourceforge.net>
+
+	* browse.c, main.c:
+	data.max was not initialized to 0 in browse() causing a problem with
+	browsing users on the same server
+
+	* login.c, main.c:
+	reorganized the login() routine to allows privileged users to bypass the
+	max_connections restriction
+
+	should check for -1 instead of EOF in getopt() test
+
+	* add_file.c, search.c:
+	modification to use the soundex hash as the key for the File_Table.  This
+	should decrase the amount of memory required for searching at the expense of
+	a little cpu, but should not affect the search results since it still uses
+	the same token based scheme once the smallest bin has been found.
+
+2000-04-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	update_stats() now prints out the number of entries in the File_Table hash
+	table to get an idea of its size
+
+	* mkpass.c, search.c, serverlib.c:
+	added copyright notice to mkpass.c and serverlib.c
+
+	tokenize() should ignore the words "of", "you" and "mp3's" because of the
+	high use of these words (>10,000 hits).
+
+2000-04-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* mkpass.c, serverlib.c:
+	added new file mkpass.c to generate a md5 password
+
+	added new file serverlib.c for functions that reference opennap globals
+
+	* Makefile.am, Makefile.in, change.c, level.c, login.c, main.c, opennap.h, userdb.c, util.c:
+	added support for md5 passwords for user db
+
+2000-03-31  drscholl  <drscholl@users.sourceforge.net>
+
+	* ban.c:
+	issue a kill if we receive a login command from a remote server for a
+	locally banned user
+
+	* ban.c:
+	check_ban() should only set con->destroy for CLASS_UNKNOWN connections
+
+	* server_connect.c:
+	server_login() passsed the wrong field to the is_linked() function
+
+	* README:
+	updated README to discuss the new OperServ feature
+
+	* login.c, privmsg.c:
+	added pseudo user OperServ to allow privilegded users without builtin client
+	support for the opennap specific commands to be able execute them by using
+	/msg opserver ...
+
+	* userdb.c:
+	removed check for .nuked in dump_userdb()
+
+	* change.c, handler.c, login.c:
+	removed unnuke() command.  nuking the account removes it permanently.
+
+	fixed encapsulated() to handle bad input data
+
+	* change.c, handler.c, opennap.h, userdb.c:
+	added support for nuking and restoring accounts
+
+	* ban.c, init.c, main.c, opennap.h:
+	added load/save bans feature from colten edwards.
+
+	* opennap.h, server_connect.c, server_login.c:
+	added is_linked() function to check to see if a server is already linked in
+	order to avoid server loops
+
+	* Makefile.in, ban.c, handler.c, login.c, main.c, opennap.h:
+	removed check_accept() function.  the maximum connections is now enforced by
+	login() to avoid the situation where servers can't link because the number
+	of client connections has exceeded the maximum
+
+	accept_connection() now calls check_ban() directly
+
+2000-03-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* handler.c, muzzle.c, network.c, privmsg.c, public.c, search.c, server_login.c, synch.c:
+	the long line truncation in public/emote needs to calculate the length based
+	upon the start of the data actually sent to the client.  server->server
+	messages were being truncated in the _next_ packet.
+
+2000-03-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, README, opennap.h:
+	win32 needs _POSIX_PATH_MAX defined to compile
+
+	update ChangeLog, NEWS and README for 0.23 release
+
+	* public.c:
+	crop publics and emotes that are longer than 128 chars rather than rejecting
+	them
+
+	* public.c, spyserv.c:
+	don't allow public or emote commands longer than 128 chars to prevent the
+	DOS attack against the windows napster client.
+
+	* main.c:
+	listen fd needs to be set to nonblocking so the loop over accept() doesn't
+	block the server.
+
+	* ban.c, login.c, main.c:
+	modified accept_connection() to loop until accept() returns an error
+
+	cli->destroy should be set in check_accept when max connections has been
+	reached.
+
+2000-03-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, change.c, join.c, util.c:
+	only call notify_mods() if a users data port is set to a different value
+	than what is currently set to
+
+	join should send a 408 back to the user than joined, and not a 406.
+
+	split_line() now breaks on space, tab, cr or lf to separate words
+
+	* ban.c, change.c, config.c, init.c, level.c, login.c, main.c, opennap.h, userdb.c, whois.c:
+	changed user db into an memory-based hash table to improve performance.
+	the user db is dumped to disk every `user_db_interval' seconds (default:
+	1800)
+
+	* configure, configure.in, main.c, remove_connection.c:
+	remove support for poll() since it doesnt work well
+
+2000-03-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* ban.c, main.c:
+	fixed but in main loop with select()ing fds
+
+	* util.c: more fixes
+
+	* main.c, util.c:
+	modified add_client() to find the first empty slot in the Clients[] array
+
+	* main.c:
+	should 0 out the old pointer when shifting down entries to fill holes
+
+	* main.c, util.c:
+	moved complete_connect() call to final loop to avoid altering Num_Clients in
+	the read loop
+
+	* main.c, util.c:
+	poll() still returns EINVAL under linux so the main loop now always shifts
+	down the CONNECTION pointeres to fill all holes.
+
+2000-03-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* ban.c, login.c, main.c, opennap.h:
+	changed ban handling to use a LIST instead of an array
+
+	* buffer.c, debug.h, join.c, util.c:
+	added VALID_STR() debug macro for testing memory allocated by STRDUP()
+
+	validate_user() and validate_channel() should call list_validate() instead
+	of just checking the first entry in the list
+
+	* opennap.dsp:
+	committed .dsp file for win32 build
+
+	* join.c:
+	fixed error message for channel_level() to be more verbose to the client
+
+	* level.c, login.c:
+	fixed messages about changing a user's level to be consistent
+
+	* kill_user.c, server_login.c:
+	corrected log messages
+
+	* login.c:
+	reasons for a kill should be quoted in login()
+
+	* handler.c, level.c, login.c, search.c, server_login.c, synch.c, topic.c:
+	fixed sync_server() to send the locally connected server list first
+
+	fixed topic() to return the current topic if none is specified
+
+	fixed login() to notify_mods() when setting a user's level
+
+2000-03-24  drscholl  <drscholl@users.sourceforge.net>
+
+	* opennap.h, remove_connection.c, server_login.c:
+	need to recursively remove server link info behind servers that split
+
+	* server_login.c, synch.c:
+	fixed broken sync message for server links
+
+	* kill_user.c, level.c:
+	fixed bug in kill_user() where the size of the av[] was not correct in the
+	call to split_line()
+
+	* Makefile.am, Makefile.in, README, configure, configure.in, handler.c, network.c, opennap.h, opennap.opt, opennap.plg, server_links.c, server_login.c:
+	fixed to compile under Windows NT 4.0
+
+	* remove_connection.c, server_links.c, server_login.c, synch.c, README, handler.c, main.c, napster.txt, opennap.h:
+	added support for passing of server link info so that all servers know about
+	each other
+
+	* TODO, kill_user.c:
+	the reason for a kill should be quoted if it exists
+
+	* handler.c, level.c, main.c:
+	bail out without doing anything if the user level is set to the level that
+	was requested
+
+	* main.c:
+	need to reset the CLient id when shifting down the entries to fill gaps
+
+	* main.c:
+	modified main() loop to reduce the size of the Clients array if there are
+	more than 10 holes in it.  this is to try and prevent EINVAL under linux,
+	which does a sanity check to make sure the nfds arg is smaller than the
+	current number of open fds
+
+	* main.c:
+	added debugging to find error with poll() call
+
+2000-03-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* change.c, login.c, search.c:
+	fixed bad log message in login() with missing arg for %s
+
+	%s should be %d in log message in alter_port()
+
+2000-03-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c:
+	removed log message from cancel_search()
+
+	* main.c:
+	added extensive debugging checking if poll() fails with EINVAL
+
+	* level.c, main.c, whois.c:
+	allow normal user's to change their own level to leech
+
+	don't call FD_ISSET on a fd with value -1
+
+	the windows client can't part "" in the whois response, so ensure it always
+	contains at least one space
+
+	* handler.c, login.c, part.c, remove_connection.c, search.c:
+	fixed memory leak in user_ip() which occurred when nick collisions happen
+
+	removed debug log message from handle_connection() when unprocessed bytes
+	remain
+
+	rewrote cancel_search() to send final ACKs when a server quits before
+	sending all acks
+
+	* join.c:
+	fixed botched send_cmd() in channel_level()
+
+	* join.c, login.c, main.c, search.c:
+	added more checks for out of memory conditions
+
+	* join.c:
+	allow channel_level() to be called with only the channel name to report the
+	current level
+
+	* login.c:
+	display the ip address when a banned user attempts to log in
+
+	* handler.c:
+	use a binary search to look up the handler for each received message
+
+2000-03-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* napster.txt: updated protocol information
+
+	* login.c, main.c:
+	fixed memory leak in login() when the login fails
+
+	exit main loop on poll() error
+
+	* change.c, handler.c, join.c, napster.txt, opennap.h, part.c:
+	added 'set user password' (753) admin command
+
+	added 'set user speed' (625) admin command
+
+	* main.c:
+	fixed accept_connection() to check for out of memory errors
+
+	* upload_complete.c:
+	upload_ok() should call print_args() when it detects a malformed message
+
+	* search.c:
+	added checking for out of memory errors in search_internal()
+
+2000-03-20  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	bandwidth stats need to be printed with %f not %d
+
+	* main.c:
+	bandwidth usage stats were not in kbytes/sec.
+
+	Last_Click was not updated.
+
+	* join.c:
+	invalid_channel returned 1 for count>0
+
+	* buffer.c, handler.c, main.c, opennap.h:
+	added total input/output bandwidth usage statistics.
+
+	* join.c, login.c:
+	added a check for valid channel name
+
+2000-03-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, join.c:
+	check for missing channel name in join()
+
+2000-03-18  drscholl  <drscholl@users.sourceforge.net>
+
+	* join.c, synch.c:
+	synch_server() should send the channel level it is other than LEVEL_USER.
+
+	* README, handler.c, join.c, opennap.h:
+	added new command 10201 to set the minimum user level required to enter a
+	channel.
+
+	* ChangeLog, NEWS, configure:
+	post release commit for 0.22
+
+2000-03-17  drscholl  <drscholl@users.sourceforge.net>
+
+	* kill_user.c, unmuzzle.c:
+	allow any user to kill/unmuzzle a user that is below their level
+
+	* napster.txt, server_links.c:
+	server_links() should allow the command to be issued by a remote user.
+
+	updated the text for message 300 in napster.txt
+
+	* download.c, login.c, opennap.h, opennap.spec, util.c:
+	added print_args() utility function for use in dumping the input command for
+	error messages
+
+	* README, announce.c, configure.in, opennap.h:
+	wallop() was using the wrong tag for the response to the client
+
+	* handler.c:
+	fixed error in encapsulated() where it was using con->sendbuf instead of
+	con->recvbuf to get the packet to relay
+
+	* README, free_user.c, login.c, opennap.h:
+	removed log message from free_user()
+
+	* NEWS, README, ban.c, init.c, login.c, napster.txt, network.c, part.c, search.c, textdb.c, AUTHORS:
+	incorporated OS/2 port from Brian Smit <dbsoft@technologist.com>.
+
+	fixes to compile cleanly under Solaris 2.7 with egcs 1.1.2
+
+	updated REAMDE with list of supported operating systems.
+
+	* handler.c, search.c:
+	fixed memory leak in remote search functions if the server that we received
+	the search request from splits before we send the ack for the search
+
+	* README, announce.c, handler.c, opennap.h, part_channel.c, public.c, util.c:
+	fixed bug in encapsulated() where the complete packet was not correctly
+	relayed when the recipient of the message is not local.
+
+	added format_message() utility function
+
+	* buffer.c:
+	minor modifications to buffer_decompress() to avoid unecessary operations
+
+	* browse.c, buffer.c, client_quit.c, handler.c, upload_complete.c:
+	removed additional extraneous logging messages
+
+	rewrote the buffer_compress() routine in hopes of solving the server link
+	problem.
+
+	* download.c, handler.c, main.c, search.c:
+	removed many log messages that are no longer really necessary.
+
+	dispatch_command() will now dump the contents of the input buffer when it
+	detects a command that is unknown, and will automatically close the
+	connection to another server upon this error
+
+2000-03-16  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, announce.c, ban.c, buffer.c, change.c, download.c, free_user.c, handler.c, join.c, kill_user.c, level.c, login.c, main.c, muzzle.c, opennap.h, part.c, public.c, remove_connection.c, remove_file.c, search.c, server_connect.c, server_links.c, server_login.c, server_usage.c, topic.c, unmuzzle.c, util.c:
+	made the server list a real LIST instead of an array.  removed global
+	Num_Servers.  pass_message_args() will now return without doing anything if
+	there are no connected servers so that each handler routine doesn't have to
+	check for Servers!=0.
+
+2000-03-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* level.c:
+	fixed broken log message causing a segfault
+
+	* buffer.c, level.c:
+	level() should register the nick if not present in the local db and the user
+	level is moderator or higher.
+
+	* join.c:
+	the 406 join message should only be sent to local users
+
+	* join.c, privmsg.c:
+	fixed sequence of commands generated by the join commmand.
+
+	removed commented out code from privmsg.c
+
+	* join.c:
+	fixed coredump on log message when a user has reached max channel membership
+
+2000-03-14  drscholl  <drscholl@users.sourceforge.net>
+
+	* public.c:
+	fixed bug with relaying the emote command to remote servers
+
+	* handler.c, login.c, opennap.h:
+	added register_user() command (10200) to allow admins to force registration
+	of user accounts
+
+	* login.c:
+	user_ip() should use strtoul() to convert the string ip into an integer.
+
+	* join.c, login.c, server_connect.c, server_login.c:
+	modified join() to alloc the memory required before sending any messages to
+	clients so that if memory runs out we can recover the state.
+
+	server_connect() should allow duplicate connects to the same host on
+	different ports.
+
+	user_ip() should case the result of strtol() to unsigned int.
+
+	server_login() should notify local admins when another server attempts to
+	join
+
+2000-03-12  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	register_nick() should only fail if the user is already logged in.
+
+2000-03-11  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c:
+	need to keep a local flag in the DSEARCH struct for use with checking where
+	to send the final ACK in remote_search_end.  if the local user logs off then
+	search->con will be invalid so we can't use ISUSER(search->con) to decide.
+
+2000-03-10  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, Makefile.in, configure, handler.c, opennap.spec, sample.servers, sample.users, textdb.c:
+	handle_connection() should loop around read() when getting a packet header
+	since some clients send it in two pieces
+
+	added sample users and servers files, and a rpm spec file for building a
+	binary package for Red Hat users.
+
+	* handler.c:
+	fixed partial packet header reading again.
+
+	* handler.c:
+	fix to read the packet header in multiple pieces
+
+	* handler.c:
+	check to see if 4 bytes of the header have been read after the initial
+	read
+
+	* handler.c:
+	write a nul (\0) char at the end of the data in handle_connection() when
+	an error is detected so that the log message is readable
+
+	* handler.c:
+	tag and len should be unsigned short integers
+
+	* add_file.c:
+	fix to abort nicely if the user hash table can't be allocated
+
+	* buffer.c, handler.c, main.c, opennap.h, remove_connection.c:
+	rewrote input handler to avoid allocating a new buffer every time data is
+	read.  instead, a single buffer is reused and extended if required.  all
+	input is processed as it is read now instead of breaking the reading and
+	processing into two steps.
+
+	* list.c, list.h:
+	added macro LIST_NEW() as a wrapper around list_new() so that it gets
+	inlined when DEBUG is turned on.
+
+2000-03-09  drscholl  <drscholl@users.sourceforge.net>
+
+	* hotlist.c:
+	fixed hotlist bug.  the hotlist entry was not being removed from the user's
+	personal list in the CONNECTION struct
+
+	* hotlist.c, opennap.h:
+	more debugging to find the hotlist problem.
+
+	* README, hotlist.c, list.c, list.h, sample.conf, util.c:
+	added list_validate() function to be used in tracking down the hotlist bug
+
+	* hotlist.c, opennap.h, remove_connection.c, util.c:
+	simplified hotlist removal code by calling list_delete() instead of
+	iterating through the list.
+
+	need to set con->uopt.hotlist to 0 after call list_free() to avoid ASSERTing
+	in cancel_search()
+
+	* list.c:
+	called FREE on the wrong pointer in list_delete()
+
+	* util.c:
+	seed the random number context with as many bytes as are read, even if less
+	than requested.
+
+	* add_file.c, hotlist.c:
+	forgot to set hotlist->magic when creating a new entry
+
+	forgot to set list->data when adding a file to the db
+
+	* add_file.c, hotlist.c, join.c, list.c, list.h, remove_connection.c, search.c, textdb.c, userdb.c:
+	removed all use of list_new() and list_append() to track down the memory
+	leak.  the debug info should now show where the leaked memory is being
+	allocated.
+
+	* napster.txt, opennap.h, remove_connection.c, search.c, util.c:
+	[napster.txt] changed text for 404 message to describe it as a generic error message
+
+	[util.c] split_line should eat extra whitespace between fields
+
+	when a local user quits, any pending searches should be marked as invalid so
+	that when the results come back the ->con pointer in the DSEARCH structure
+	is not used.
+	rather than for a specific value.
+
+	* search.c:
+	should have compiled before committing the last fix.
+
+	* search.c:
+	duplicate tokens should not be added to the list in tokenize(). this makes
+	the search function return the same file multiple times.
+
+	* change.c, debug.c, join.c, list.c, login.c, main.c, part.c:
+	reformatted some code with indent
+
+	fixed memory leak in reginfo() where userdb_free() was not called.
+
+	* add_file.c, debug.c:
+	commented out memory dump from debug_cleanup()
+
+	reformatted the code in add_file.c
+
+2000-03-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	db->lastSeen was set from get_level() when it should be atol()
+
+	* login.c:
+	db->nick was not set when creating a new db entry in reginfo()
+
+	* download.c, login.c, resume.c, search.c, synch.c, upload_complete.c:
+	changed most instances of %lu to %u since we only use 32-bit integers.
+
+	* opennap.h, search.c, util.c, handler.c, main.c:
+	only use /dev/random to seed the random context.  on servers the system
+	random pool gets eaten up too fast.
+
+	* debug.c, search.c, server_login.c, userdb.c:
+	fixed to handle generate_search_id() returning NULL.
+
+2000-03-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* util.c:
+	add_client did not set the .id member when growing the array.
+
+	* login.c:
+	user->pass was not free'd if there was an error during login
+
+	* debug.c, join.c:
+	no need to test for block->file being NULL when we are only referencing
+	a static memory block.
+
+	muzzled users should not be allowed to join chat channels
+
+	* debug.c:
+	debug code doesn't need to strdup() the file passed in, it can simply
+	reference it since it is static memory.
+
+	got rid of the .prev pointer in the BLOCK struct.  we can walk the list of
+	block with a BLOCK** pointer instead.
+
+	* TODO, download.c, upload_complete.c:
+	fixed upload_ok() to use send_user() instead of send_cmd() since the
+	downloader could be on a remote server.
+
+	removed PostgreSQL from the TODO list since we no longer use a SQL db.
+
+	* announce.c, kill_user.c, main.c, opennap.h, remove_connection.c, search.c, server_links.c, upload_complete.c, util.c:
+	Modified the main loop to stop shifiting down the CONNECTION array to fill
+	the holes.  add_client() will insert new connections into the holes, or
+	grow the array if its all full.  Added new global Max_Clients which should
+	be used in any contruct that needs to loop over all local connections,
+	avoiding the entries that are set to NULL (holes).
+
+	* buffer.c, main.c:
+	use a new local variable numClients for the loop test constructs since
+	Num_Clients gets changed by the accept_connection().  this may be the cause
+	of all those immediate disconnects.
+
+	* search.c:
+	use a faster algorithm for walking the list when deleting invalid entries
+	from the files list
+
+	* search.c:
+	tokenize() should ignore common words because they are not useful in
+	searching
+
+	fdb_collect_garbage() will now print messages about bins with more than
+	10,000 entries so that they can be considered for addition to the ignore
+	list
+
+	* AUTHORS, configure.in, init.c, main.c, network.c, opennap.h, timer.c:
+	solaris port (jones@users.sourceforge.net)
+
+	* add_file.c, browse.c, client_quit.c, download.c, handler.c, opennap.h, remove_file.c, server_login.c, synch.c, upload_complete.c, util.c, whois.c:
+	added the ability to download files and browse users on other servers
+
+	server stats for users/files/size is again global for all linked servers
+
+2000-03-06  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, announce.c, ban.c, browse.c, change.c, client_quit.c, download.c, handler.c, hash.c, join.c, kill_user.c, level.c, login.c, main.c, muzzle.c, opennap.h, part.c, ping.c, privmsg.c, public.c, remove_connection.c, remove_file.c, search.c, server_connect.c, server_links.c, server_login.c, server_usage.c, synch.c, topic.c, unmuzzle.c, upload_complete.c, userdb.c, util.c, whois.c:
+	server message are no longer automatically forwarded by handle_connection().
+	each handler is now responsible for forwarding the message if necessary.
+
+	implemented the ability to search on remote servers so that the entire file
+	database isn't replicated on every server.
+
+	several of the server query functions now take an optional server argument
+	to get the status of a remote server rather than the one the client is
+	connected to.
+
+	* sample.conf, config.c, init.c, main.c, network.c, opennap.h:
+	added max_data_size and max_rss_size configuration variables to adjust
+	sytem limits on memory usage per process
+
+	* change.c, server_connect.c:
+	fixes to compile cleanly with debugging turned off
+
+	* opennap.h, textdb.c, util.c:
+	added `#define USE_CRLF 1' for use on win32 to write \r\n at the end of each
+	line in the database
+
+	modified next_arg() to use space, \r, \n and \t as word separators, and to
+	set the argument to 0 when hitting the \0 in the source string to avoid
+	returning an extra empty string
+
+	* Makefile.in, add_file.c, ban.c, buffer.c, configure, configure.in, hotlist.c, login.c, main.c, opennap.h, public.c, server_connect.c, server_login.c, synch.c, textdb.c, timer.c, userdb.c, util.c:
+	created logerr() macro as a wrapper for libc errors
+
+	used OUTOFMEMORY() macro when memory errors occur
+
+	don't use next_arg() in public() because it will strip leading space from
+	the user's message
+
+2000-03-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, README, config.c, configure.in, main.c, opennap.h, sample.conf, textdb.c, textdb.h, userdb.c:
+	removed all variables pertaining to mysql
+
+	updated the installation instructions to reference the new flat text file
+	user and server databases
+
+	* Makefile.am, Makefile.in, change.c, compress.c, config.c, configure, configure.in, create_db.sql, db.c, init.c, level.c, login.c, main.c, opennap.h, sample.conf, server_connect.c, server_login.c, textdb.c, textdb.h, userdb.c, whois.c:
+	removed all references to MySQL from the code base.
+
+	added flat file text database for use with user and server lists.
+
+2000-03-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* search.c:
+	reenable code to reject search matches for a user's own files
+
+	search term for equality is "EQUAL TO", not "EQUALS" according to the
+	protocol specification.
+
+	added error reporting to the client if the comparison operation in a search
+	string is unknown.
+
+	* getopt.c, main.c:
+	added copyright notice to getopt.c
+
+	fixed broken usage() output
+
+	* ChangeLog, Makefile.in, NEWS, README:
+	ChangeLog is now generated by rcs2log.
+
+	Moved contents of the NEWS file into README.  NEWS is for user visible
+	changes in accordance with the GNU standards.
+
+	* Makefile.am, opennap.dsp, opennap.opt, opennap.plg:
+	integrated updated visual c++ files
+
+	* init.c, main.c, network.c, opennap.h, getopt.c:
+	fixes to compile under win2k (Damian Hodgkiss)
+
+	* napster.txt, whois.c:
+	fixed bug in whois response.  the total downloads comes before total uploads
+	in the mod+ version
+
+	added additional documentation on the 613 and 626 commands.
+
+2000-03-02  drscholl  <drscholl@users.sourceforge.net>
+
+	* join.c, timer.c:
+	needed to include stdlib.h to compile cleanly without debugging on
+
+	* ChangeLog, add_file.c, config.c, login.c, main.c, opennap.h, remove_connection.c, search.c:
+	removed old code and and -DLESSMEMORY flag since that is now the default
+
+	modified core search function to using str*() functions instead of calling
+	tokenize() on the filename
+
+	fixed bug in login() where the number of fields in the client login (6)
+	was not checked, which lead to a coredump if the last field was not present.
+
+	* hash.c, hash.h, list.c, opennap.h:
+	catch out of memory error conditions in list and hash functions
+
+	* hotlist.c, list.c:
+	reconciled differences in hotlist code
+
+	* NEWS, hotlist.c, remove_connection.c:
+	fixed memory leak in remove_connection() where it did not free empty hotlist
+	entries
+
+	* login.c: dont allow nul usernames
+
+	* main.c, napster.txt, public.c:
+	fixed emote command to check for required quotes around the text portion
+	of the message.
+
+2000-03-01  drscholl  <drscholl@users.sourceforge.net>
+
+	* getopt.c:
+	added getopt() replacement for Win32 which doesn't have this function
+
+	* join.c, list_channels.c, list_users.c, part.c, part_channel.c, public.c, synch.c, topic.c, util.c:
+	fixed compilation errors with new list code
+
+	* Makefile.am, Makefile.in, add_file.c, buffer.c, change.c, client_quit.c, download.c, free_user.c, handler.c, hotlist.c, join.c, kill_user.c, level.c, list.c, list.h, login.c, main.c, muzzle.c, opennap.h, part_channel.c, ping.c, privmsg.c, public.c, remove_connection.c, search.c, server_connect.c, server_links.c, server_login.c, server_usage.c, topic.c, unmuzzle.c, upload_complete.c, util.c, whois.c:
+	added new files list.c and list.h to contain the generic list routines.
+
+	switch to using LIST instead of arrays for many things which don't need to
+	be directly indexed.
+
+	optimized USER and CONNECTION structs to require as little memory as
+	possible.
+
+	* main.c, opennap.h:
+	optimized fields in the DATUM struct to be as small as possible
+
+	* TODO, add_file.c, hotlist.c, opennap.h, search.c:
+	added -DLESSMEMORY to force the server to regenerate the token list when
+	comparing rather than storing it in the database
+
+	* main.c, timer.c:
+	changed next_timer() to return the time offset in seconds of when the next
+	timer is scheduled
+
+	* network.c:
+	need to include sys/time.h before sys/resouce.h on bsdi
+
+	* main.c, opennap.h, timer.c:
+	added next_timer() function to give the time at which the next pending event
+	is scheduled.  the main even loop in the server should never block for
+	longer than when a pending even is scheduled
+
+	* ChangeLog, Makefile.am, Makefile.in, ban.c, init.c, join.c, main.c, opennap.h, timer.c:
+	added timer functions for scheduling periodic events (colten edwards)
+
+	added global variable Current_Time which is set once per iteration of the
+	main loop.  functions which need the current time should use this variable
+	rather than calling time()
+
+	* buffer.c, hotlist.c:
+	removed error message that were too verbose from send_queued_data() and
+	add_hotlist()
+
+	* init.c:
+	handle SIGPIPE to avoid terminating the process when writing to a connection
+	that got shut down
+
+	* add_file.c, search.c:
+	added additional debugging output to the add_file() and associated
+	routines
+
+	* main.c:
+	moved the check for connections to the stats port to before the new
+	connections port since the latter modifies Num_Clients and it was throwing
+	of the check for connections to the stats port
+
+	* handler.c, init.c:
+	fixes to compile cleanly with debugging turned off
+
+	* browse.c, search.c:
+	allow max_browse_result to be 0 to indicate unlimited
+
+	added additional debugging to free_flist()
+
+2000-02-29  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, handler.c, init.c, main.c, opennap.h, Makefile.am:
+	main.c was getting too big. broke out initialization code into init.c and
+	connection handling code into handler.c
+
+	* ChangeLog, main.c, network.c:
+	added support for the opennap server to listen on port 8889 to report stats
+	about the server to interested parties
+
+	* NEWS, add_file.c, ban.c, configure, configure.in, kill_user.c, opennap.h, privmsg.c, public.c, topic.c, util.c:
+	added various checks for memory exhaustion to recover "gracefully"
+
+	* ChangeLog, FAQ, network.c, search.c, util.c:
+	check for out of memory errors in tokenize()
+
+2000-02-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, ban.c, config.c, configure, configure.in, main.c, network.c, opennap.h, sample.conf:
+	allow max_shared to be 0 to allow unlimited sharing
+
+	added new config vars 'uid' and 'gid' to specify the uid/gid to switch to
+	if running as root (uid 0)
+
+	added new config var 'connection_hard_limit' to specify the maxium number
+	of file descriptors the process can use
+
+	added configure option --with-fd-setsize to specify the maxium number of
+	filedescriptor that can be used on select() based systems
+
+	* config.c, main.c, opennap.h:
+	added new config variable `collect_interval' to control the interval between
+	garbage collection
+
+	* buffer.c, change.c, level.c, login.c, napster.txt, opennap.h, privmsg.c, util.c:
+	fixes to compile cleanly with --disable-debug
+
+	added safe_realloc() function for detection of memory exhaustion
+
+2000-02-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* hotlist.c:
+	print tag value out when the user attempts to add another user already in
+	their hotlist
+
+	* add_file.c, free_user.c, hotlist.c, resume.c, util.c:
+	log() messages in add_file() and share_file() were missing the nick, causing
+	a segfault
+
+2000-02-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* opennap.h, resume.c:
+	rearranged members of the DATUM struct.
+
+	added additional debug statement to resume()
+
+	* add_file.c, opennap.h, search.c, synch.c:
+	added a new content type CT_MP3 to serve as a default.  CT_AUDIO doesn't
+	necessarily mean audio/mp3
+
+	* ChangeLog, FAQ, add_file.c, main.c, metaserver.c, opennap.h, search.c, synch.c:
+	restored sharing of multimedia files.
+
+	* ChangeLog:
+	updated ChangeLog with recent changes
+
+	* buffer.c, main.c:
+	modified buffer_compress() to allocate one 16k output buffer and compresss
+	as much data as will fit in it.  this is necessary since queue_data() can
+	now produce multiple 16k buffer chunks for server connections.
+
+2000-02-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	changed listen() queue backlog to a value of 50
+
+	* README, main.c, opennap.h, server_usage.c:
+	added number of global users, server start time, and server uptime to the
+	10115 server stats reply
+
+	* kill_user.c:
+	should set user->con->destroy=1 when killing a local user, not con->destroy
+
+	* main.c, search.c:
+	if multiple FILENAME CONTAINS clauses are specified, treat them as an
+	implicit AND operation
+
+	* Makefile.in, main.c, opennap.h, search.c:
+	added a garbage collection routine to run every 60 seconds to free up memory
+	associated with invalid entries
+
+	* ChangeLog, Makefile.am, README, main.c, opennap.h, server_links.c:
+	added new command 10112 to show the server links (colten edwards)
+
+	* AUTHORS, ChangeLog, Makefile.am, Makefile.in, debug.c, debug.h, main.c, opennap.h, server_usage.c:
+	added a new command 10115 for getting some useful information about the
+	server (colten edwards)
+
+	* upload_complete.c:
+	upload_ok() was looking in the downloader's hash table for the file info,
+	should be the uploader's table
+
+	* main.c:
+	forgot to uncomment the free_hash() on the File_Table
+
+	* search.c:
+	nick was printed using %d instead of %s when returing search results
+
+	* search.c:
+	fdb_search() should return if it can't find a search token in the hash table
+	since we can be sure there are no matches
+
+	* search.c: fixed bug in fdb_search()
+
+	* ChangeLog, whois.c:
+	minor whois change
+
+	* browse.c, buffer.c, change.c, config.c, configure, configure.in, db.c, debug.c, debug.h, download.c, free_user.c, hash.c, login.c, main.c, opennap.h, remove_file.c, resume.c, search.c, server_connect.c, server_login.c, synch.c, upload_complete.c, util.c, add_file.c:
+	wrote new database for storing the library.  we now use a hash table based
+	on word tokens in the filename, with a list of files for each word
+
+	modified malloc debugger to use a hash table to store the allocation
+	information because a single list was too slow for large amounts of data
+
+	modified buffer_queue() to allocate chunks of memory and allocate a new
+	buffer in the list if there is not enough room to append, instead of using
+	realloc.  this should improve performace
+
+	began adding extra checks for when we run out of memory so that we can
+	recover gracefully.
+
+2000-02-24  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	we should force a call to send_queued_data() in main() if the connection is
+	about to be shut down.  in this case we write as much as we can before we
+	close the socket.
+
+	* main.c:
+	no longer necessary to check for existence of the client pointer because
+	it won't be removed except by the main() routine itself.
+
+	* buffer.c, kill_user.c, login.c, main.c, opennap.h, remove_connection.c, server_connect.c:
+	remove_connection() should now only be called from the main() routine.
+	other functions that wish the client connection to be shut down should
+	set the .destroy memory to a nonzero value.
+
+	* whois.c, change.c:
+	username was printed out using %d instead of %s in alter_port()
+
+	the whois response now inclues the server the user is connected to if the
+	user level of the client issuing the request is admin+
+
+	* buffer.c:
+	send_queued_data() should call buffer_free() on the output buffer before
+	calling remove_connection()
+
+	* buffer.c, main.c:
+	send_queued_data() should call remove_connection() instead of setting
+	con->destroy=1 since it is safe to free the CONNECTION pointer at
+	that point.
+
+2000-02-23  drscholl  <drscholl@users.sourceforge.net>
+
+	* download.c: more logging in download()
+
+	* buffer.c, client_quit.c, download.c, free_user.c, remove_file.c:
+	need to call fudge_path() on filename before SQL query in remove_file()
+
+	fixed download() to send the correct 203 command when the uploader is
+	firewalled.
+
+	added log messages for sending/receving client quit messages
+
+	* download.c:
+	queue_limit() should check for mysql_num_rows() > 0 before calling
+	mysql_fetch_row()
+
+	* client_quit.c, download.c, kill_user.c, napster.txt:
+	fixed client_quit() to avoid calling hash_remove() when it detects a QUIT for
+	a local user
+
+	* ChangeLog, main.c:
+	send_queued_data() should be called if there is uncompressed data waiting to
+	be sent to the server
+
+	* client_quit.c, download.c, kill_user.c, login.c, main.c, remove_file.c, upload_complete.c:
+	reformatted log() messages for the upload/download functions
+
+2000-02-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c, main.c:
+	alter_port() was not listed in the handler callback table
+
+	* download.c, kill_user.c:
+	download() should use validate_user() instead of just VALID()
+
+	use next_arg() in kill_user() instead of plain strchr()
+
+	* buffer.c, change.c:
+	fixed buffer_uncompress() to set .datamax when calling realloc().
+
+	* ChangeLog, buffer.c, opennap.h:
+	modified buffer_queue() to allocate memory in 1k chunks to avoid calling
+	realloc() too often
+
+	modified buffer_compress() to allocate memory in 2k chunks to avoid calling
+	realloc() too often
+
+	* ChangeLog, network.c, opennap.h, server_login.c:
+	set SO_SNDBUF and SO_RCVBUF to 16k for server-server tcp connections
+
+	* ChangeLog, change.c, opennap.h:
+	added support for 613 command for admin to alter the data port the client is
+	listening on (only works with the win32 clients)
+
+	* ChangeLog, browse.c, buffer.c, config.c, main.c, napster.txt, opennap.h, resume.c, search.c:
+	calls to write() should check for EWOULDBLOCK to avoid closing the
+	connection unnecessarily
+
+	added max_browse_result config variable to control the maxium number of
+	entries returned on a /browse command (default 1500)
+
+	allow max_search_result to be 0 to allow for arbitrary size searches
+
+	* public.c:
+	fixed bug where the first char of a public message gets chopped off
+
+	* db.c, login.c, public.c, resume.c:
+	reduced max filename size to 150 to try to avoid mysqld crashes.
+
+	fixed bug in resume() where the md5 attribute was not quoted in the SQL
+	query.
+
+	change order in login() to wait until after the login/email ack has been
+	sent before sending the notification of the user level being changed to
+	avoid breaking the win32 client.
+
+2000-02-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* download.c:
+	functions that call transfer_wrapper() need to check the return value
+
+	* ChangeLog, add_file.c, config.c, configure, configure.in, login.c, main.c, metaserver.c, network.c, opennap.h, search.c:
+	added fixes for clean compile under Solaris 2.6
+
+	handle_connection() now prints the tag and how many bytes it is waiting for
+	when it detects that it needs to wait for the whole data packet to arrive
+
+2000-02-18  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, main.c, opennap.h, privmsg.c, whois.c:
+	mod+ users are now notified when someone does a /whois on them
+
+	* db.c, debug.c, network.c, remove_connection.c:
+	debug_malloc() should exit gracefully if memory runs out
+
+	adjust the size of the filename field in the library SQL table to be 237
+	chars.  mysql 3.22.23 seems to crash if the fields is any longer.
+
+	* README, db.c:
+	optimized the library SQL table to use as small as possible size integers
+
+	* remove_file.c:
+	added more ASSERT() tests for Num_Files<0
+
+	* free_user.c, remove_file.c, sample.conf:
+	added debugging code to try and detect when Num_Files < 0
+
+	* ChangeLog, Makefile.in, aclocal.m4, configure, configure.in:
+	added AM_MAINTAINER_MODE macro to configure.in
+
+	* search.c:
+	fixed the search() function for the linespeed,bitrate&frequency attributes
+	where an `&&' was not placed before the test in the SQL query string.
+
+2000-02-17  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, README, level.c, napster.txt:
+	modified level() to update the db for registered accounts when a user's
+	level is changed, so that it is persistent across logins
+
+	* login.c:
+	fixed bug in register_nick() where there was no "return;" when the MySQL
+	query failed.
+
+	* download.c, napster.txt:
+	fixed broken queue limit server message (620) which did not include the file
+	size
+
+	* configure, configure.in, opennap.h:
+	added --disable-random option to configure to turn off use of /dev/random
+	on machines which have it
+
+2000-02-16  drscholl  <drscholl@users.sourceforge.net>
+
+	* config.c, main.c, opennap.h:
+	added listen_addr config variable to specify which interface to listen on
+
+	* buffer.c, download.c, util.c:
+	added better handling for bad input in the download functions
+
+	validate_user() should check for at least a valid pointer on the .con member
+	if its non-null
+
+	* buffer.c:
+	took extraneous assert() out of buffer_consume() to clean up error
+	messages.
+
+	* download.c:
+	fixed compilation error in queue_limit()
+
+	* download.c, main.c, napster.txt, opennap.h, server_login.c:
+	added support for the user queue limit command (619/620)
+
+	added additional debugging in server_login_ack()
+
+2000-02-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c:
+	added more debugging check for a duplicat login message sent from clients
+
+	* login.c:
+	added additional debugging output to login() and register_nick()
+
+	* main.c:
+	modified update_stats() to print the current system time
+
+	* opennap.h, whois.c, add_file.c, buffer.c, change.c, hash.c, main.c:
+	win32 port for 0.12
+
+2000-02-14  drscholl  <drscholl@users.sourceforge.net>
+
+	* AUTHORS, ChangeLog, Makefile.am, Makefile.in, NEWS, announce.c, browse.c, buffer.c, change.c, config.c, db.c, download.c, free_user.c, join.c, login.c, main.c, md5.c, motd.c, network.c, opennap.dsp, opennap.dsw, opennap.h, part.c, part_channel.c, privmsg.c, public.c, remove_connection.c, remove_file.c, resume.c, search.c, server_connect.c, server_login.c, snprintf.c, synch.c, topic.c, upload_complete.c, util.c, whois.c:
+	win32 port from "Damian Hodgkiss" <mian@thirty4.com>
+
+	default client queue length set to 100kbytes
+
+2000-02-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* opennap.h, public.c, util.c:
+	fixed broken emote() function to avoid segfaults
+
+2000-02-12  drscholl  <drscholl@users.sourceforge.net>
+
+	* login.c, main.c, motd.c, napster.txt, opennap.h, public.c:
+	added support for client request for motd (621)
+
+	* main.c, napster.txt, opennap.h, public.c:
+	added support for the emote (824) command
+
+2000-02-11  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c, network.c, opennap.h:
+	try_connect() needs to bind_interface() before calling connect()
+
+	* network.c: oops, busted lookup_ip()
+
+	* main.c, network.c:
+	fixed broken log() format in handle_connection() when printing out the
+	message received from a client is unknown
+
+	* Makefile.am, Makefile.in, main.c:
+	removed Id: from Makefile.am since it got passed to Makefile.in and was
+	screwing things up
+
+	* server_login.c:
+	server_login() should send errors using message 0, not 404
+
+	* login.c:
+	added check for a nick with nonprintable ascii chars
+
+2000-02-10  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, add_file.c, download.c:
+	fixes for download_end() and upload_end() to prevent subtracting from the
+	counts if the count is 0
+
+2000-02-08  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, Makefile.am, Makefile.in, change.c, main.c, opennap.h, spynap.c:
+	removed spynap from the distribution
+
+	added support for the change email (702) command
+
+	* TODO, change.c, main.c, napster.txt, opennap.h:
+	added support for the change password (701) command
+
+	* kill_user.c, login.c, opennap.h, whois.c:
+	added support for the whowas (605) server response
+
+	kill_user() did not skip the colon (:) prefix on the server name
+
+	* login.c:
+	register_nick() had compilation warnings about unused variables `pkt' and `len'
+
+	* login.c:
+	removed spurious colon (:) from the SQL query in reginfo()
+
+	the colon (:) before the server name was not skipped in reginfo()
+
+	* util.c:
+	pass_message() should not assert on validate_connection() since it can be
+	NULL when generating a new message.
+
+	* free_user.c, login.c, opennap.h, synch.c, util.c:
+	need to store the user password in order to do user registration on multiple
+	servers
+
+2000-02-07  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, configure, configure.in, network.c:
+	freebsd does not have socklen_t, so add a check for it in configure.in
+
+2000-02-05  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, NEWS, README, TODO, config.c, create_db.sql, login.c, main.c, opennap.h:
+	added support for account registration
+
+2000-02-04  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, main.c:
+	change_speed() was not in the lookup table in main.c
+
+	* Makefile.in, opennap.h, server_connect.c:
+	fix to prevent server_connect() from tyring to link the same server twice
+
+	* Makefile.in, add_file.c, change.c, configure, configure.in, free_user.c, main.c, napster.txt, opennap.h, remove_file.c, search.c, synch.c, util.c:
+	removed minidb support.
+
+	cleaned up search() routine.
+
+	* Makefile.in, add_file.c, change.c, configure, configure.in, free_user.c, main.c, napster.txt, opennap.h, remove_file.c, search.c, synch.c, util.c:
+	added support for a mini-db instead of MySQL for storing the library.
+
+	* main.c, synch.c:
+	fix to avoid looping endlessly when POLLHUP is set for a client connection.
+
+	* main.c, search.c, synch.c, ChangeLog, Makefile.in:
+	search() should return a 404 error if the search failed
+
+	modified synch_server() to first sync the users and channels, then do a bulk
+	dump of the library table in hopes of improving performance.
+
+2000-02-03  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, Makefile.in, NEWS, add_file.c, configure, configure.in, main.c, metaserver.c, motd.c:
+	added support for poll() on systems that support it
+
+	fixed bug in share_file() where the escaped path was not used in the sql
+	query to insert the row
+
+	fixed bug in share_file() where the information on the file size was not
+	incorporated into the global stats
+
+	* Makefile.in, configure, configure.in, main.c, metaserver.c:
+	added support for using poll() on systems that support it
+
+	* add_file.c:
+	share_file() forgot to quote the filename in the sql query
+
+	fixed compute_soundex() to avoid generates hases over 4 chars long
+
+	* ban.c, search.c:
+	fixed bug in search() when specifying the TYPE field
+
+	banlist() should return an empty ban request packet to indicate the end of
+	the list.
+
+2000-02-02  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, Makefile.am, Makefile.in, change.c, metaserver.c:
+	change_speed() needs to update the library table to reflect a speed change
+
+	* ChangeLog, Makefile.in, README, TODO, ban.c, buffer.c, debug.c, debug.h, free_user.c, hash.c, hotlist.c, kill_user.c, login.c, napster.txt, remove_connection.c, remove_file.c, resume.c, server_connect.c, synch.c, topic.c, util.c, whois.c:
+	fixes to compile cleanly with debugging turned off (not recommended though)
+
+	* Makefile.in, aclocal.m4, configure, configure.in, md5.h, server_login.c, util.c:
+	finished integration of the md5 routines from GNU md5sum (textutils)
+
+	* ChangeLog, Makefile.am, NEWS, global.h, md5.c, md5.h, md5c.c:
+	removed md5.h, global.h and md5c.c since they don't work on Alpha, switch to
+	using version from the md5sum program in GNU textutils
+
+	* Makefile.in, aclocal.m4, add_file.c, buffer.c, compress.c, configure, debug.c, debug.h, hash.c, hash.h, main.c, metaserver.c, network.c, opennap.h, server_connect.c, server_login.c, util.c:
+	fixes to compile under RedHat Linux 6.0 (Alpha)
+
+	* buffer.c, login.c, main.c, opennap.h:
+	if a client connects from localhost, the external ip address should be used
+	so that remote users can connect to their data port
+
+2000-02-01  drscholl  <drscholl@users.sourceforge.net>
+
+	* synch.c:
+	fixed synch_user() so that it will not sync users that come from behind
+	the server we are syncing with
+
+	* public.c:
+	fixed bug in public() where a middle server would rebroadcast all received
+	messages ending up doubling the messages to clients
+
+	* Makefile.am, Makefile.in, buffer.c, free_user.c, main.c, remove_connection.c:
+	use `unsigned long' instead of ulong for portability
+
+	fixed bug in handle_connection() where the call to add_random_bytes had
+	arguments without con->
+
+	server_split was issuing QUIT messages for all users when a server split
+	happened.
+
+	free_user() should check for user->email != 0 before free()ing it
+
+	* README, add_file.c, opennap.h, synch.c:
+	synch_user needed to use the new 10300 (share file) message to sync non-mp3
+	data.
+
+	share_file() now checks to make sure the content-type looks valid by
+	inspecting the major MIME type
+
+	added additional information on the new 10300 message to the README
+
+	* ChangeLog, README, add_file.c, db.c, free_user.c, main.c, opennap.h, search.c, spynap.c:
+	added support for sharing generic media types other than mp3
+
+	* Makefile.am, Makefile.in, spynap.c:
+	added md5 hash checking on downloads to spynap
+
+2000-01-31  drscholl  <drscholl@users.sourceforge.net>
+
+	* main.c:
+	assertion in dispatch_command was in error, the length really was 0xee.  use
+	VALID_LEN() to test for buffer overrun instead.
+
+	* main.c, util.c:
+	added additional ASSERT() in dispatch_command() to track down buffer overrun
+
+	* buffer.c, free_user.c, ping.c:
+	free_user() should not remove files from the db when a signal is caught, it
+	should just free the memory assocated with the structure
+
+	fixed bug in buffer_group() where the number of consumed bytes in the next
+	buffer was not skipped
+
+	ping/pong now xmit any optional arguments the clients pass to them
+
+2000-01-30  drscholl  <drscholl@users.sourceforge.net>
+
+	* buffer.c:
+	more fixes in attempt to solve the pop_user missing user nick on server
+	message.
+
+	changed buffer_validate() to not try to validate the ->next pointer other
+	than it is a valid pointer.
+
+	* buffer.c, util.c:
+	buffer_compress() assumed that the input buffer was not already partially
+	consumed.  this should not happen, but it looks like it does in certain
+	circumstances.
+
+	* ChangeLog, add_file.c, buffer.c, main.c, napster.txt, search.c:
+	changed add_file() to print out errors back the user when a file is not
+	added to the db.
+
+	changed add_file() to use a ulong instead of int for storing the file size.
+
+	send_queued_data() did not print out the con->host even though there was a
+	%s for it, caused a segfault.
+
+	changed handle_connection() to ignore message 4 since the new napster
+	v2.0beta5a sends it before the login command.
+
+	search now ignores files belonging to the user who issued the command
+
+2000-01-29  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, main.c:
+	handle_connection now prints out the message it received when it errors out
+	becaues the client is not registered yet.
+
+	* add_file.c:
+	forgot to skip the backslash before sending the path to compute_soundex
+
+	compute_soundex should skip nonalpha chars at the beginning of the string
+
+	* ChangeLog, README, add_file.c, buffer.c, db.c, search.c:
+	added support for soundex searches
+
+	* Makefile.in, ban.c, login.c, main.c, spynap.c:
+	login() was checking for CLASS_USER to set con->destroy when a banned user
+	attempts to log in.  It should have been checking for CLASS_UNKNOWN since
+	the connection is not registered yet.
+
+	added some nice output to some of the server numerics to spynap
+
+2000-01-28  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, README, config.c, main.c, opennap.h, sample.conf:
+	added max_connections config variable
+
+	* Makefile.in, buffer.c, debug.c, kill_user.c, login.c, main.c, opennap.h, sample.conf, server_connect.c, server_login.c, util.c:
+	debug_valid should return 0 on buffer overrun
+
+	handler routines should set con->destroy=1 instead of calling
+	remove_connection() since handle_connection() has a cached copy of the
+	pointer.  this is only necessary when destroying the connection for the
+	source of the message being processed.  destroying other connections is
+	perfectly fine.
+
+	buffer_uncompress() should allocate 1 extra byte similar to buffer_read()
+
+	* Makefile.am, Makefile.in, README, add_file.c, announce.c, ban.c, browse.c, buffer.c, change.c, client_quit.c, compress.c, config.c, configure, configure.in, debug.c, debug.h, download.c, hash.c, hotlist.c, join.c, kill_user.c, level.c, list_channels.c, list_users.c, login.c, main.c, metaserver.c, motd.c, muzzle.c, network.c, opennap.h, part.c, patchnap.c, ping.c, privmsg.c, public.c, remove_connection.c, remove_file.c, resume.c, sample.conf, search.c, server_connect.c, server_login.c, spynap.c, spyserv.c, synch.c, topic.c, unmuzzle.c, upload_complete.c, util.c, whois.c:
+	major rewrite of i/o handling.  server->server links are now handled using
+	a compressed stream.
+
+2000-01-27  drscholl  <drscholl@users.sourceforge.net>
+
+	* NEWS, TODO, ping.c, sample.conf:
+	final changes for 0.10 release.
+
+	* README, db.c:
+	primary key() can only be 256 bytes long, so change the nick length to 15
+	and the filename length to 240.
+
+	* ChangeLog, README, add_file.c, config.c, db.c, main.c, opennap.h, sample.conf:
+	added max_shared variable to control how many files a user can share
+
+	(owner,filename) is now the primary key to avoid duplicates.
+
+2000-01-26  drscholl  <drscholl@users.sourceforge.net>
+
+	* util.c:
+	max bytes per compression block was still set to debug level
+
+	* Makefile.in, config.c, db.c, main.c, opennap.h, part_channel.c, sample.conf, util.c:
+	fixed bug in calculate_chunk_length() where the size returned was the total
+	length of the compressed data, and not the region.
+
+	added max_compress configuration variable to control the maximum number of
+	compressed packets to create in a single cycle, to avoid blocking client
+	connections
+
+	* compress.c, db.c, util.c:
+	added additional error reporting to init_db()
+
+	fixed bug in send_queued_data() when only a portion of the send buffer is
+	compressed
+
+	* network.c, util.c:
+	the length of the compressed packet was 2 bytes too short
+
+	moved my_ntoa() to network.c
+
+	* README, compress.c, opennap.h, util.c:
+	compressed_data() did not correctly handle the new packet format
+
+2000-01-25  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.in, util.c:
+	fixed send_queued_data() to ensure that compressed packets are less than
+	65535 bytes long.
+
+	* Makefile.in, configure, configure.in, network.c:
+	COMPRESSDOTO should be set in the check for libz, not /dev/random
+
+	* ChangeLog, main.c, network.c, opennap.h:
+	set SO_KEEPALIVE on tcp sockets to detect dead clients
+
+	* ban.c: ban() should notify mods+ of the ban
+
+	* ban.c, free_user.c, join.c, muzzle.c, napster.txt, opennap.h, public.c, remove_connection.c, unmuzzle.c, util.c:
+	various bugfixes.
+
+	* main.c:
+	should ignore EAGAIN on read() without closing the connection
+
+	* add_file.c, remove_connection.c:
+	bug fix in add_file()
+
+	* ChangeLog, kill_user.c:
+	elites should be able to kill other elites
+
+	* free_user.c:
+	fixed memory leak in free_user() where .server was not free'd
+
+	* login.c, synch.c, util.c:
+	sync_user() didn't send a proper user-ip packet
+
+	* README, login.c, opennap.h:
+	changed user-ip message to include the locally connected port and the server
+	the user is connected to
+
+	* Makefile.am, Makefile.in, TODO, login.c, main.c, network.c, opennap.h, server_connect.c, server_login.c:
+	changed server connect to be nonblocking.  new file network.c contains most
+	of the standard network routines.
+
+	* ChangeLog:
+	updated ChangeLog with today's changes
+
+	* download.c, kill_user.c, level.c, main.c, opennap.h, server_connect.c, topic.c:
+	fixed handle_connection() to not pass 404 messages to peer servers.
+
+	added a 404 handler to notify the mods+ of the error message received
+
+	added a 607 handler to pass the server message to a remote user
+
+	* main.c, util.c:
+	still more fixes for compressed data.
+
+	* compress.c, config.c, main.c, opennap.h, sample.conf, util.c:
+	added compression_threshold config var (default 8 kbytes) to controll when
+	compression is applied in order to reduce load
+
+	* Makefile.in, main.c, opennap.h, util.c:
+	more fixes for compressed_data()
+
+	* compress.c: fixed bug in compressed_data()
+
+	* compress.c, main.c, util.c:
+	another fix for compressed data packet.  the uncompressed lenght was
+	overwriting the compressed length.
+
+	* Makefile.in, sample.conf, util.c:
+	fixed bug in send_queued_data() when compressing packets
+
+	* Makefile.am, Makefile.in:
+	needed to add compress.o to opennap_DEPENDENCIES to get it to compile
+
+	* Makefile.in, TODO:
+	added rcs id tag to Makefile.am
+
+	* compress.c: forgot to add compress.c to cvs
+
+2000-01-24  drscholl  <drscholl@users.sourceforge.net>
+
+	* Makefile.am, Makefile.in, README, configure.in, sample.conf, synch.c:
+	sync_user() should not flush data to peer servers now that compression
+	support is in place, since it will defeat the benefits
+
+	sync_user() did not relay the client ip address.
+
+	* Makefile.am, Makefile.in, config.c, configure, configure.in, main.c, sample.conf:
+	fixes for optional compilation with libz, since its not needed for standalone
+	servers.
+
+	* ChangeLog, Makefile.am, Makefile.in, README, config.c, configure, configure.in, main.c, opennap.h, util.c:
+	added compressed data (10200) message, and "compression_level" variable
+
+	* ChangeLog, config.c, main.c, napster.txt, opennap.h, remove_connection.c, resume.c, search.c, server_connect.c, util.c:
+	added client_queue_length and server_queue_length config variables to tune the
+	maximum queue lengths allowed
+
+	fixed resume messages which used broken sequences %ul and %uh
+
+	added max_results server config variable to control the maximum number of
+	matches returned on a client search
+
+	* ChangeLog, Makefile.in, opennap.h, server_connect.c:
+	added server version (801) support
+
+	* TODO, server_connect.c:
+	fixed test for fields[2] being set to argc==3 in notify_mods() call from
+	server_connect()
+
+	* ChangeLog, Makefile.in, configure, configure.in, main.c, metaserver.c, opennap.h, server_connect.c, util.c:
+	metaserver should write a \n after the ip:port
+
+	send_queued_data() should return without doing anything if there is no data
+	to send
+
+	added check for /dev/random and substitute simple random number generation
+	on systems without it
+
+	* ChangeLog, server_connect.c:
+	server_connect() should check the return from split_line() to get the number
+	of arguments
+
+	* ChangeLog, Makefile.in, add_file.c, config.c, configure, configure.in, debug.c, debug.h, hotlist.c, join.c, login.c, main.c, napster.txt, opennap.h, part.c, ping.c, privmsg.c, remove_connection.c, resume.c, search.c, server_connect.c, upload_complete.c, util.c, whois.c:
+	added additional integrity checking to the validate_*() functions in
+	debug mode
+
+	server variables can be dynamically changed using the 810 client message
+	(colten edwards)
+
+	login() should ensure that the given speed is in the 0-10 range
+
+	search() was sending the host using %d instead of %lu
+
+	CONFIG struct now holds default values for variables, and functions
+	config_defaults() and free_defaults() is used to manage the memory
+
+	added macro VALID_LEN to test a pointer for enough allocated memory
+
+	* ChangeLog, config.c, main.c, opennap.h, sample.conf:
+	added option to specify the maximum number of channels a user may join.
+
+2000-01-22  drscholl  <drscholl@users.sourceforge.net>
+
+	* README, download.c, opennap.h, util.c, whois.c:
+	whois prints the dotted-quad form of the ip address, not an integer
+
+	* ChangeLog, join.c, main.c, opennap.h:
+	enforce a 5 channel limit for users
+
+	added cl option to allow only privileged users to create channels
+
+	* kill_user.c, login.c, util.c, whois.c:
+	fixed another crash in login()
+
+	whois was checking the level of the person getting whois'ed, not the
+	person issuing the whois
+
+2000-01-21  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, login.c, util.c:
+	fix for bad password segfault in login
+
+	* ChangeLog, hotlist.c, login.c:
+	hotlist fix for users that are already logged in
+
+	* ChangeLog, NEWS, README, login.c:
+	fixed segfault in login().  split_line() does not write a 0 in the last
+	element of the arrary, you have to check the return value for the size
+
+	* README, main.c, opennap.h, privmsg.c, remove_connection.c, server_connect.c, server_login.c:
+	added support for the server linking commands
+
+	* level.c:
+	backed out change because you cant set a level >= your own
+
+	* level.c:
+	fix so that users can set others to leech status
+
+	* ChangeLog, TODO, ban.c, change.c, download.c, kill_user.c, level.c, login.c, muzzle.c, napster.txt, opennap.h, whois.c:
+	ban did not record the time of the ban
+
+	notify_mods changed to only notify local mods
+
+	change data port command was not passed to peer servers
+
+	added additional information to whois for moderators
+
+	change set level command so that mods+ can change the level of a user below
+	their level
+
+	the 218-221 message were not passed to peer servers
+
+	* ChangeLog, Makefile.am, Makefile.in, ban.c, login.c, main.c, opennap.h:
+	added support for ban, unban and banlist (612, 614, 615, 616, 629)
+
+	* README, db.c, login.c, opennap.h:
+	login should report error on nick already in use to the client before
+	disconnecting it
+
+2000-01-20  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, README, TODO, announce.c, download.c, hash.h, kill_user.c, level.c, login.c, main.c, muzzle.c, opennap.h, server_connect.c, synch.c, topic.c, unmuzzle.c, whois.c:
+	changed user level from bitmask to integer.
+
+	kill and muzzle operations now notify all mods+
+
+	added the wallop command (627)
+
+	user levels are now leech, user, moderator, admin and elite.
+
+	change server operator to elite instead of admin.
+
+	* napster.txt, opennap.h:
+	added some additional protocol information to napster.txt
+
+	* metaserver.c:
+	fixes for bsdi 4.1.  accept's 3rd arg should be socklen_t
+
+	* login.c, main.c, opennap.h, server_connect.c:
+	fixes for compilation under bsdi 4.1
+
+	* ChangeLog, configure, configure.in, download.c, main.c, opennap.h, server_connect.c, util.c:
+	endian checking was made more portable.  now use autoconf to define
+	WORDS_BIGENDIAN where appropriate.
+
+	* ChangeLog, main.c:
+	update_stats() now prints a message to the log with the current total
+	library size.
+
+	* add_file.c, free_user.c, main.c, opennap.h, remove_file.c:
+	server now stores internal library size in kilobytes to avoid rounding
+	errors.
+
+	* ChangeLog, FAQ, NEWS, README, hash.c, login.c:
+	channel and user names are now case insensitive.
+
+	* ChangeLog, Makefile.am, Makefile.in, configure, configure.in, hotlist.c, join.c, login.c, main.c, metaserver.c, opennap.h, search.c, server_connect.c, util.c:
+	added additional debugging sanity checking for major structures.
+
+	* ChangeLog, Makefile.am, Makefile.in, configure, configure.in, spynap.c:
+	configure now will look for mysql in /usr/local as well as /usr
+
+	* ChangeLog, TODO, hotlist.c, login.c, main.c, napster.txt, opennap.h, spynap.c, util.c:
+	fixed hotlist bug which crashed the server.
+
+2000-01-19  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, change.c, napster.txt, opennap.h:
+	added support for the change speed command (700)
+
+	* download.c, main.c, napster.txt, opennap.h, spynap.c:
+	added support for 626 (data port error)
+
+	added download support to spynap reference client
+
+2000-01-18  drscholl  <drscholl@users.sourceforge.net>
+
+	* NEWS, README, spynap.c:
+	began to add download support to spynap.  /search and /browse results are
+	now cached, and you can do /get <n> to request a file.  downloading does not
+	actually work yet.
+
+2000-01-17  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, README, login.c, main.c, opennap.h, search.c, spyserv.c:
+	login() did not set the user->host field so transfers between different
+	machines would fail.
+
+	format_request() did not terminate the output string.
+
+	added 10013 numeric for passing the ip address of clients to peer servers
+
+2000-01-16  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, download.c, main.c, napster.txt, opennap.h, search.c, spyserv.c, upload_complete.c:
+	added support for downloading from firewalled clients (500,501)
+
+	search patterns need to have %, ', _ and \ quoted in the SQL query
+
+2000-01-15  drscholl  <drscholl@users.sourceforge.net>
+
+	* ChangeLog, Makefile.am, Makefile.in, download.c, download_ack.c, main.c, napster.txt, opennap.h, spyserv.c, upload_complete.c:
+	fixed download problem where the 204 message was sending the information
+	for the person making the request, not the person holding the file.
+
+	added -l option to specify the local port on the spyserv agent
+
+	* ChangeLog, configure, configure.in, db.c, download.c, download_ack.c, main.c, opennap.h, upload_complete.c:
+	fixed several of the download numerics since they were not doing what
+	the protocol specifies.
+
+2000-01-14  drscholl  <drscholl@users.sourceforge.net>
+
+	* add_file.c, download.c, main.c, opennap.h, util.c:
+	fixed DOS filename quoting in download()
+
+	added SO_REUSEADDR option to main socket
+
+	* add_file.c:
+	single quote needs to be escaped too.
+
+	* add_file.c, spynap.c:
+	DOS backslashes need to be quoted before adding to the SQL database.
+
+	* patchnap.c:
+	offset was off by one in patchnap.c
+
+	* ChangeLog:
+	post release changelog update (oops)
+
+	* hotlist.c:
+	hotlist contains list of CONNECTION, not USER.
+
+	* configure, configure.in:
+	updated configure.in to version 0.07
+
+	* AUTHORS, Makefile.am, Makefile.in, NEWS, announce.c, client_quit.c, close_db.c, db.c, debug.c, debug.h, download.c, download_ack.c, free_user.c, hash.c, hash.h, metaserver.c, motd.c, muzzle.c, opennap.h, part_channel.c, patchnap.c, remove_connection.c, remove_file.c, resume.c, server_connect.c, server_login.c, spynap.c, spyserv.c, synch.c, unmuzzle.c, upload_complete.c:
+	final email address fixes in copyright notices
+
+	removed spyserv and spynap from the default build list.  now we just include
+	the sources.
+
+	updated to version 0.07.
+
+2000-01-13  drscholl  <drscholl@users.sourceforge.net>
+
+	* change.c:
+	forgot to add change.c to the CVS repository
+
+	* configure, configure.in, main.c, util.c, NEWS, config.c:
+	updated some more email addresses in the copyright notices
+
+	updated version number to 0.06
+
+	* ChangeLog, Makefile.am, Makefile.in, TODO, add_file.c, browse.c, hotlist.c, join.c, kill_user.c, level.c, list_channels.c, list_users.c, login.c, main.c, napster.txt, opennap.h, part.c, ping.c, privmsg.c, public.c, search.c, spynap.c, topic.c, whois.c:
+	fixed email address in many copyright notices
+
+	added support for the change data port (703) command
+
+	added #define for HANDLER to be used as a prototype for all protocol handler
+	routines
+
+2000-01-12  drscholl  <drscholl@users.sourceforge.net>
+
+	* TODO, debug.h, hash.h, main.c, opennap.h, spynap.c:
+	fixed copyright notices on some files.
+
+	fixed segmentation fault in new read() loop in handle_connection().
+
+	fixed broken /browse command in spynap.
+
+	* ChangeLog, Makefile.in, main.c, opennap.h, remove_connection.c:
+	each connection is now given its own input buffer so that we can use
+	nonblocking read() calls.
+
+	* ChangeLog, TODO, add_file.c, remove_file.c, search.c, spynap.c, util.c:
+	array_add() should not assert if the list is empty
+
+	server was reporting library size in MB, not GB
+
+	search strings should have spaces converted to % for SQL queries
+
+	added a /msg command to the spynap sample client
+
+2000-01-11  drscholl  <drscholl@users.sourceforge.net>
+
+	* spynap.c:
+	Updated the spynap client application to add a few more text commands for
+	easier use in testing other numerics.
+
+	* AUTHORS, NEWS, add_file.c, announce.c, browse.c, client_quit.c, config.c, db.c, debug.c, download.c, download_ack.c, free_user.c, hash.c, hotlist.c, join.c, kill_user.c, level.c, list_channels.c, list_users.c, login.c, main.c, metaserver.c, motd.c, muzzle.c, napster.txt, part.c, part_channel.c, ping.c, privmsg.c, public.c, remove_connection.c, remove_file.c, resume.c, search.c, server_connect.c, server_login.c, spynap.c, spyserv.c, synch.c, topic.c, unmuzzle.c, upload_complete.c, util.c, whois.c:
+	Updated copyright notice to reflect new year and new email address.
+
+	* .indent.pro, FAQ, client_quit.c, create_db.sql, global.h, hotlist.c, level.c, list_channels.c, list_users.c, md5.h, md5c.c, metaserver.c, muzzle.c, napster.txt, ping.c, remove_file.c, resume.c, sample.conf, sample.motd, server_connect.c, server_login.c, spynap.c, spyserv.c, synch.c, topic.c, unmuzzle.c, upload_complete.c, util.c:
+	Initial import of the opennap-0.05 work in progress.
+
+	* .indent.pro, FAQ, client_quit.c, create_db.sql, global.h, hotlist.c, level.c, list_channels.c, list_users.c, md5.h, md5c.c, metaserver.c, muzzle.c, napster.txt, ping.c, remove_file.c, resume.c, sample.conf, sample.motd, server_connect.c, server_login.c, spynap.c, spyserv.c, synch.c, topic.c, unmuzzle.c, upload_complete.c, util.c:
+	New file.
+
+	* add_file.c, announce.c, browse.c, close_db.c, config.c, configure, configure.in, db.c, debug.c, debug.h, download.c, download_ack.c, free_user.c, hash.c, hash.h, install-sh, join.c, kill_user.c, login.c, main.c, missing, mkinstalldirs, motd.c, opennap.h, part.c, part_channel.c, privmsg.c, public.c, remove_connection.c, search.c, whois.c:
+	Initial import of the opennap-0.05 work in progress.
+
+	* add_file.c, announce.c, browse.c, close_db.c, config.c, configure, configure.in, db.c, debug.c, debug.h, download.c, download_ack.c, free_user.c, hash.c, hash.h, install-sh, join.c, kill_user.c, login.c, main.c, missing, mkinstalldirs, motd.c, opennap.h, part.c, part_channel.c, privmsg.c, public.c, remove_connection.c, search.c, whois.c:
+	New file.
+
+	* INSTALL, Makefile.am, NEWS, TODO, aclocal.m4:
+	Initial import of the opennap-0.05 work in progress.
+
+	* INSTALL, Makefile.am, NEWS, TODO, aclocal.m4:
+	New file.
+
+	* AUTHORS, COPYING, ChangeLog, Makefile.in, README:
+	Initial import of the opennap-0.05 work in progress.
+
+	* AUTHORS, COPYING, ChangeLog, Makefile.in, README:
+	New file.
+

@@ -1,0 +1,34 @@
+#!/bin/sh
+
+if [ "$1" = "" ]; then
+ echo "$0 [prefix]"
+ echo "Moves the relevant files from the old config dir to the new ones"
+ echo "Please enter the prefix such as /usr/local or /usr"
+ exit
+fi
+
+prefix="$1"
+oldconfdir=$prefix/share/opennap-ng
+confdir=$prefix/etc/opennap-ng
+statedir=$prefix/var/opennap-ng
+
+if [ ! -x "$oldconfdir" ]; then
+ echo "$oldconfdir does not exist.  Wrong prefix?"
+ exit
+fi
+
+mkdir -p $confdir
+mkdir -p $statedir
+
+cd $prefix/share/opennap-ng/
+cp -a class config filter block motd servers $confdir/
+cp -a bans channels level.log users $statedir/
+
+echo ""
+echo "You may ignore some cp errors if files do not exist."
+echo "However, if 10 or so such errors exist, something went wrong."
+echo ""
+echo "Files have been copied from $prefix/share/opennap-ng"
+echo "to $prefix/etc and $prefix/var"
+echo ""
+echo "Old files have been left in place.  You may remove them yourself."

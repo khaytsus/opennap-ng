@@ -1,0 +1,7 @@
+
+zlib is now statically compiled in so what you see below is no longer needed. (w00h00).
+
+In order to compile opennap-ng for win32 please get zlibwapi.dll + header files
+from : http://www.zlib.org
+
+Put the files zlibwapi.dll, zlibwapi.lib, zlib.h and zconf.h in this directory.

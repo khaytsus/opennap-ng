@@ -1,0 +1,9 @@
+opennap-ng (0.46-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Johan Schurer <leodav@users.sf.net>  Tue, 23 Jul 2002 11:59:45 +0200
+
+Local variables:
+mode: debian-changelog
+End:

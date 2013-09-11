@@ -1,0 +1,17 @@
+Source: opennap-ng
+Section: net
+Priority: optional
+Maintainer: Johan Schurer <leodav@users.sf.net>
+Standards-Version: 3.2.1
+
+Package: opennap-ng
+Architecture: any
+Depends: ${shlibs:Depends}, debhelper (>= 2)
+Conflicts: opennap
+Description: Next Generation Napster server.
+ opennap-ng is a fork of the existing opennap-0.44 but with lots of
+ improvements like zlib client-server communication, bug fixes and logging.
+ .
+ Napster is a protocol for sharing files between clients. The server acts as
+ a broker and search engine for client transfers. It also features group and
+ private chat, similar to IRC.

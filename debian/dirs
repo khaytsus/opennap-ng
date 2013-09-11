@@ -1,0 +1,4 @@
+usr/sbin
+etc/opennap-ng
+var/lib/opennap-ng
+var/log/opennap-ng

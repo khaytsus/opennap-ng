@@ -1,0 +1,198 @@
+Credits ( in no particular order ):
+	- LeoDaV
+	- khaytsus
+	- reech
+	- winter_mute
+	- spike
+	- acetyl
+	- drogoh
+	- kaenguru
+	- henning_d
+	- pengu
+	- moni4711
+	- masterofdisaster822
+	- sgop
+	- the_turner
+	- cowbot
+	- mirthran
+	- evilgranny ( He really made us mad - but in this way he motivated us to be better ) 
+	- djhibernate ( He proved that another fork could speed up development quite a bit )
+	- and many many more ...
+
+This project would not have had so many changes in such a short time without them.
+
+	Thanks to them all.
+
+OPENNAP-NG 0.48
+
+Changed state_dir and config_dir, please review the README file for more
+information.
+
+ - Win32 memory statistics work now
+ - No more crashing when linking a server with a nick the same name online.
+ - Fixed bug dealing with search dropping the first character of each pattern
+ - Ghosts kills are now properly synced to the network, no more desync.
+ - Whois shows one or more of the following Status:
+     Friend, Criminal, Muzzled, Cloaked
+ - autogen.sh more cross-platform friendly
+ - Initial work on a proxy scanner (not yet working properly, use at your
+     own risk!  Off by default)
+
+OPENNAP-NG 0.47.1
+===============
+
+Changed main.c timeouts again.  Keep in mind that if there is *no* activity
+there is no output from the server.  However, no cpu issues, and while it
+might seem 'frozen' it responds immediately, it's just waiting for something
+to do.
+
+Incorporated patches kindly submitted by Hoshi.
+
+Change: Opennap-NG manual revised, relayouted and updated. Tables rule!
+abuse.c
+Bugfix: new approach to make "eject_nochannels" functional.
+add_file.c
+Bugfix: block file treats empty lines now as comments and not as "*".
+config.c
+Change: default for "max_connections" to 1000. (Was FD_SETSIZE which looks
+        dangerous for most OSes and some less powerful machines.)
+Change: default for "stat_pass" and "stat_user" set to NULL (instead of "".
+        Now not setting those vars is a clean way to skip Napigator report.)
+hash.c
+Change: some optimizations and inlinings to speed up some functions a bit.
+New: created own inlined version of strcmp() to speed up searches and hashes
+
+OPENNAP-NG 0.47
+===============
+
+New feature:   abuse_bans_ip, allows you to decide if an abusing user is
+banned:  user!* *!ip or user!ip
+
+Fixed lots of little bugs, cleaned up quite a few of the open bugs on
+SourceForge's bug tracking system, and a few that were not there.
+
+Most significantly is the level.log, channels, and idle bugs have been
+fixed, which means you should probably update to this release.
+
+ACLs checking has been disabled, so as of this release there are no known
+major bugs.
+
+Changed rpm -ba to rpmbuild -ba for "make rpm" builds.  rpm -ba is depreciated
+and no longer supported, so if your distribution is older or has not changed
+over to this new rpm structure, you must link rpmbuild to rpm if you want
+to "make rpm".  This does not affect the binary rpm built, just to build
+one from this source.  rpm -ta file.tar.bz2 is still not supported at this
+time, as we build the spec file at configure time.  ./configure ; make rpm
+
+Manual has been slightly updated, covers new feature abuse_bans_ip, and
+corrected some mistakes.
+
+
+OPENNAP-NG 0.46
+===============
+
+It's been a long road, most of the development team have disapered
+along the line, but there have been a log of changes since we
+first started.  Lots of bug fixes, leaks fixed, improvements.  We'd
+love to impliment more desired features but don't have the manpower
+to do it.  Hopefully sometime things will get back on track and by
+0.47 there will be more features requests included.
+
+OPENNAP-NG 0.45
+===============
+* A new flag has been introduced.
+  This flag exempts a user from the limits imposed by
+  "eject_*" and "max_connections".
+  This flag is set and resettable by 
+    /raw 10050 nick [flag]
+  or by 
+    /msg operserv userflag nick [flag]
+  E.g. if you don't want to promote a 
+  friendly person to mod+ only to allow him to logon
+  whenever he wants you do a 
+    "/raw 10050 nick friend"
+  This flag is backwards compatible to old servers and 
+  does no priviledge escalation as a new level might do.
+  The only drawback is that this flag is reset completely 
+  by old servers when a user is unmuzzled.
+  
+* A lot of bugs concerning tbans have been fixed.
+  Now servers are able to unban users so that split 
+  networks should have quite consistent banlists
+  even when using tbans.
+  
+* Fixed the longstanding bug in login.c which kicked 
+  users who were sharing when "eject_when_full" had 
+  been set to "yes". 
+  Now the login procedure also takes care when a 
+  client with a very slow connection takes more
+  time to share his files and it also takes care
+  of wellbehaving clients which refresh their 
+  library.
+
+* Fixed a bug in the router code where a server
+  that had been configured as a router did not
+  route any search requests to the peers.
+
+* Implemented search statistics on the most
+  often used remote searches. This is the base to 
+  implement some caching code in the next 
+  release.
+  You can get the stats using a 
+    /raw 10116
+  Be aware that only remote searches are counted as
+  these are most router poundering. Local searches
+  are still invisible to everyone. This feature
+  is about performance - not to disturb privacy.
+
+* Now ghosts from different IP addresses can be allowed.
+  If you set "allow_dynamic_ghosts" to 1 then ghosting
+  is allowed even if the ghosting user does not have 
+  the same IP address as the ghosted one.
+  As this is a security risk the default is not
+  to allow dynamic ghosting.
+  
+* Checking abuses of several tags asides from the flood
+  counter. Measurements of network traffic showed, that
+  a particular client did some protocol violation.
+  By cutting off these abuses you might save up to 50% 
+  of traffic on your hub.
+  You can configure whether you want to notify the user
+  the mod or both about the abuse. You can even set the 
+  frequency of notification for both.
+  
+* Preventing abuse of privmsgs for queueing. A particular
+  client sends a privmsg to insert a download request 
+  into the queue. As this client is really popular
+  you might want to cut off these privmsgs so that these
+  clients have to do their downloading the usual way.
+  You can see the abuse when checking your server logfile
+  for entries like this:
+  privmsg: all 205: 174000 3976798 Bytes - 205WQ: 138688 (79.7%) 1525575 Bytes (38.4%)
+  ( This example has been taken from a hub running for about
+    12 hours with 5 peer nodes on average )
+
+* Preventing the sharing of fake files. You now can set
+  the minimum size that a shared file has to have to be
+  shared on the server.
+
+* If a user ignores another user with a higher userlevel then the
+  ignoring user will get kicked. This happens when downloading, pinging
+  and sending a privmsg.
+
+* Security: The tag 11 had no logging at all except floodprotection.
+  So it had been possible to bruteforce passwords of mod+ undetected.
+  Now every tag 11 is logged and you can use your IDS on checking 
+  the logfile.
+
+* Internal Ban List: Now you can control clients who reconnect
+  excessive and bail out with the same error over and over again.
+  A time ban of 300 seconds saves a lot of I/O. An ibl_ttl of 0
+  disables this feature.
+
+* And - most important: A determined pack of ppl who are willing
+  to develop the most bandwidth saving, fastest, most stable 
+  and most friendly opennap server. ;-)
+
+* opennap_config.pl:  Script to help configure the opennap config
+  file, from scratch or to edit the existing one.

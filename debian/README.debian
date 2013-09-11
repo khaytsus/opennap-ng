@@ -1,0 +1,15 @@
+opennap-ng for Debian
+----------------------
+
+  Most options are autodetected or configured during compilation thus
+  users are supposed to build this package themselves.
+
+  Recommended method is running "fakeroot debian/rules binary" in the top
+  directory
+
+  In case you would like to pass some parameters to ./configure, set variable
+  DEB_BUILD_OPTIONS like that:
+
+  $ DEB_BUILD_OPTIONS="--enable-csc" fakeroot debian/rules binary
+              
+Johan Schurer <leodav@users.sf.net>, Tue, 23 Jul 2002 11:59:45 +0200
