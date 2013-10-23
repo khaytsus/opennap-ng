@@ -540,3 +540,7 @@ RFC1459, the IRC protocol was helpful in implementing many features.
 
 http://www.onelist.com/community/napdev/ is a useful community (mailing list)
 for discussion of the napster protocol.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/khaytsus/opennap-ng/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
