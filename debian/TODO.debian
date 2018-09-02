@@ -1,7 +1,0 @@
- 
-  25 July 2002:
----------------
-  * have to get the pid file in /var/run and the log file in /var/log
-    according to... debian rulez ;)
-  * add a log rotate
-  * create a second package containing the router (hub)
